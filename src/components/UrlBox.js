@@ -1,4 +1,4 @@
-function UrlBox (props) {
+function UrlBox(props) {
     return (
         <div>
             <input value="foodist.io/abY8je0" />
@@ -7,4 +7,4 @@ function UrlBox (props) {
     )
 }
 
-export default UrlBox;
+export default UrlBox

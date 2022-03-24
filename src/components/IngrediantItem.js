@@ -1,4 +1,4 @@
-function IngrediantItem (props) {
+function IngrediantItem(props) {
     return (
         <li>
             <span>{props.name}</span>
@@ -9,4 +9,4 @@ function IngrediantItem (props) {
     )
 }
 
-export default IngrediantItem;
+export default IngrediantItem

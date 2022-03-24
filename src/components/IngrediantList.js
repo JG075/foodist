@@ -1,4 +1,4 @@
-import IngrediantItem from "./IngrediantItem";
+import IngrediantItem from "./IngrediantItem"
 
 function IngrediantList(props) {
     const data = [
@@ -7,14 +7,14 @@ function IngrediantList(props) {
             quantity: {
                 value: "2",
                 measurement: "",
-            }
+            },
         },
         {
             name: "Cheese",
             quantity: {
                 value: "500",
                 measurement: "grams",
-            }
+            },
         },
 
         {
@@ -22,19 +22,17 @@ function IngrediantList(props) {
             quantity: {
                 value: "30",
                 measurement: "ml",
-            }
+            },
         },
     ]
 
-    const ingrediantItems = data.map(item => <IngrediantItem {...item} />);
+    const ingrediantItems = data.map((item) => <IngrediantItem {...item} />)
 
     return (
         <div>
-            <ul>
-                {ingrediantItems}
-            </ul>
+            <ul>{ingrediantItems}</ul>
         </div>
     )
 }
 
-export default IngrediantList;
+export default IngrediantList
