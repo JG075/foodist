@@ -1,8 +1,8 @@
 function IngrediantAdder(props) {
     return (
         <div>
-            <form>
-                <input placeholder="2 lemons, beef 500g" />
+            <form onSubmit={(e) => e.preventDefault()}>
+                <input placeholder="Enter an ingrediant and quantity e.g. 2 lemons, cheese 500g" />
                 <button>Enter</button>
             </form>
         </div>
