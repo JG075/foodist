@@ -5,16 +5,23 @@ import App from "./App"
 
 // Creator tests
 
-test("I can add an ingrediant and it appears in the ingrediant list", async () => {
+test("I can add an ingrediant and it appears in the ingrediants list", async () => {
     render(<App />)
-    const ingrediantName = "2 limes"
     const placeholderText =
         "Enter an ingrediant and quantity e.g. 2 lemons, cheese 500g"
     const inputElem = screen.getByPlaceholderText(placeholderText)
-    userEvent.type(inputElem, ingrediantName)
+    userEvent.type(inputElem, "2 limes")
     userEvent.click(screen.getByRole("button", { name: /enter/i }))
-    await waitFor(() => {
-        expect(screen.getByText(ingrediantName)).not.toBeNull()
-    })
+
+    await waitFor(() => expect(screen.getAllByRole("listitem")).toHaveLength(1))
+
+    const listItems = screen.getAllByRole("listitem")
+    const lastItem = listItems[listItems.length - 1]
+    expect(lastItem).toHaveTextContent("Limes")
+    expect(lastItem).toHaveTextContent("2")
     expect(inputElem).toHaveValue("")
 })
+
+// test("If an item is already in the list a new item is added to the top", async () => {
+
+// })
