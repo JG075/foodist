@@ -2,12 +2,29 @@ import "./App.css"
 import UrlBox from "./components/UrlBox"
 import IngrediantAdder from "./components/IngrediantAdder"
 import IngrediantList from "./components/IngrediantList"
+import ingrediantParser from "./helpers/ingrediantParser"
+import { useState } from "react"
+import { v4 as uuidv4 } from "uuid"
 
 function App() {
-    const handleOnSubmit = (inputValue) => {
-        console.log(inputValue)
+    const [ingrediantsList, setIngrediantsList] = useState([])
+    const [ingrediantInput, setingrediantInput] = useState("")
 
-        // TODO: show an error message if above cannot be accomplished
+    const handleOnChange = (e) => setingrediantInput(e.target.value)
+    const handleOnSubmit = (e) => {
+        e.preventDefault()
+        const parsedIngrediant = ingrediantParser(ingrediantInput)
+        if (!parsedIngrediant) {
+            // TODO: show an error message if above cannot be accomplished
+            console.log(ingrediantInput, "cannot be parsed")
+            return
+        }
+        const newIngrediant = {
+            id: uuidv4(),
+            ...parsedIngrediant,
+        }
+        setIngrediantsList([newIngrediant, ...ingrediantsList])
+        setingrediantInput("")
     }
 
     return (
@@ -18,8 +35,8 @@ function App() {
             </header>
             <main>
                 <UrlBox />
-                <IngrediantAdder onSubmit={handleOnSubmit} />
-                <IngrediantList />
+                <IngrediantAdder value={ingrediantInput} onChange={handleOnChange} onSubmit={handleOnSubmit} />
+                <IngrediantList list={ingrediantsList} />
             </main>
         </div>
     )

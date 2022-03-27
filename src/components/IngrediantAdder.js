@@ -1,22 +1,14 @@
 import { useState } from "react"
 import PropTypes from "prop-types"
 
-function IngrediantAdder(props) {
-    const [inputValue, setInputValue] = useState("")
-
-    const handleOnChange = (e) => setInputValue(e.target.value)
-    const handleOnSubmit = (e) => {
-        e.preventDefault()
-        props.onSubmit(inputValue)
-    }
-
+function IngrediantAdder({ value, onChange, onSubmit }) {
     return (
         <div>
-            <form onSubmit={handleOnSubmit}>
+            <form onSubmit={onSubmit}>
                 <input
                     placeholder="Enter an ingrediant and quantity e.g. 2 lemons, cheese 500g"
-                    value={inputValue}
-                    onChange={handleOnChange}
+                    value={value}
+                    onChange={onChange}
                 />
                 <button>Enter</button>
             </form>
@@ -25,6 +17,8 @@ function IngrediantAdder(props) {
 }
 
 IngrediantAdder.propsTypes = {
+    inputValue: PropTypes.string,
+    onChange: PropTypes.func,
     onSubmit: PropTypes.func,
 }
 

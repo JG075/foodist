@@ -1,12 +1,18 @@
-function IngrediantItem(props) {
+import PropTypes from "prop-types"
+import Qty from "js-quantities"
+
+function IngrediantItem({ name, qty }) {
     return (
         <li>
-            <span>{props.name}</span>
-            <span>{props.quantity.value}</span>
-            <span>{props.quantity.measurement}</span>
+            <span>{name}</span> <span>{qty.toString().replace(/ /g, "")}</span>
             <button>X</button>
         </li>
     )
+}
+
+IngrediantItem.propTypes = {
+    name: PropTypes.string,
+    qty: PropTypes.instanceOf(Qty),
 }
 
 export default IngrediantItem
