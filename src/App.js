@@ -1,10 +1,15 @@
-import logo from "./logo.svg"
 import "./App.css"
 import UrlBox from "./components/UrlBox"
 import IngrediantAdder from "./components/IngrediantAdder"
 import IngrediantList from "./components/IngrediantList"
 
 function App() {
+    const handleOnSubmit = (inputValue) => {
+        console.log(inputValue)
+
+        // TODO: show an error message if above cannot be accomplished
+    }
+
     return (
         <div className="App">
             <header className="App-header">
@@ -13,7 +18,7 @@ function App() {
             </header>
             <main>
                 <UrlBox />
-                <IngrediantAdder />
+                <IngrediantAdder onSubmit={handleOnSubmit} />
                 <IngrediantList />
             </main>
         </div>

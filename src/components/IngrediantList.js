@@ -28,9 +28,7 @@ function IngrediantList(props) {
         },
     ]
 
-    const ingrediantItems = data.map((item) => (
-        <IngrediantItem key={item.id} {...item} />
-    ))
+    const ingrediantItems = data.map((item) => <IngrediantItem key={item.id} {...item} />)
 
     return (
         <div>
