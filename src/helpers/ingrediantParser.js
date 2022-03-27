@@ -1,5 +1,18 @@
 import Qty from "js-quantities"
 
+export const perferedAliases = [
+    ["cu", "cup"],
+    ["tb", "tbsp"],
+]
+
+Qty.formatter = (scalar, units) => {
+    const preferedAlias = perferedAliases.find(([alias, prefered]) => alias === units)
+    if (preferedAlias) {
+        return `${scalar} ${preferedAlias[1]}`
+    }
+    return Qty(`${scalar} ${units}`).toString()
+}
+
 const toTitleCase = (str) => {
     return str.replace(/\w\S*/g, function (txt) {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
@@ -7,7 +20,8 @@ const toTitleCase = (str) => {
 }
 
 const ingrediantParser = (textString) => {
-    const regEx = /((?<qty1>\d+)(?<measure1>[a-z]*))?\s*(?<name>(?:\s*[a-z])+)(\s+(?<qty2>\d+))?\s*(?<measure2>[a-z]*)/i
+    const regEx =
+        /((?<qty1>\d+)(?<measure1>[^\d\s]*))?\s*(?<name>(?:\s*[^\d\s])+)(\s+(?<qty2>\d+))?\s*(?<measure2>[^\d\s]*)/i
     const match = textString.toLowerCase().match(regEx)
     if (!match || !match.groups) {
         return null
@@ -23,20 +37,25 @@ const ingrediantParser = (textString) => {
     let parsedName = name
     try {
         let parsedMeasurement = measurement
-        if (!measurement) {
-            // Try to get the measurement from the name e.g. "grams cheese"
-            const firstPart = name.split(" ")
-            if (firstPart.length >= 2) {
+        const isEscaped = /^".*"$/.test(name)
+        // Try to get the measurement from the name e.g. "grams cheese"
+        // Except if the name is escaped e.g. "\"Grams Cookies\""
+        if (!isEscaped && !measurement) {
+            const parts = name.split(" ")
+            if (parts.length >= 2) {
                 try {
-                    const firstPartQty = Qty(firstPart[0])
+                    const firstPartQty = Qty(parts[0])
                     if (firstPartQty.units()) {
                         parsedMeasurement = firstPartQty.units()
-                        parsedName = firstPart.slice(1).join(" ")
+                        parsedName = parts.slice(1).join(" ")
                     }
                 } catch (error) {
                     // Perhaps send this to a logging service
                 }
             }
+        }
+        if (isEscaped) {
+            parsedName = name.replaceAll('"', "")
         }
         qty = Qty(`${quantity} ${parsedMeasurement}`)
     } catch (error) {

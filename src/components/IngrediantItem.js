@@ -4,7 +4,7 @@ import Qty from "js-quantities"
 function IngrediantItem({ name, qty }) {
     return (
         <li>
-            <span>{name}</span> <span>{qty.toString().replace(/ /g, "")}</span>
+            <span>{name}</span> <span>{qty.format().replace(/ /g, "")}</span>
             <button>X</button>
         </li>
     )

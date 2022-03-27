@@ -1,4 +1,4 @@
-import ingrediantParser from "./ingrediantParser"
+import ingrediantParser, { perferedAliases } from "./ingrediantParser"
 import Qty from "js-quantities"
 
 test.each([
@@ -20,7 +20,7 @@ test.each([
 ])("ingrediantParser('%s')", (input, expected) => {
     const output = ingrediantParser(input)
     expect(output.name).toEqual(expected.name)
-    expect(output.qty.toString()).toEqual(expected.qty.toString())
+    expect(output.qty.format()).toEqual(expected.qty.format())
 })
 
 test("Handles invalid measurements", () => {
@@ -33,4 +33,19 @@ test("Handles invalid measurements", () => {
 test("Handles no ingrediant name", () => {
     const output = ingrediantParser("100")
     expect(output).toBeNull()
+})
+
+test.each(perferedAliases)("ingrediantParser('%s')", (input, expected) => {
+    const quantity = new Qty(`2 ${expected}`)
+    expect(quantity.format()).toEqual(`2 ${expected}`)
+})
+
+test("Ingrediant name can be escaped for edge cases", () => {
+    const output1 = ingrediantParser('3 "Grams Pie"')
+    expect(output1.name).toEqual("Grams Pie")
+    expect(output1.qty.format()).toEqual("3")
+
+    const output2 = ingrediantParser('100g "Grams Cookies"')
+    expect(output2.name).toEqual("Grams Cookies")
+    expect(output2.qty.format()).toEqual("100 g")
 })
