@@ -40,6 +40,10 @@ function App() {
         setingrediantInput("")
     }
     const handleClose = () => setAppError("")
+    const handleOnDelete = (idToDelete) => {
+        const newIngrediantList = ingrediantsList.filter(({ id }) => id !== idToDelete)
+        setIngrediantsList(newIngrediantList)
+    }
 
     return (
         <div className="App">
@@ -50,14 +54,20 @@ function App() {
             <main>
                 <UrlBox />
                 <IngrediantAdder value={ingrediantInput} onChange={handleOnChange} onSubmit={handleOnSubmit} />
-                <IngrediantList list={ingrediantsList} />
+                <IngrediantList list={ingrediantsList} onItemDelete={handleOnDelete} />
                 <Snackbar
                     open={!!appError}
                     onClose={handleClose}
                     autoHideDuration={6000}
                     anchorOrigin={{ vertical: "top", horizontal: "center" }}
                 >
-                    {!!appError && <Alert severity="error">{appError}</Alert>}
+                    <div>
+                        {appError && (
+                            <Alert severity="error" onClose={handleClose}>
+                                {appError || null}
+                            </Alert>
+                        )}
+                    </div>
                 </Snackbar>
             </main>
         </div>

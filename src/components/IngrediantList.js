@@ -1,8 +1,10 @@
 import IngrediantItem from "./IngrediantItem"
 import PropTypes from "prop-types"
 
-function IngrediantList({ list }) {
-    const ingrediantItems = list.map((item) => <IngrediantItem key={item.id} {...item} />)
+function IngrediantList({ list, onItemDelete }) {
+    const ingrediantItems = list.map((item) => (
+        <IngrediantItem key={item.id} onDelete={() => onItemDelete(item.id)} {...item} />
+    ))
     return (
         <div>
             <ul>{ingrediantItems}</ul>

@@ -47,3 +47,17 @@ test("If I enter no ingrediant name I see an error message", async () => {
     addItemToList("20")
     expect(screen.getByText("Please enter an ingrediant name and optionally a quantity.")).not.toBeNull()
 })
+
+test("I can delete an item from the list", async () => {
+    render(<App />)
+    addItemToList("2 limes")("3 apples")
+
+    const getListItems = () => screen.getAllByRole("listitem")
+
+    await waitFor(() => expect(getListItems()).toHaveLength(2))
+
+    userEvent.click(screen.getAllByRole("button", { name: "X" })[0])
+    expect(getListItems()).toHaveLength(1)
+    expect(getListItems()[0]).toHaveTextContent("Limes")
+    expect(getListItems()[0]).toHaveTextContent("2")
+})

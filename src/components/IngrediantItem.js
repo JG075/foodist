@@ -1,11 +1,11 @@
 import PropTypes from "prop-types"
 import Qty from "js-quantities"
 
-function IngrediantItem({ name, qty }) {
+function IngrediantItem({ name, qty, onDelete }) {
     return (
         <li>
             <span>{name}</span> <span>{qty.format().replace(/ /g, "")}</span>
-            <button>X</button>
+            <button onClick={onDelete}>X</button>
         </li>
     )
 }
