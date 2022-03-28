@@ -5,10 +5,11 @@ import App from "./App"
 
 // Creator tests
 
-const placeholderText = "Enter an ingrediant and quantity e.g. 2 lemons, cheese 500g"
+const placeholderText = "Enter an ingrediant and quantity e.g. 2 lemons, mozzarella 50g"
 
 const addItemToList = (inputText) => {
     const inputElem = screen.getByPlaceholderText(placeholderText)
+    userEvent.clear(inputElem)
     userEvent.type(inputElem, inputText)
     userEvent.click(screen.getByRole("button", { name: /enter/i }))
     return addItemToList
@@ -30,6 +31,9 @@ test("I can add an ingrediant and it appears in the ingrediants list", async () 
 test("If an item is already in the list a new item is added to the top", async () => {
     render(<App />)
     addItemToList("2 limes")("3 apples")
+
+    await waitFor(() => expect(screen.getAllByRole("listitem")).toHaveLength(2))
+
     const listItems = screen.getAllByRole("listitem")
     const firstItem = listItems[0]
     expect(firstItem).toHaveTextContent("Apples")
@@ -39,25 +43,40 @@ test("If an item is already in the list a new item is added to the top", async (
 test("If I enter an invalid unit type I see an error message", async () => {
     render(<App />)
     addItemToList("20foo carrots")
-    expect(screen.getByText("You have entered an invalid measurement unit.")).not.toBeNull()
+    const errMsg = "You have entered an invalid measurement unit."
+    await waitFor(() => {
+        expect(screen.getByText(errMsg)).not.toBeNull()
+    })
+    addItemToList("20g carrots")
+    await waitFor(() => {
+        expect(screen.queryByText(errMsg)).toBeNull()
+    })
 })
 
 test("If I enter no ingrediant name I see an error message", async () => {
     render(<App />)
     addItemToList("20")
-    expect(screen.getByText("Please enter an ingrediant name and optionally a quantity.")).not.toBeNull()
+    const errMsg = "Please enter an ingrediant name and optionally a quantity."
+    await waitFor(() => {
+        expect(screen.getByText(errMsg)).not.toBeNull()
+    })
+    addItemToList("20 lemons")
+    await waitFor(() => {
+        expect(screen.queryByText(errMsg)).toBeNull()
+    })
 })
 
 test("I can delete an item from the list", async () => {
     render(<App />)
     addItemToList("2 limes")("3 apples")
-
     const getListItems = () => screen.getAllByRole("listitem")
 
     await waitFor(() => expect(getListItems()).toHaveLength(2))
 
-    userEvent.click(screen.getAllByRole("button", { name: "X" })[0])
-    expect(getListItems()).toHaveLength(1)
+    userEvent.click(screen.getAllByRole("button", { name: "delete" })[0])
+
+    await waitFor(() => expect(getListItems()).toHaveLength(1))
+
     expect(getListItems()[0]).toHaveTextContent("Limes")
     expect(getListItems()[0]).toHaveTextContent("2")
 })
