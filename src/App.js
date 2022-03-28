@@ -38,8 +38,8 @@ function App() {
         }
         setIngrediantsList([newIngrediant, ...ingrediantsList])
         setingrediantInput("")
+        setAppError("")
     }
-    const handleClose = () => setAppError("")
     const handleOnDelete = (idToDelete) => {
         const newIngrediantList = ingrediantsList.filter(({ id }) => id !== idToDelete)
         setIngrediantsList(newIngrediantList)
@@ -49,26 +49,18 @@ function App() {
         <div className="App">
             <header className="App-header">
                 <h1>Foodist</h1>
-                <p>The easiest way to make and share ingrediants</p>
+                <p>The easiest way to make and share ingrediant lists</p>
             </header>
             <main>
-                <UrlBox />
-                <IngrediantAdder value={ingrediantInput} onChange={handleOnChange} onSubmit={handleOnSubmit} />
+                {/* <UrlBox /> */}
+                <IngrediantAdder
+                    value={ingrediantInput}
+                    onChange={handleOnChange}
+                    onSubmit={handleOnSubmit}
+                    error={!!appError}
+                    helperText={appError}
+                />
                 <IngrediantList list={ingrediantsList} onItemDelete={handleOnDelete} />
-                <Snackbar
-                    open={!!appError}
-                    onClose={handleClose}
-                    autoHideDuration={6000}
-                    anchorOrigin={{ vertical: "top", horizontal: "center" }}
-                >
-                    <div>
-                        {appError && (
-                            <Alert severity="error" onClose={handleClose}>
-                                {appError || null}
-                            </Alert>
-                        )}
-                    </div>
-                </Snackbar>
             </main>
         </div>
     )

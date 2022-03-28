@@ -1,5 +1,6 @@
 import IngrediantItem from "./IngrediantItem"
 import PropTypes from "prop-types"
+import List from "@mui/material/List"
 
 function IngrediantList({ list, onItemDelete }) {
     const ingrediantItems = list.map((item) => (
@@ -7,7 +8,9 @@ function IngrediantList({ list, onItemDelete }) {
     ))
     return (
         <div>
-            <ul>{ingrediantItems}</ul>
+            <List dense sx={{ width: "100%", bgcolor: "background.paper" }}>
+                {ingrediantItems}
+            </List>
         </div>
     )
 }
