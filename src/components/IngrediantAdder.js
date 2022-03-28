@@ -1,4 +1,3 @@
-import { useState } from "react"
 import PropTypes from "prop-types"
 
 function IngrediantAdder({ value, onChange, onSubmit }) {

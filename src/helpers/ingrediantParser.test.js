@@ -23,18 +23,6 @@ test.each([
     expect(output.qty.format()).toEqual(expected.qty.format())
 })
 
-test("Handles invalid measurements", () => {
-    const output1 = ingrediantParser("100foo apples")
-    const output2 = ingrediantParser("apples 100foo")
-    expect(output1).toBeNull()
-    expect(output2).toBeNull()
-})
-
-test("Handles no ingrediant name", () => {
-    const output = ingrediantParser("100")
-    expect(output).toBeNull()
-})
-
 test.each(perferedAliases)("ingrediantParser('%s')", (input, expected) => {
     const quantity = new Qty(`2 ${expected}`)
     expect(quantity.format()).toEqual(`2 ${expected}`)
@@ -48,4 +36,13 @@ test("Ingrediant name can be escaped for edge cases", () => {
     const output2 = ingrediantParser('100g "Grams Cookies"')
     expect(output2.name).toEqual("Grams Cookies")
     expect(output2.qty.format()).toEqual("100 g")
+})
+
+test("Throws errors if the input is invalid", () => {
+    expect(() => {
+        ingrediantParser("20foo apples")
+    }).toThrow()
+    expect(() => {
+        ingrediantParser("20")
+    }).toThrow()
 })

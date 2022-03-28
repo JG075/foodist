@@ -24,12 +24,12 @@ const ingrediantParser = (textString) => {
         /((?<qty1>\d+)(?<measure1>[^\d\s]*))?\s*(?<name>(?:\s*[^\d\s])+)(\s+(?<qty2>\d+))?\s*(?<measure2>[^\d\s]*)/i
     const match = textString.toLowerCase().match(regEx)
     if (!match || !match.groups) {
-        return null
+        throw new Error("No valid match")
     }
     const { groups } = match
     const { name, qty1, qty2, measure1, measure2 } = groups
     if (!name) {
-        return null
+        throw new Error("No ingrediant name")
     }
     const quantity = qty1 || qty2 || "1"
     const measurement = measure1 || measure2 || ""
@@ -59,7 +59,7 @@ const ingrediantParser = (textString) => {
         }
         qty = Qty(`${quantity} ${parsedMeasurement}`)
     } catch (error) {
-        return null
+        throw error
     }
     return {
         name: toTitleCase(parsedName),
