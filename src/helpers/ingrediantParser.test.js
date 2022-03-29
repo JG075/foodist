@@ -89,3 +89,15 @@ test("Converts a fraction to decimal for non fractional units", () => {
     fractionalUnitHelper("1/2", "g", "Apple", false, `0.5 %u`)
     fractionalUnitHelper("1/2", "g", "Apple", true, `0.5 %u`)
 })
+
+test('Remove the word "of" from the ingrediant name', () => {
+    const output = ingrediantParser("100g of rice")
+    expect(output.name).toEqual("Rice")
+    expect(output.qty.format()).toEqual("100 g")
+})
+
+test('Keep the word "of" in the ingrediant name if it\'s escaped', () => {
+    const output = ingrediantParser('100g "of rice"')
+    expect(output.name).toEqual("Of Rice")
+    expect(output.qty.format()).toEqual("100 g")
+})

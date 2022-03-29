@@ -64,7 +64,10 @@ const ingrediantParser = (textString) => {
             }
         }
         if (isEscaped) {
-            parsedName = name.replaceAll('"', "")
+            parsedName = parsedName.replaceAll('"', "")
+        } else {
+            // Remove the word "of" at the start of the string
+            parsedName = parsedName.replace(/^of\s/i, "")
         }
         const isFraction = /\//.test(quantity)
         let normalizedQty = quantity
