@@ -25,7 +25,7 @@ function IngrediantItem({ name, qty, onDelete }) {
                     color: #7d7c7c;
                 `}
             >
-                {qty.format().replace(/ /g, "")}
+                {qty.format()}
             </span>
             <IconButton
                 aria-label="delete"

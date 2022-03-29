@@ -1,14 +1,23 @@
 import Qty from "js-quantities"
+import { number, fraction as mfraction } from "mathjs"
 
 export const perferedAliases = [
     ["cu", "cup"],
     ["tb", "tbsp"],
 ]
+export const fractionalUnits = ["", "tb", "tsp", "cu"]
 
 Qty.formatter = (scalar, units) => {
-    const preferedAlias = perferedAliases.find(([alias, prefered]) => alias === units)
-    if (preferedAlias) {
-        return `${scalar} ${preferedAlias[1]}`
+    const [, preferedAlias] = perferedAliases.find(([alias, prefered]) => alias === units) || []
+    let parsedScalar
+    if (fractionalUnits.indexOf(units) !== -1) {
+        const fraction = mfraction(scalar)
+        parsedScalar = fraction.toFraction()
+    }
+    if (parsedScalar || preferedAlias) {
+        const firstPart = `${parsedScalar || scalar}`
+        const secondPart = `${preferedAlias || units}`
+        return secondPart ? `${firstPart} ${secondPart}` : firstPart
     }
     return Qty(`${scalar} ${units}`).toString()
 }
@@ -21,7 +30,7 @@ const toTitleCase = (str) => {
 
 const ingrediantParser = (textString) => {
     const regEx =
-        /((?<qty1>\d+)(?<measure1>[^\d\s]*))?\s*(?<name>(?:\s*[^\d\s])+)(\s+(?<qty2>\d+))?\s*(?<measure2>[^\d\s]*)/i
+        /((?<qty1>[\d/.]+)(?<measure1>[^\d\s]*))?\s*(?<name>(?:\s*[^\d\s])+)(\s+(?<qty2>[\d/.]+))?\s*(?<measure2>[^\d\s]*)/i
     const match = textString.toLowerCase().match(regEx)
     if (!match || !match.groups) {
         throw new Error("No valid match")
@@ -57,7 +66,13 @@ const ingrediantParser = (textString) => {
         if (isEscaped) {
             parsedName = name.replaceAll('"', "")
         }
-        qty = Qty(`${quantity} ${parsedMeasurement}`)
+        const isFraction = /\//.test(quantity)
+        let normalizedQty = quantity
+        if (isFraction) {
+            const fraction = mfraction(quantity)
+            normalizedQty = number(fraction)
+        }
+        qty = Qty(`${normalizedQty} ${parsedMeasurement}`)
     } catch (error) {
         throw error
     }

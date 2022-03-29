@@ -1,4 +1,4 @@
-import ingrediantParser, { perferedAliases } from "./ingrediantParser"
+import ingrediantParser, { perferedAliases, fractionalUnits } from "./ingrediantParser"
 import Qty from "js-quantities"
 
 test.each([
@@ -45,4 +45,42 @@ test("Throws errors if the input is invalid", () => {
     expect(() => {
         ingrediantParser("20")
     }).toThrow()
+    expect(() => {
+        ingrediantParser("")
+    }).toThrow()
+})
+
+const fractionalUnitHelper = (scalar, unit, ingrediant, reverse, outputTemplate) => {
+    const inputString = reverse ? `${ingrediant} ${scalar}${unit}` : `${scalar}${unit} ${ingrediant}`
+    const output = ingrediantParser(inputString)
+    expect(output.name).toEqual(ingrediant)
+    const [, preferedAlias] = perferedAliases.find(([alias, prefered]) => alias === unit) || [null, unit]
+    const expectedOutput = outputTemplate.replace("%s", scalar).replace("%u", preferedAlias).trim()
+    expect(output.qty.format()).toEqual(expectedOutput)
+}
+
+test.each(fractionalUnits)("ingrediantParser('1/4%s Apple')", (unit) => {
+    fractionalUnitHelper("1/4", unit, "Apple", false, "%s %u")
+})
+
+test.each(fractionalUnits)("ingrediantParser('Apple 1/4%s')", (unit) => {
+    fractionalUnitHelper("1/4", unit, "Apple", true, "%s %u")
+})
+
+test.each(fractionalUnits)("ingrediantParser('0.5%s Apple')", (unit) => {
+    fractionalUnitHelper("0.5", unit, "Apple", false, `1/2 %u`)
+})
+
+test.each(fractionalUnits)("ingrediantParser('Apple 0.5%s')", (unit) => {
+    fractionalUnitHelper("0.5", unit, "Apple", true, `1/2 %u`)
+})
+
+test("Does not use fraction output for non fractional units", () => {
+    fractionalUnitHelper("0.5", "g", "Apple", false, `%s %u`)
+    fractionalUnitHelper("0.5", "g", "Apple", true, `%s %u`)
+})
+
+test("Converts a fraction to decimal for non fractional units", () => {
+    fractionalUnitHelper("1/2", "g", "Apple", false, `0.5 %u`)
+    fractionalUnitHelper("1/2", "g", "Apple", true, `0.5 %u`)
 })
