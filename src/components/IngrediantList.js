@@ -2,9 +2,14 @@ import IngrediantItem from "./IngrediantItem"
 import PropTypes from "prop-types"
 import List from "@mui/material/List"
 
-function IngrediantList({ list, onItemDelete }) {
+function IngrediantList({ list, onItemDelete, onItemCheck }) {
     const ingrediantItems = list.map((item) => (
-        <IngrediantItem key={item.id} onDelete={() => onItemDelete(item.id)} {...item} />
+        <IngrediantItem
+            key={item.id}
+            onDelete={() => onItemDelete(item.id)}
+            onItemCheck={() => onItemCheck(item.id)}
+            {...item}
+        />
     ))
     return (
         <div>
@@ -17,6 +22,8 @@ function IngrediantList({ list, onItemDelete }) {
 
 IngrediantList.propTypes = {
     list: PropTypes.array,
+    onItemDelete: PropTypes.func,
+    onItemCheck: PropTypes.func,
 }
 
 export default IngrediantList

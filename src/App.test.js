@@ -3,6 +3,8 @@ import userEvent from "@testing-library/user-event"
 
 import App from "./App"
 
+import { completedStyle } from "./components/IngrediantItem"
+
 // Creator tests
 
 const placeholderText = "Enter an ingrediant and quantity e.g. 2 lemons, mozzarella 50g"
@@ -79,4 +81,17 @@ test("I can delete an item from the list", async () => {
 
     expect(getListItems()[0]).toHaveTextContent("Limes")
     expect(getListItems()[0]).toHaveTextContent("2")
+})
+
+test("I can check off an item on the list and it moves to the bottom with a completed appearance", async () => {
+    render(<App />)
+    addItemToList("2 limes")("3 apples")
+    const getListItems = () => screen.getAllByRole("listitem")
+
+    await waitFor(() => expect(getListItems()).toHaveLength(2))
+
+    userEvent.click(screen.getAllByRole("checkbox")[0])
+
+    await waitFor(() => expect(getListItems()[1]).toHaveTextContent("Apples"))
+    expect(screen.getAllByRole("checkbox")[1]).toBeChecked()
 })

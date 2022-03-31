@@ -34,6 +34,7 @@ function App() {
         }
         const newIngrediant = {
             id: uuidv4(),
+            checked: false,
             ...parsedIngrediant,
         }
         setIngrediantsList([newIngrediant, ...ingrediantsList])
@@ -42,6 +43,25 @@ function App() {
     }
     const handleOnDelete = (idToDelete) => {
         const newIngrediantList = ingrediantsList.filter(({ id }) => id !== idToDelete)
+        setIngrediantsList(newIngrediantList)
+    }
+    const handleItemCheck = (idToCheck) => {
+        const newIngrediantList = ingrediantsList.filter(({ id }) => id !== idToCheck)
+        const item = ingrediantsList.find(({ id }) => id === idToCheck)
+        if (item.checked) {
+            const firstCheckedIndex = ingrediantsList.findIndex(({ checked }) => checked)
+            newIngrediantList.splice(firstCheckedIndex, 0, {
+                ...item,
+                checked: false,
+            })
+        } else {
+            const firstCheckedIndex = ingrediantsList.findIndex(({ checked }) => checked)
+            const insertAtIndex = firstCheckedIndex === -1 ? newIngrediantList.length : firstCheckedIndex - 1
+            newIngrediantList.splice(insertAtIndex, 0, {
+                ...item,
+                checked: true,
+            })
+        }
         setIngrediantsList(newIngrediantList)
     }
 
@@ -60,7 +80,7 @@ function App() {
                     error={!!appError}
                     helperText={appError}
                 />
-                <IngrediantList list={ingrediantsList} onItemDelete={handleOnDelete} />
+                <IngrediantList list={ingrediantsList} onItemDelete={handleOnDelete} onItemCheck={handleItemCheck} />
             </main>
         </div>
     )
