@@ -8,7 +8,9 @@ const IngrediantListName = () => {
             variant="standard"
             placeholder="Give your list a name"
             size="medium"
+            disableUnderline={true}
             inputProps={{
+                disableUnderline: true,
                 sx: {
                     fontSize: "26px",
                     textAlign: "center",
