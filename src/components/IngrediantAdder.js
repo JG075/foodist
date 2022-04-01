@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import PropTypes from "prop-types"
 import TextField from "@mui/material/TextField"
 import InputAdornment from "@mui/material/InputAdornment"
@@ -24,7 +25,12 @@ function IngrediantAdder({ value, onChange, onSubmit, error, helperText }) {
                 error={error}
                 helperText={helperText}
                 sx={{
-                    margin: "20px 0",
+                    margin: "25px 0 20px",
+                }}
+                css={{
+                    ".MuiOutlinedInput-notchedOutline": {
+                        border: "2px solid #7a7a7a",
+                    },
                 }}
                 autoComplete="off"
             />

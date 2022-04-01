@@ -18,8 +18,8 @@ function IngrediantItem({ name, qty, checked, onDelete, onItemCheck }) {
     return (
         <ListItem
             sx={{
-                boxShadow: "1px 2px 0px 1px #d9d9d9",
-                border: "1px solid #cacaca",
+                boxShadow: "0px 1px 0px 0px #4e1d1e",
+                border: "1px solid #9f9f9f",
                 borderRadius: "5px",
                 padding: "6px 12px",
                 marginBottom: "10px",

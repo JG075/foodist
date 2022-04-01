@@ -5,8 +5,6 @@ import App from "./App"
 
 import { completedStyle } from "./components/IngrediantItem"
 
-// Creator tests
-
 const placeholderText = "Enter an ingrediant and quantity e.g. 2 lemons, mozzarella 50g"
 
 const addItemToList = (inputText) => {
@@ -94,4 +92,13 @@ test("I can check off an item on the list and it moves to the bottom with a comp
 
     await waitFor(() => expect(getListItems()[1]).toHaveTextContent("Apples"))
     expect(screen.getAllByRole("checkbox")[1]).toBeChecked()
+})
+
+test("I can enter a name for the list", async () => {
+    render(<App />)
+    const getNameInput = () => screen.getByPlaceholderText("Give your list a name")
+    const inputText = "My baked lasagne"
+    userEvent.type(getNameInput(), inputText)
+
+    await waitFor(() => expect(getNameInput()).toHaveValue(inputText))
 })
