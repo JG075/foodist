@@ -3,17 +3,47 @@ import userEvent from "@testing-library/user-event"
 
 import App from "./App"
 
-import { completedStyle } from "./components/IngrediantItem"
-
-const placeholderText = "Enter an ingrediant and quantity e.g. 2 lemons, mozzarella 50g"
+const adderPlaceholderText = "Enter an ingrediant and quantity e.g. 2 lemons, mozzarella 50g"
+const listNamePlaceHolderText = "Give your list a name"
 
 const addItemToList = (inputText) => {
-    const inputElem = screen.getByPlaceholderText(placeholderText)
+    const inputElem = screen.getByPlaceholderText(adderPlaceholderText)
     userEvent.clear(inputElem)
     userEvent.type(inputElem, inputText)
     userEvent.click(screen.getByRole("button", { name: /enter/i }))
     return addItemToList
 }
+
+const enterListName = (listName) => {
+    const getNameInput = () => screen.getByPlaceholderText(listNamePlaceHolderText)
+    userEvent.type(getNameInput(), listName)
+}
+
+const getListItems = () => screen.getAllByRole("listitem")
+
+const getListNameInput = () => screen.getByPlaceholderText(listNamePlaceHolderText)
+
+let localStorageMock = {}
+
+beforeAll(() => {
+    global.Storage.prototype.setItem = (key, value) => {
+        localStorageMock[key] = value
+    }
+    global.Storage.prototype.getItem = (key) => {
+        const value = localStorageMock[key]
+        if (typeof value === "undefined") {
+            return null
+        }
+        return value
+    }
+    global.fetch = jest.fn(() => {
+        Promise.resolve()
+    })
+})
+
+beforeEach(() => {
+    localStorageMock = {}
+})
 
 test("I can add an ingrediant and it appears in the ingrediants list", async () => {
     render(<App />)
@@ -25,7 +55,7 @@ test("I can add an ingrediant and it appears in the ingrediants list", async () 
     const lastItem = listItems[listItems.length - 1]
     expect(lastItem).toHaveTextContent("Limes")
     expect(lastItem).toHaveTextContent("2")
-    expect(screen.getByPlaceholderText(placeholderText)).toHaveValue("")
+    expect(screen.getByPlaceholderText(adderPlaceholderText)).toHaveValue("")
 })
 
 test("If an item is already in the list a new item is added to the top", async () => {
@@ -69,7 +99,6 @@ test("If I enter no ingrediant name I see an error message", async () => {
 test("I can delete an item from the list", async () => {
     render(<App />)
     addItemToList("2 limes")("3 apples")
-    const getListItems = () => screen.getAllByRole("listitem")
 
     await waitFor(() => expect(getListItems()).toHaveLength(2))
 
@@ -84,7 +113,6 @@ test("I can delete an item from the list", async () => {
 test("I can check off an item on the list and it moves to the bottom with a completed appearance", async () => {
     render(<App />)
     addItemToList("2 limes")("3 apples")
-    const getListItems = () => screen.getAllByRole("listitem")
 
     await waitFor(() => expect(getListItems()).toHaveLength(2))
 
@@ -96,9 +124,20 @@ test("I can check off an item on the list and it moves to the bottom with a comp
 
 test("I can enter a name for the list", async () => {
     render(<App />)
-    const getNameInput = () => screen.getByPlaceholderText("Give your list a name")
     const inputText = "My baked lasagne"
-    userEvent.type(getNameInput(), inputText)
+    enterListName(inputText)
+    await waitFor(() => expect(getListNameInput()).toHaveValue(inputText))
+})
 
-    await waitFor(() => expect(getNameInput()).toHaveValue(inputText))
+test("If I reload the page the information I have entered has been saved", async () => {
+    const { unmount } = render(<App />)
+    const inputText = "My baked lasagne"
+    enterListName(inputText)
+    addItemToList("2 limes")("3 apples")
+    await waitFor(() => expect(getListNameInput()).toHaveValue(inputText))
+    expect(getListItems()).toHaveLength(2)
+    unmount(<App />)
+    render(<App />)
+    await waitFor(() => expect(getListNameInput()).toHaveValue(inputText))
+    expect(getListItems()).toHaveLength(2)
 })

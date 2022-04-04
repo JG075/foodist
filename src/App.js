@@ -9,6 +9,8 @@ import ingrediantParser from "./helpers/ingrediantParser"
 import { useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import { createTheme, ThemeProvider } from "@mui/material/styles"
+import useLocalState from "./hooks/useLocalState"
+import Qty from "js-quantities"
 
 const sectionStyle = {
     boxSizing: "border-box",
@@ -44,8 +46,14 @@ const theme = createTheme({
 })
 
 function App() {
-    const [ingrediantsList, setIngrediantsList] = useState([])
-    const [ingrediantInput, setingrediantInput] = useState("")
+    const [listName, setListName] = useLocalState("", "list-name")
+    const [ingrediantsList, setIngrediantsList] = useLocalState([], "ingrediant-list", {
+        qty: {
+            dehydrate: (qty) => qty.toString(),
+            hydrate: (qty) => new Qty(qty),
+        },
+    })
+    const [ingrediantInput, setingrediantInput] = useState("", "ingrediant-input")
     const [appError, setAppError] = useState()
 
     const handleOnChange = (e) => setingrediantInput(e.target.value)
@@ -98,6 +106,8 @@ function App() {
         setIngrediantsList(newIngrediantList)
     }
 
+    const handleListNameChange = (e) => setListName(e.target.value)
+
     return (
         <ThemeProvider theme={theme}>
             <div className="App">
@@ -133,7 +143,7 @@ function App() {
                         marginTop: 30,
                     }}
                 >
-                    <IngrediantListName />
+                    <IngrediantListName value={listName} onChange={handleListNameChange} />
                     {/* <UrlBox /> */}
                     <IngrediantAdder
                         value={ingrediantInput}

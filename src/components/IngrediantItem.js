@@ -6,14 +6,6 @@ import Checkbox from "@mui/material/Checkbox"
 import IconButton from "@mui/material/IconButton"
 import DeleteIcon from "@mui/icons-material/Delete"
 
-export const completedStyle = {
-    background: "#f3f3f3",
-    "& .ingrediant": {
-        textDecoration: "line-through",
-        color: "#7d7c7c",
-    },
-}
-
 function IngrediantItem({ name, qty, checked, onDelete, onItemCheck }) {
     return (
         <ListItem
@@ -24,7 +16,16 @@ function IngrediantItem({ name, qty, checked, onDelete, onItemCheck }) {
                 padding: "6px 12px",
                 marginBottom: "10px",
             }}
-            css={checked && completedStyle}
+            css={
+                checked && {
+                    background: "#f3f3f3",
+                    opacity: 0.75,
+                    "& .ingrediant": {
+                        textDecoration: "line-through",
+                        color: "#7d7c7c",
+                    },
+                }
+            }
         >
             <Checkbox checked={checked} edge="start" onChange={onItemCheck} />
             <span className="ingrediant">
