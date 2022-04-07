@@ -1,16 +1,20 @@
 /** @jsxImportSource @emotion/react */
 import "./App.css"
 import React from "react"
-import UrlBox from "./components/UrlBox"
+import { BrowserRouter as Router, useNavigate } from "react-router-dom"
+import { ThemeProvider } from "@mui/material"
+import LoadingButton from "@mui/lab/LoadingButton"
+
 import IngrediantAdder from "./components/IngrediantAdder"
 import IngrediantList from "./components/IngrediantList"
 import IngrediantListName from "./components/IngrediantListName"
 import ingrediantParser from "./helpers/ingrediantParser"
-import { useState } from "react"
-import { v4 as uuidv4 } from "uuid"
-import { createTheme, ThemeProvider } from "@mui/material/styles"
 import useLocalState from "./hooks/useLocalState"
-import Qty from "js-quantities"
+import { useImmer } from "./hooks/useImmer"
+import apiIngrediantList from "./api/IngrediantList"
+import ModelIngrediant from "./models/Ingrediant"
+import ModelIngrediantList from "./models/IngrediantList"
+import theme from "./theme"
 
 const sectionStyle = {
     boxSizing: "border-box",
@@ -21,40 +25,17 @@ const sectionStyle = {
     padding: "15px 0",
 }
 
-const theme = createTheme({
-    palette: {
-        primary: {
-            main: "#6f6f6f",
-        },
-    },
-    components: {
-        MuiInput: {
-            styleOverrides: {
-                root: {
-                    ":after": {
-                        borderBottom: 0,
-                    },
-                },
-                underline: {
-                    "&&:hover::before": {
-                        borderBottom: "1px solid rgba(0, 0, 0, 0.42)",
-                    },
-                },
-            },
-        },
-    },
-})
-
 function App() {
-    const [listName, setListName] = useLocalState("", "list-name")
-    const [ingrediantsList, setIngrediantsList] = useLocalState([], "ingrediant-list", {
-        qty: {
-            dehydrate: (qty) => qty.toString(),
-            hydrate: (qty) => new Qty(qty),
-        },
-    })
-    const [ingrediantInput, setingrediantInput] = useState("", "ingrediant-input")
-    const [appError, setAppError] = useState()
+    const [ingrediantsList, setIngrediantsList] = useLocalState(
+        new ModelIngrediantList({}),
+        "ingrediant-list",
+        ModelIngrediantList.serialize,
+        ModelIngrediantList.deserialize
+    )
+    const [ingrediantInput, setingrediantInput] = useImmer("", "ingrediant-input")
+    const [appError, setAppError] = useImmer()
+    const [isPublishing, setIsPublishing] = useImmer(false)
+    const navigate = useNavigate()
 
     const handleOnChange = (e) => setingrediantInput(e.target.value)
 
@@ -71,42 +52,50 @@ function App() {
             }
             return
         }
-        const newIngrediant = {
-            id: uuidv4(),
-            checked: false,
-            ...parsedIngrediant,
-        }
-        setIngrediantsList([newIngrediant, ...ingrediantsList])
+        const newIngrediant = new ModelIngrediant(parsedIngrediant)
+        setIngrediantsList(({ ingrediants }) => {
+            ingrediants.unshift(newIngrediant)
+        })
         setingrediantInput("")
         setAppError("")
     }
 
     const handleOnDelete = (idToDelete) => {
-        const newIngrediantList = ingrediantsList.filter(({ id }) => id !== idToDelete)
-        setIngrediantsList(newIngrediantList)
+        setIngrediantsList(({ ingrediants }) => {
+            const index = ingrediants.findIndex(({ id }) => id === idToDelete)
+            if (index !== -1) ingrediants.splice(index, 1)
+        })
     }
 
     const handleItemCheck = (idToCheck) => {
-        const newIngrediantList = ingrediantsList.filter(({ id }) => id !== idToCheck)
-        const item = ingrediantsList.find(({ id }) => id === idToCheck)
-        if (item.checked) {
-            const firstCheckedIndex = ingrediantsList.findIndex(({ checked }) => checked)
-            newIngrediantList.splice(firstCheckedIndex, 0, {
-                ...item,
-                checked: false,
-            })
-        } else {
-            const firstCheckedIndex = ingrediantsList.findIndex(({ checked }) => checked)
-            const insertAtIndex = firstCheckedIndex === -1 ? newIngrediantList.length : firstCheckedIndex - 1
-            newIngrediantList.splice(insertAtIndex, 0, {
-                ...item,
-                checked: true,
-            })
-        }
-        setIngrediantsList(newIngrediantList)
+        setIngrediantsList(({ ingrediants }) => {
+            const itemIndex = ingrediants.findIndex(({ id }) => id === idToCheck)
+            const item = ingrediants[itemIndex]
+            ingrediants.splice(itemIndex, 1)
+            const firstCheckedIndex = ingrediantsList.firstCheckedIndex
+            if (item.checked) {
+                item.checked = false
+                ingrediants.splice(firstCheckedIndex, 0, item)
+            } else {
+                const insertAtIndex = firstCheckedIndex === -1 ? ingrediants.length : firstCheckedIndex - 1
+                item.checked = true
+                ingrediants.splice(insertAtIndex, 0, item)
+            }
+        })
     }
 
-    const handleListNameChange = (e) => setListName(e.target.value)
+    const handleListNameChange = (e) => {
+        setIngrediantsList((draft) => {
+            draft.name = e.target.value
+        })
+    }
+
+    const handlePublish = async (e) => {
+        const { id } = await apiIngrediantList.post(ingrediantsList)
+        setIsPublishing(true)
+        console.log(id)
+        navigate(`/${id}`)
+    }
 
     return (
         <ThemeProvider theme={theme}>
@@ -143,7 +132,25 @@ function App() {
                         marginTop: 30,
                     }}
                 >
-                    <IngrediantListName value={listName} onChange={handleListNameChange} />
+                    <IngrediantListName
+                        sx={{ width: "80%" }}
+                        value={ingrediantsList.name}
+                        onChange={handleListNameChange}
+                    />
+                    <LoadingButton
+                        sx={{
+                            backgroundColor: "#4c8e48",
+                            margin: "20px auto 0",
+                            width: "108px",
+                            display: "block",
+                        }}
+                        variant="contained"
+                        size="large"
+                        onClick={handlePublish}
+                        loading={isPublishing}
+                    >
+                        Publish
+                    </LoadingButton>
                     {/* <UrlBox /> */}
                     <IngrediantAdder
                         value={ingrediantInput}
@@ -153,7 +160,7 @@ function App() {
                         helperText={appError}
                     />
                     <IngrediantList
-                        list={ingrediantsList}
+                        list={ingrediantsList.ingrediants}
                         onItemDelete={handleOnDelete}
                         onItemCheck={handleItemCheck}
                     />

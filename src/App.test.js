@@ -1,27 +1,47 @@
-import { render, waitFor, screen } from "@testing-library/react"
+import { render, within, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
+import { BrowserRouter as Router } from "react-router-dom"
+import { createMemoryHistory } from "history"
 
 import App from "./App"
+import IngrediantList from "./api/IngrediantList"
+
+jest.mock("./api/IngrediantList")
 
 const adderPlaceholderText = "Enter an ingrediant and quantity e.g. 2 lemons, mozzarella 50g"
 const listNamePlaceHolderText = "Give your list a name"
 
-const addItemToList = (inputText) => {
-    const inputElem = screen.getByPlaceholderText(adderPlaceholderText)
-    userEvent.clear(inputElem)
-    userEvent.type(inputElem, inputText)
-    userEvent.click(screen.getByRole("button", { name: /enter/i }))
-    return addItemToList
+const addItemToList = (user) => {
+    return async (...args) => {
+        for await (let text of args) {
+            const inputElem = screen.getByPlaceholderText(adderPlaceholderText)
+            await user.clear(inputElem)
+            await user.type(inputElem, text)
+            await user.click(screen.getByRole("button", { name: /enter/i }))
+        }
+        return Promise.resolve()
+    }
 }
 
-const enterListName = (listName) => {
-    const getNameInput = () => screen.getByPlaceholderText(listNamePlaceHolderText)
-    userEvent.type(getNameInput(), listName)
+const enterListName = (user) => {
+    return async (listName) => {
+        const nameInput = screen.getByPlaceholderText(listNamePlaceHolderText)
+        return await user.type(nameInput, listName, { delay: 1 })
+    }
 }
 
 const getListItems = () => screen.getAllByRole("listitem")
-
 const getListNameInput = () => screen.getByPlaceholderText(listNamePlaceHolderText)
+const getPublishButton = () => screen.getByText("Publish")
+
+function setup(jsx) {
+    const history = createMemoryHistory()
+    const renderJsx = <Router history={history}>{jsx}</Router>
+    return {
+        user: userEvent.setup(),
+        ...render(renderJsx),
+    }
+}
 
 let localStorageMock = {}
 
@@ -46,10 +66,10 @@ beforeEach(() => {
 })
 
 test("I can add an ingrediant and it appears in the ingrediants list", async () => {
-    render(<App />)
-    addItemToList("2 limes")
+    const { user } = setup(<App />)
+    await addItemToList(user)("2 limes")
 
-    await waitFor(() => expect(screen.getAllByRole("listitem")).toHaveLength(1))
+    expect(screen.getAllByRole("listitem")).toHaveLength(1)
 
     const listItems = screen.getAllByRole("listitem")
     const lastItem = listItems[listItems.length - 1]
@@ -59,10 +79,10 @@ test("I can add an ingrediant and it appears in the ingrediants list", async () 
 })
 
 test("If an item is already in the list a new item is added to the top", async () => {
-    render(<App />)
-    addItemToList("2 limes")("3 apples")
+    const { user } = setup(<App />)
+    await addItemToList(user)("2 limes", "3 apples")
 
-    await waitFor(() => expect(screen.getAllByRole("listitem")).toHaveLength(2))
+    expect(screen.getAllByRole("listitem")).toHaveLength(2)
 
     const listItems = screen.getAllByRole("listitem")
     const firstItem = listItems[0]
@@ -70,74 +90,91 @@ test("If an item is already in the list a new item is added to the top", async (
     expect(firstItem).toHaveTextContent("3")
 })
 
-test("If I enter an invalid unit type I see an error message", async () => {
-    render(<App />)
-    addItemToList("20foo carrots")
-    const errMsg = "You have entered an invalid measurement unit."
-    await waitFor(() => {
-        expect(screen.getByText(errMsg)).not.toBeNull()
-    })
-    addItemToList("20g carrots")
-    await waitFor(() => {
-        expect(screen.queryByText(errMsg)).toBeNull()
-    })
-})
-
 test("If I enter no ingrediant name I see an error message", async () => {
-    render(<App />)
-    addItemToList("20")
+    const { user } = setup(<App />)
+    await addItemToList(user)("20")
+
     const errMsg = "Please enter an ingrediant name and optionally a quantity."
-    await waitFor(() => {
-        expect(screen.getByText(errMsg)).not.toBeNull()
-    })
-    addItemToList("20 lemons")
-    await waitFor(() => {
-        expect(screen.queryByText(errMsg)).toBeNull()
-    })
+    await screen.findByText(errMsg)
+
+    await addItemToList(user)("20 lemons")
+    expect(screen.queryByText(errMsg)).toBeNull()
 })
 
 test("I can delete an item from the list", async () => {
-    render(<App />)
-    addItemToList("2 limes")("3 apples")
+    const { user } = setup(<App />)
+    await addItemToList(user)("2 limes", "3 apples")
 
-    await waitFor(() => expect(getListItems()).toHaveLength(2))
+    expect(getListItems()).toHaveLength(2)
 
-    userEvent.click(screen.getAllByRole("button", { name: "delete" })[0])
+    await user.click(screen.getAllByRole("button", { name: "delete" })[0])
 
-    await waitFor(() => expect(getListItems()).toHaveLength(1))
+    expect(getListItems()).toHaveLength(1)
 
     expect(getListItems()[0]).toHaveTextContent("Limes")
     expect(getListItems()[0]).toHaveTextContent("2")
 })
 
 test("I can check off an item on the list and it moves to the bottom with a completed appearance", async () => {
-    render(<App />)
-    addItemToList("2 limes")("3 apples")
+    const { user } = setup(<App />)
+    await addItemToList(user)("2 limes", "3 apples")
 
-    await waitFor(() => expect(getListItems()).toHaveLength(2))
+    expect(getListItems()).toHaveLength(2)
 
-    userEvent.click(screen.getAllByRole("checkbox")[0])
+    await user.click(screen.getAllByRole("checkbox")[0])
 
-    await waitFor(() => expect(getListItems()[1]).toHaveTextContent("Apples"))
+    expect(getListItems()[1]).toHaveTextContent("Apples")
     expect(screen.getAllByRole("checkbox")[1]).toBeChecked()
 })
 
 test("I can enter a name for the list", async () => {
-    render(<App />)
+    const { user } = setup(<App />)
     const inputText = "My baked lasagne"
-    enterListName(inputText)
-    await waitFor(() => expect(getListNameInput()).toHaveValue(inputText))
+    await enterListName(user)(inputText)
+    expect(getListNameInput()).toHaveValue(inputText)
 })
 
 test("If I reload the page the information I have entered has been saved", async () => {
-    const { unmount } = render(<App />)
+    const { user, unmount } = setup(<App />)
     const inputText = "My baked lasagne"
-    enterListName(inputText)
-    addItemToList("2 limes")("3 apples")
-    await waitFor(() => expect(getListNameInput()).toHaveValue(inputText))
+    await enterListName(user)(inputText)
+    await addItemToList(user)("2 limes", "3 apples")
+
+    expect(getListNameInput()).toHaveValue(inputText)
     expect(getListItems()).toHaveLength(2)
+
     unmount(<App />)
-    render(<App />)
-    await waitFor(() => expect(getListNameInput()).toHaveValue(inputText))
+    setup(<App />)
+
+    expect(getListNameInput()).toHaveValue(inputText)
     expect(getListItems()).toHaveLength(2)
+})
+
+test("If I click the Publish button, the Publish button will show a loading state", async () => {
+    const { user } = setup(<App />)
+    const fakeListId = "aB29dk24"
+    const resp = {
+        id: fakeListId,
+    }
+    IngrediantList.post.mockResolvedValue(resp)
+    const inputText = "My baked lasagne"
+    await enterListName(user)(inputText)
+    await addItemToList(user)("2 limes", "3 apples")
+    await user.click(getPublishButton())
+    await waitFor(() => expect(getPublishButton()).toBeDisabled())
+    within(getPublishButton()).getByRole("progressbar")
+})
+
+test("If I click the Publish button, I will be taken to the signup page if I am not logged in", async () => {
+    const { user } = setup(<App />)
+    const fakeListId = "aB29dk24"
+    const resp = {
+        id: fakeListId,
+    }
+    IngrediantList.post.mockResolvedValue(resp)
+    const inputText = "My baked lasagne"
+    await enterListName(user)(inputText)
+    await addItemToList(user)("2 limes", "3 apples")
+    await user.click(screen.getByText("Publish"))
+    expect(global.window.location.pathname).toEqual(`/signup`)
 })

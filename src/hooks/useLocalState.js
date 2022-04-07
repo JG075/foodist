@@ -1,23 +1,19 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
+import { useImmer } from "./useImmer"
 
-const useLocalState = (defaultValue, key, hydrationObj) => {
-    const parser = (parserType) => {
-        return (key, value) => {
-            if (hydrationObj && key in hydrationObj) {
-                const parser = hydrationObj[key]
-                return parser[parserType](value)
-            }
-            return value
-        }
-    }
-
-    const [value, setValue] = useState(() => {
+const useLocalState = (defaultValue, key, serializer, deserializer) => {
+    const [value, setValue] = useImmer(() => {
         const localValue = window.localStorage.getItem(key)
-        return localValue !== null ? JSON.parse(localValue, parser("hydrate")) : defaultValue
+        if (localValue === null) {
+            return defaultValue
+        }
+        const parsedValue = JSON.parse(localValue)
+        return deserializer ? deserializer(parsedValue) : parsedValue
     })
 
     useEffect(() => {
-        window.localStorage.setItem(key, JSON.stringify(value, parser("dehydrate")))
+        const serializedValue = serializer ? serializer(value) : value
+        window.localStorage.setItem(key, JSON.stringify(serializedValue))
     }, [key, value])
 
     return [value, setValue]

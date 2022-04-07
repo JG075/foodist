@@ -1,12 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import PropTypes from "prop-types"
-import Qty from "js-quantities"
 import ListItem from "@mui/material/ListItem"
 import Checkbox from "@mui/material/Checkbox"
 import IconButton from "@mui/material/IconButton"
 import DeleteIcon from "@mui/icons-material/Delete"
+import ModelIngrediant from "../models/Ingrediant"
 
-function IngrediantItem({ name, qty, checked, onDelete, onItemCheck }) {
+function IngrediantItem({ item, onDelete, onItemCheck }) {
+    const { name, qty, checked } = item
     return (
         <ListItem
             sx={{
@@ -53,11 +54,9 @@ function IngrediantItem({ name, qty, checked, onDelete, onItemCheck }) {
 }
 
 IngrediantItem.propTypes = {
-    name: PropTypes.string,
-    qty: PropTypes.instanceOf(Qty),
+    item: PropTypes.instanceOf(ModelIngrediant),
     onDelete: PropTypes.func,
     onItemCheck: PropTypes.func,
-    completed: PropTypes.bool,
 }
 
 export default IngrediantItem

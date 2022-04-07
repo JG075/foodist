@@ -2,7 +2,7 @@
 import TextField from "@mui/material/TextField"
 import PropTypes from "prop-types"
 
-const IngrediantListName = ({ value, onChange }) => {
+const IngrediantListName = ({ sx, value, onChange }) => {
     return (
         <TextField
             autoComplete="off"
@@ -18,11 +18,13 @@ const IngrediantListName = ({ value, onChange }) => {
                     fontWeight: "500",
                 },
             }}
+            sx={sx}
         />
     )
 }
 
 IngrediantListName.propTypes = {
+    sx: PropTypes.object,
     value: PropTypes.string,
     onChange: PropTypes.func,
 }
