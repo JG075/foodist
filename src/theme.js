@@ -5,6 +5,9 @@ const theme = createTheme({
         primary: {
             main: "#6f6f6f",
         },
+        secondary: {
+            main: "#4c8e48",
+        },
     },
     components: {
         MuiInput: {

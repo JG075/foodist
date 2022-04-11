@@ -1,18 +1,19 @@
 import { useEffect } from "react"
 import { useImmer } from "./useImmer"
 
-const useLocalState = (defaultValue, key, serializer, deserializer) => {
+const useLocalState = (defaultValue, key) => {
     const [value, setValue] = useImmer(() => {
         const localValue = window.localStorage.getItem(key)
         if (localValue === null) {
             return defaultValue
         }
         const parsedValue = JSON.parse(localValue)
-        return deserializer ? deserializer(parsedValue) : parsedValue
+        const instanceClass = defaultValue && defaultValue.constructor
+        return instanceClass && instanceClass.deserialize ? instanceClass.deserialize(parsedValue) : parsedValue
     })
 
     useEffect(() => {
-        const serializedValue = serializer ? serializer(value) : value
+        const serializedValue = value.serialize ? value.serialize() : value
         window.localStorage.setItem(key, JSON.stringify(serializedValue))
     }, [key, value])
 

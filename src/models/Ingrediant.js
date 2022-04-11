@@ -1,6 +1,6 @@
 import { immerable } from "immer"
 import { v4 as uuidv4 } from "uuid"
-import Qty from "js-quantities"
+import Qty from "../lib/qty"
 
 export default class Ingrediant {
     [immerable] = true
@@ -12,7 +12,8 @@ export default class Ingrediant {
         this.checked = checked
     }
 
-    static serialize = ({ id, name, qty, checked }) => {
+    serialize() {
+        const { id, name, qty, checked } = this
         return {
             id,
             name,
@@ -25,7 +26,7 @@ export default class Ingrediant {
         return new Ingrediant({
             id,
             name,
-            qty: Qty(qty),
+            qty: new Qty(qty),
             checked: Boolean(checked),
         })
     }

@@ -1,5 +1,5 @@
-import ingrediantParser, { perferedAliases, fractionalUnits } from "./ingrediantParser"
-import Qty from "js-quantities"
+import ingrediantParser from "./ingrediantParser"
+import Qty, { perferedAliases, fractionalUnits } from "../lib/qty"
 
 test.each([
     ["Limes", { name: "Limes", qty: new Qty("1") }],
