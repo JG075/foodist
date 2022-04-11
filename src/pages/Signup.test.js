@@ -205,7 +205,7 @@ test("If the username I entered is taken I should see a useful message", async (
 
 test("If the server responded with an error a message should be displayed", async () => {
     const { user } = setup(<Signup />)
-    ApiUser.post.mockRejectedValue({ response: { status: 500 } })
+    ApiUser.post.mockRejectedValue({ response: { status: 404 } })
     await enterValidData(user)
     const errMsg = "Sorry something went wrong"
     expect(screen.getByText(errMsg)).toBeInTheDocument()
@@ -215,8 +215,7 @@ test("If I enter valid data I should be taken to my home page", async () => {
     const { user } = setup(<Signup />)
     ApiUser.post.mockResolvedValue(Promise.resolve({ id: "John" }))
     await enterValidData(user)
-    // const route = mockedUseNavigate.mock.calls[0][0]
-    await waitFor(() => expect(window.location.pathname).toEqual("/user/john/lists"))
+    await waitFor(() => expect(window.location.pathname).toEqual("/users/John/lists"))
 })
 
 test("If there is IngrediantList in the state it should set the authorId and make a post request", async () => {

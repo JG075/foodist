@@ -12,6 +12,7 @@ import theme from "../theme"
 import apiIngrediantList from "../api/IngrediantList"
 import ModelIngrediantList from "../models/IngrediantList"
 import useLocalState from "../hooks/useLocalState"
+import Title from "../components/Title"
 
 const textFieldStyle = {
     width: "100%",
@@ -79,8 +80,7 @@ const Signup = (props) => {
                 })
                 await apiIngrediantList.post(updatedIngrediantList.serialize())
             }
-            const username = res.id.toLowerCase()
-            navigate(`/user/${username}/lists`)
+            navigate(`/users/${res.id}/lists`)
         } catch (err) {
             if (err.response && /duplicate id/.test(err.response.data)) {
                 setError("username", {
@@ -96,16 +96,7 @@ const Signup = (props) => {
 
     return (
         <div>
-            <h1
-                css={{
-                    marginTop: "0",
-                    fontSize: "26px",
-                    marginBottom: "30px",
-                    fontWeight: 500,
-                }}
-            >
-                Signup
-            </h1>
+            <Title>Signup</Title>
             <form
                 onSubmit={handleSubmit(onSubmit)}
                 css={{

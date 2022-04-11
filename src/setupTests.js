@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom"
 import { render } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { BrowserRouter as Router } from "react-router-dom"
+import { BrowserRouter as Router, MemoryRouter, Route, Routes } from "react-router-dom"
 
 function setup(jsx, options = {}) {
     const { localStorage = {} } = options
@@ -18,8 +18,24 @@ function setup(jsx, options = {}) {
     return {
         user: userEvent.setup(),
         localStorage,
-        ...render(<Router>{jsx}</Router>),
+        ...render(jsx),
     }
 }
 
-export default setup
+const defaultSetup = (jsx, options) => {
+    const jsxWithRouter = <Router>{jsx}</Router>
+    return setup(jsxWithRouter, options)
+}
+
+export const setupWithMemoryRouter = (jsx, { routerPath, routePath, ...options }) => {
+    const jsxWithRouter = (
+        <MemoryRouter initialEntries={[routerPath]}>
+            <Routes>
+                <Route path={routePath} element={jsx} />
+            </Routes>
+        </MemoryRouter>
+    )
+    return setup(jsxWithRouter, options)
+}
+
+export default defaultSetup

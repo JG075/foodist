@@ -3,14 +3,22 @@ import apiProvider from "./provider"
 export default class ApiCore {
     constructor(options) {
         if (options.getAll) {
-            this.getAll = () => {
-                return apiProvider.getAll(options.url)
+            this.getAll = async (params) => {
+                const items = await apiProvider.getAll(options.url, params)
+                if (options.model) {
+                    return items.map((i) => new options.model(i))
+                }
+                return items
             }
         }
 
         if (options.getSingle) {
-            this.getSingle = (id) => {
-                return apiProvider.getSingle(options.url, id)
+            this.getSingle = async (id) => {
+                const item = await apiProvider.getSingle(options.url, id)
+                if (options.model) {
+                    return new options.model(item)
+                }
+                return item
             }
         }
 

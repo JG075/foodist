@@ -4,14 +4,18 @@ import { handleResponse, handleError } from "./response"
 const BASE_URL = "http://localhost:3001"
 
 /** @param {string} resource */
-const getAll = (resource) => {
-    return axios.get(`${BASE_URL}/${resource}`).then(handleResponse).catch(handleError)
+const getAll = (resource, params) => {
+    const searchParams = new URLSearchParams(params)
+    const paramsString = params ? `?${searchParams}` : ""
+    return axios.get(`${BASE_URL}/${resource}/${paramsString}`).then(handleResponse).catch(handleError)
 }
 
 /** @param {string} resource */
 /** @param {string} id */
-const getSingle = (resource, id) => {
-    return axios.get(`${BASE_URL}/${resource}/${id}`).then(handleResponse).catch(handleError)
+const getSingle = (resource, params) => {
+    const searchParams = new URLSearchParams(params)
+    const paramsString = params ? `?${searchParams}` : ""
+    return axios.get(`${BASE_URL}/${resource}/${paramsString}`).then(handleResponse).catch(handleError)
 }
 
 /** @param {string} resource */

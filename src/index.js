@@ -1,5 +1,4 @@
 import React from "react"
-import ReactDOM from "react-dom"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import { createRoot } from "react-dom/client"
 
@@ -9,6 +8,7 @@ import reportWebVitals from "./reportWebVitals"
 import Signup from "./pages/Signup"
 import Login from "./pages/Login"
 import Index from "./pages/Index"
+import Lists from "./pages/Lists"
 
 const container = document.getElementById("root")
 const root = createRoot(container)
@@ -21,6 +21,7 @@ root.render(
                     <Route index element={<Index />} />
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/users/:username/lists" element={<Lists />} />
                 </Route>
             </Routes>
         </React.StrictMode>
