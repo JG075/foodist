@@ -3,11 +3,13 @@ import { screen, waitFor, act as actComponent, within } from "@testing-library/r
 import apiIngrediantList from "../api/IngrediantList"
 import Ingrediant from "../models/Ingrediant"
 import ModelIngrediantList from "../models/IngrediantList"
-import setup, { setupWithMemoryRouter } from "../setupTests"
+import setup, { setupWithMemoryRouter } from "../testHelpers"
 import Lists from "./Lists"
 import Qty from "../lib/qty"
+import { useAuth } from "../hooks/auth"
 
 jest.mock("../api/IngrediantList")
+jest.mock("../hooks/auth")
 
 const listsMock = [
     new ModelIngrediantList({
@@ -42,14 +44,25 @@ const listsMock = [
     }),
 ]
 
-test("I see the title with my username", async () => {
-    apiIngrediantList.getAll.mockResolvedValue(listsMock)
+beforeEach(() => useAuth.mockReturnValue({}))
+
+test("I see the title with the creator's username", async () => {
+    // Prevent calling the API as we just want to test if the title is there
+    apiIngrediantList.getAll.mockImplementation(() => "")
     setupWithMemoryRouter(<Lists />, { routerPath: "/users/John/lists", routePath: "/users/:username/lists" })
     expect(await screen.findByText("John's Lists")).toBeInTheDocument()
 })
 
+test("If I am logged in, the title becomes 'My Lists'", async () => {
+    useAuth.mockReturnValue({ user: { username: "Bob" } })
+    // Prevent calling the API as we just want to test if the title is there
+    apiIngrediantList.getAll.mockImplementation(() => "")
+    setup(<Lists />)
+    expect(await screen.findByText("My Lists")).toBeInTheDocument()
+})
+
 test("When I load the page, the ingrediantList api is only called once", async () => {
-    apiIngrediantList.getAll.mockResolvedValue(listsMock)
+    apiIngrediantList.getAll.mockImplementation(jest.fn())
     setup(<Lists />)
     await waitFor(() => expect(apiIngrediantList.getAll).toBeCalledTimes(1))
 })
@@ -74,7 +87,7 @@ test("I see a 'User not found' message, if the user does not exist", async () =>
     expect(await screen.findByText(errMsg)).toBeInTheDocument()
 })
 
-test("I see an error message if theree is a problem requesting the user's list", async () => {
+test("I see an error message if there is a problem requesting the user's list", async () => {
     apiIngrediantList.getAll.mockRejectedValue({ response: { status: 500 } })
     setup(<Lists />)
     const errMsg = "Sorry something went wrong."
@@ -86,6 +99,16 @@ test("If the user has no lists, I see some text that states this", async () => {
     setup(<Lists />)
     const errMsg = "This user does not have any lists to show."
     expect(await screen.findByText(errMsg)).toBeInTheDocument()
+    await waitFor(() => expect(screen.queryByRole("progressbar")).not.toBeInTheDocument())
+})
+
+test("If I am logged in and I have no lists, I see some text that states this", async () => {
+    useAuth.mockReturnValue({ user: { username: "Bob" } })
+    apiIngrediantList.getAll.mockResolvedValue([])
+    setup(<Lists />)
+    const errMsg = "You don't have any lists to show. Make one!"
+    expect(await screen.findByText(errMsg)).toBeInTheDocument()
+    await waitFor(() => expect(screen.queryByRole("progressbar")).not.toBeInTheDocument())
 })
 
 const table = listsMock.map((item, index) => [item, index])

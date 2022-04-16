@@ -1,32 +1,96 @@
 import React from "react"
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
 import { createRoot } from "react-dom/client"
 
 import "./index.css"
 import App from "./App"
 import reportWebVitals from "./reportWebVitals"
 import Signup from "./pages/Signup"
-import Login from "./pages/Login"
-import Index from "./pages/Index"
+import Signin from "./pages/Signin"
+import ListMaker from "./pages/ListMaker"
 import Lists from "./pages/Lists"
+import { ProvideAuth } from "./hooks/auth"
+import { useAuth } from "./hooks/auth"
 
 const container = document.getElementById("root")
 const root = createRoot(container)
 
-root.render(
-    <Router>
-        <React.StrictMode>
-            <Routes>
-                <Route path="/" element={<App />}>
-                    <Route index element={<Index />} />
-                    <Route path="/signup" element={<Signup />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/users/:username/lists" element={<Lists />} />
-                </Route>
-            </Routes>
-        </React.StrictMode>
-    </Router>
-)
+const PrivateRoute = ({ children, ...rest }) => {
+    let auth = useAuth()
+    return (
+        <Route
+            {...rest}
+            render={({ location }) =>
+                auth.user ? (
+                    children
+                ) : (
+                    <Navigate
+                        to={{
+                            pathname: "/login",
+                            state: { from: location },
+                        }}
+                    />
+                )
+            }
+        />
+    )
+}
+
+const PublicRoute = ({ children, ...rest }) => {
+    let auth = useAuth()
+    return auth.user ? (
+        <Navigate
+            to={{
+                pathname: "/",
+            }}
+        />
+    ) : (
+        children
+    )
+}
+
+const IndexPage = () => {
+    const { user } = useAuth()
+    return user ? <Lists /> : <ListMaker />
+}
+
+const Index = () => {
+    return (
+        <ProvideAuth>
+            <Router>
+                <React.StrictMode>
+                    <Routes>
+                        <Route path="/" element={<App />}>
+                            <Route index element={<IndexPage />} />
+                            <Route
+                                path="/signup"
+                                element={
+                                    <PublicRoute>
+                                        <Signup />
+                                    </PublicRoute>
+                                }
+                            />
+                            <Route
+                                path="/signin"
+                                element={
+                                    <PublicRoute>
+                                        <Signin />
+                                    </PublicRoute>
+                                }
+                            />
+                            <Route path="/users/:username">
+                                <Route path="/users/:username/lists" element={<Lists />} />
+                                <Route path="/users/:username/lists/:listid" element={<ListMaker />} />
+                            </Route>
+                        </Route>
+                    </Routes>
+                </React.StrictMode>
+            </Router>
+        </ProvideAuth>
+    )
+}
+
+root.render(<Index />)
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

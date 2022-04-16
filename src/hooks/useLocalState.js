@@ -8,12 +8,12 @@ const useLocalState = (defaultValue, key) => {
             return defaultValue
         }
         const parsedValue = JSON.parse(localValue)
-        const instanceClass = defaultValue && defaultValue.constructor
-        return instanceClass && instanceClass.deserialize ? instanceClass.deserialize(parsedValue) : parsedValue
+        const instanceClass = defaultValue?.constructor
+        return instanceClass?.deserialize ? instanceClass.deserialize(parsedValue) : parsedValue
     })
 
     useEffect(() => {
-        const serializedValue = value.serialize ? value.serialize() : value
+        const serializedValue = value?.serialize ? value.serialize() : value
         window.localStorage.setItem(key, JSON.stringify(serializedValue))
     }, [key, value])
 

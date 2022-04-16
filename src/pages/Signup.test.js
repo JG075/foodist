@@ -1,85 +1,74 @@
-import { screen, waitFor, act as actComponent, within } from "@testing-library/react"
+import { screen, waitFor, within, fireEvent, waitForElementToBeRemoved } from "@testing-library/react"
 
-import setup from "../setupTests"
+import setup from "../testHelpers"
 import Signup from "./Signup"
-import ApiUser from "../api/User"
+import { useAuth } from "../hooks/auth"
 import ApiIngrediantList from "../api/IngrediantList"
 import ModelIngrediantList from "../models/IngrediantList"
 import ModelIngrediant from "../models/Ingrediant"
 import Qty from "../lib/qty"
 
-jest.mock("../api/User")
 jest.mock("../api/IngrediantList")
+jest.mock("../hooks/auth")
 
 const getUsernameInput = () => screen.getByRole("textbox", { name: /username/i })
 const getEmailInput = () => screen.getByRole("textbox", { name: /email/i })
 const getPasswordInput = () => screen.getByLabelText(/^password/i)
 const getRepeatPasswordInput = () => screen.getByLabelText(/repeat password/i)
-const getSubmitButton = () => screen.getByText("Submit")
+const getSubmitButton = () => screen.getByRole("button", { name: /sign up/i })
 
-const enterValidData = async (user) => {
-    const username = "John"
-    const email = "john@doe.com"
-    const password = "Applesauce1!"
-    await user.type(getUsernameInput(), username)
-    await user.type(getEmailInput(), email)
-    await user.type(getPasswordInput(), password)
-    await user.type(getRepeatPasswordInput(), password)
-    await actComponent(async () => {
-        await user.click(getSubmitButton())
-    })
+const username = "John"
+const email = "john@doe.com"
+const password = "Applesauce1!"
+
+// fireEvent is used as per react-hook-form docs, userEvent results in act() warnings, see more (https://react-hook-form.com/advanced-usage#TestingForm)
+const enterValidData = (user) => {
+    fireEvent.input(getUsernameInput(), { target: { value: username } })
+    fireEvent.input(getEmailInput(), { target: { value: email } })
+    fireEvent.input(getPasswordInput(), { target: { value: password } })
+    fireEvent.input(getRepeatPasswordInput(), { target: { value: password } })
+    fireEvent.submit(getSubmitButton())
 }
 
 const invalidUsernameMsg = "Username should only contain letters, numbers, and/or an underscore"
 
-beforeEach(() => {
-    ApiUser.post.mockResolvedValue(Promise.resolve({ response: {} }))
-})
+beforeEach(() => useAuth.mockReturnValue({}))
 
 test("If I submit with no form values I should see required errors", async () => {
-    const { user } = setup(<Signup />)
-    await user.click(getSubmitButton())
+    setup(<Signup />)
+    fireEvent.click(getSubmitButton())
     expect(await screen.findByText("Username is required")).toBeInTheDocument()
-    expect(await screen.findByText("Email is required")).toBeInTheDocument()
-    expect(await screen.findByText("Password is required")).toBeInTheDocument()
+    expect(screen.getByText("Email is required")).toBeInTheDocument()
+    expect(screen.getByText("Password is required")).toBeInTheDocument()
 })
 
 test("I should not be able to enter a username with spaces", async () => {
-    const { user } = setup(<Signup />)
-    await user.type(getUsernameInput(), "username with spaces")
-    await actComponent(async () => {
-        await user.click(getSubmitButton())
-    })
+    setup(<Signup />)
+    fireEvent.input(getUsernameInput(), { target: { value: "username with spaces" } })
+    fireEvent.click(getSubmitButton())
     expect(await screen.findByText(invalidUsernameMsg)).toBeInTheDocument()
 })
 
 test("I should not be able to enter a username with symbols", async () => {
-    const { user } = setup(<Signup />)
-    await user.type(getUsernameInput(), "username&^%£%")
-    await actComponent(async () => {
-        await user.click(getSubmitButton())
-    })
+    setup(<Signup />)
+    fireEvent.input(getUsernameInput(), { target: { value: "username&^%£%" } })
+    fireEvent.click(getSubmitButton())
     expect(await screen.findByText(invalidUsernameMsg)).toBeInTheDocument()
 })
 
 test("I should not be able to enter a username longer than 30 characters", async () => {
-    const { user } = setup(<Signup />)
-    const username = "a".repeat(31)
-    const expected = "a".repeat(30)
-    await user.type(getUsernameInput(), username)
-    await actComponent(async () => {
-        await user.click(getSubmitButton())
-    })
-    expect(getUsernameInput()).toHaveValue(expected)
+    setup(<Signup />)
+    expect(getUsernameInput()).toHaveAttribute("maxlength", "30")
 })
 
 test("I should not see an error with a valid username", async () => {
-    const { user } = setup(<Signup />)
-    await user.type(getUsernameInput(), "username_test12345")
-    await actComponent(async () => {
-        await user.click(getSubmitButton())
-    })
-    await waitFor(() => expect(screen.queryByText(invalidUsernameMsg)).not.toBeInTheDocument())
+    setup(<Signup />)
+    const username = "username_test12345"
+    fireEvent.input(getUsernameInput(), { target: { value: username } })
+    fireEvent.click(getSubmitButton())
+    // This is needed to wait for the form to be updated before making assertions
+    expect(await screen.findByText("Password is required")).toBeInTheDocument()
+    expect(screen.queryByText(invalidUsernameMsg)).not.toBeInTheDocument()
 })
 
 test("I should not be able to enter an invalid email", async () => {
@@ -89,136 +78,139 @@ test("I should not be able to enter an invalid email", async () => {
 })
 
 test("I should not be able to enter a password with less than 8 characters", async () => {
-    const { user } = setup(<Signup />)
+    setup(<Signup />)
     const password = "a".repeat(7)
-    await user.type(getPasswordInput(), password)
-    await actComponent(async () => {
-        await user.click(getSubmitButton())
-    })
-    expect(getPasswordInput()).toHaveAttribute("aria-invalid", "true")
+    fireEvent.input(getPasswordInput(), { target: { value: password } })
+    fireEvent.click(getSubmitButton())
+    await waitFor(() => expect(getPasswordInput()).toHaveAttribute("aria-invalid", "true"))
 })
 
 test("I should not be able to enter a password with no number", async () => {
-    const { user } = setup(<Signup />)
+    setup(<Signup />)
     const password = "Applesauce"
-    await user.type(getPasswordInput(), password)
-    await actComponent(async () => {
-        await user.click(getSubmitButton())
-    })
-    expect(getPasswordInput()).toHaveAttribute("aria-invalid", "true")
+    fireEvent.input(getPasswordInput(), { target: { value: password } })
+    fireEvent.click(getSubmitButton())
+    await waitFor(() => expect(getPasswordInput()).toHaveAttribute("aria-invalid", "true"))
 })
 
 test("I should not be able to enter a password with no symbol", async () => {
-    const { user } = setup(<Signup />)
+    setup(<Signup />)
     const password = "Applesauce1"
-    await user.type(getPasswordInput(), password)
-    await actComponent(async () => {
-        await user.click(getSubmitButton())
-    })
-    expect(getPasswordInput()).toHaveAttribute("aria-invalid", "true")
+    fireEvent.input(getPasswordInput(), { target: { value: password } })
+    fireEvent.click(getSubmitButton())
+    await waitFor(() => expect(getPasswordInput()).toHaveAttribute("aria-invalid", "true"))
 })
 
 test("I should be able to enter a valid password", async () => {
-    const { user } = setup(<Signup />)
+    setup(<Signup />)
     const password = "Applesauce1!"
-    await user.type(getPasswordInput(), password)
-    await actComponent(async () => {
-        await user.click(getSubmitButton())
-    })
-    expect(getPasswordInput()).not.toHaveAttribute("aria-invalid", "true")
+    fireEvent.input(getPasswordInput(), { target: { value: password } })
+    fireEvent.click(getSubmitButton())
+    // This is needed to wait for the form to be updated before making assertions
+    expect(await screen.findByText("Username is required")).toBeInTheDocument()
+    await waitFor(() => expect(getPasswordInput()).not.toHaveAttribute("aria-invalid", "true"))
 })
 
 test("I should not be able to submit without repeating my password", async () => {
-    const { user } = setup(<Signup />)
-    const username = "john"
-    const email = "john@doe.com"
-    const password = "Applesauce1!"
-    await user.type(getUsernameInput(), username)
-    await user.type(getEmailInput(), email)
-    await user.type(getPasswordInput(), password)
-    await actComponent(async () => {
-        await user.click(getSubmitButton())
-    })
+    setup(<Signup />)
+    fireEvent.input(getUsernameInput(), { target: { value: username } })
+    fireEvent.input(getEmailInput(), { target: { value: email } })
+    fireEvent.input(getPasswordInput(), { target: { value: password } })
+    fireEvent.click(getSubmitButton())
     expect(await screen.findByText("Repeat password is required")).toBeInTheDocument()
 })
 
 test("I should not be able to submit if both passwords don't match", async () => {
-    const { user } = setup(<Signup />)
-    const username = "John"
-    const email = "john@doe.com"
-    const password = "Applesauce1!"
+    setup(<Signup />)
     const repeatPassword = "test"
-    await user.type(getUsernameInput(), username)
-    await user.type(getEmailInput(), email)
-    await user.type(getPasswordInput(), password)
-    await user.type(getRepeatPasswordInput(), repeatPassword)
-    await actComponent(async () => {
-        await user.click(getSubmitButton())
-    })
+    fireEvent.input(getUsernameInput(), { target: { value: username } })
+    fireEvent.input(getEmailInput(), { target: { value: email } })
+    fireEvent.input(getPasswordInput(), { target: { value: password } })
+    fireEvent.input(getRepeatPasswordInput(), { target: { value: repeatPassword } })
+    fireEvent.click(getSubmitButton())
     expect(await screen.findByText("Passwords do not match")).toBeInTheDocument()
 })
 
 test("I should not see an error if both passwords match", async () => {
-    const { user } = setup(<Signup />)
-    await enterValidData(user)
+    setup(<Signup />)
+    const password = "Applesauce1"
+    fireEvent.input(getPasswordInput(), { target: { value: password } })
+    fireEvent.input(getRepeatPasswordInput(), { target: { value: password } })
+    fireEvent.click(getSubmitButton())
     const errMsg = "Passwords do not match"
+    // This is needed to wait for the form to be updated before making assertions
+    expect(await screen.findByText("Username is required")).toBeInTheDocument()
     await waitFor(() => expect(screen.queryByText(errMsg)).not.toBeInTheDocument())
 })
 
 test("If I enter valid data I should see a loading icon", async () => {
-    const { user } = setup(<Signup />)
-    const res = new Promise(() => {})
-    ApiUser.post.mockResolvedValue(res)
-    await enterValidData(user)
-    expect(getSubmitButton()).toHaveAttribute("disabled")
+    let resolveCb
+    const res = new Promise((resolve, reject) => {
+        resolveCb = resolve
+    })
+    useAuth.mockReturnValue({ signup: () => res })
+    setup(<Signup />)
+    enterValidData()
+    await waitFor(() => expect(getSubmitButton()).toHaveAttribute("disabled"))
     expect(within(getSubmitButton()).getByRole("progressbar")).toBeInTheDocument()
-})
-
-test("If I enter valid data, once the request resolves, I should not see a loding icon", async () => {
-    const { user } = setup(<Signup />)
-    await enterValidData(user)
-    await waitFor(() => expect(getSubmitButton()).not.toHaveAttribute("disabled"))
-    expect(within(getSubmitButton()).queryByRole("progressbar")).not.toBeInTheDocument()
+    resolveCb({})
+    await waitForElementToBeRemoved(() => within(getSubmitButton()).queryByRole("progressbar"))
 })
 
 test("If I enter valid data it should make a post request", async () => {
-    const { user } = setup(<Signup />)
-    await enterValidData(user)
-    expect(ApiUser.post).toBeCalledTimes(1)
-    const { id, email, password } = ApiUser.post.mock.calls[0][0]
-    expect(id).toEqual("John")
-    expect(email).toEqual("john@doe.com")
-    expect(password).toEqual("Applesauce1!")
+    const myMock = jest.fn(() => Promise.resolve({}))
+    useAuth.mockReturnValue({ signup: myMock })
+    setup(<Signup />)
+    enterValidData()
+    await waitFor(() => expect(myMock).toBeCalledTimes(1))
+    const returned = myMock.mock.calls[0][0]
+    expect(returned.username).toEqual(username)
+    expect(returned.email).toEqual(email)
+    expect(returned.password).toEqual(password)
 })
 
 test("If the username I entered is taken I should see a useful message", async () => {
-    const { user } = setup(<Signup />)
     const response = {
-        data: "Error: Insert failed, duplicate id",
-        status: 500,
+        data: "Duplicate username",
+        status: 403,
     }
-    ApiUser.post.mockRejectedValue({ response })
-    await enterValidData(user)
+    useAuth.mockReturnValue({ signup: () => Promise.reject({ response }) })
+    setup(<Signup />)
+    enterValidData()
     const errMsg = "The username you have entered has already been taken"
-    expect(screen.getByText(errMsg)).toBeInTheDocument()
+    expect(await screen.findByText(errMsg)).toBeInTheDocument()
+})
+
+test("If the email I entered is taken I should see a useful message", async () => {
+    const response = {
+        data: "Duplicate email",
+        status: 403,
+    }
+    useAuth.mockReturnValue({ signup: () => Promise.reject({ response }) })
+    setup(<Signup />)
+    enterValidData()
+    const errMsg = "The email you have entered has already been taken"
+    expect(await screen.findByText(errMsg)).toBeInTheDocument()
 })
 
 test("If the server responded with an error a message should be displayed", async () => {
-    const { user } = setup(<Signup />)
-    ApiUser.post.mockRejectedValue({ response: { status: 404 } })
-    await enterValidData(user)
+    useAuth.mockReturnValue({ signup: () => Promise.reject({ response: { status: 404 } }) })
+    setup(<Signup />)
+    enterValidData()
     const errMsg = "Sorry something went wrong"
-    expect(screen.getByText(errMsg)).toBeInTheDocument()
+    expect(await screen.findByText(errMsg)).toBeInTheDocument()
 })
 
 test("If I enter valid data I should be taken to my home page", async () => {
-    const { user } = setup(<Signup />)
-    ApiUser.post.mockResolvedValue(Promise.resolve({ id: "John" }))
-    await enterValidData(user)
-    await waitFor(() => expect(window.location.pathname).toEqual("/users/John/lists"))
+    useAuth.mockReturnValue({ signup: () => Promise.resolve({ username }) })
+    setup(<Signup />)
+    enterValidData()
+    await waitFor(() => expect(window.location.pathname).toEqual(`/users/${username}/lists`))
 })
 
 test("If there is IngrediantList in the state it should set the authorId and make a post request", async () => {
+    const authorId = "John"
+    useAuth.mockReturnValue({ signup: () => Promise.resolve({ username: authorId }) })
     const ingrediantList = new ModelIngrediantList({
         name: "fruit recipe",
         ingrediants: [
@@ -232,17 +224,18 @@ test("If there is IngrediantList in the state it should set the authorId and mak
             }),
         ],
     })
-    const { user } = setup(<Signup />, {
+    setup(<Signup />, {
         localStorage: {
             "ingrediant-list": JSON.stringify(ingrediantList.serialize()),
         },
     })
-    const authorId = "John"
-    ApiUser.post.mockResolvedValue({ id: authorId })
-    ApiIngrediantList.post.mockResolvedValue(Promise.resolve())
-    await enterValidData(user)
-    const arg = ApiIngrediantList.post.mock.calls[0][0]
-    expect(arg.authorId).toEqual(authorId)
+    ApiIngrediantList.post.mockResolvedValue(Promise.resolve({}))
+    enterValidData()
+    let arg
+    await waitFor(() => {
+        arg = ApiIngrediantList.post.mock.calls[0][0]
+        expect(arg.authorId).toEqual(authorId)
+    })
     ingrediantList.authorId = authorId
     expect(arg).toMatchObject(ingrediantList.serialize())
 })

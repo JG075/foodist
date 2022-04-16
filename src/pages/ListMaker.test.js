@@ -1,7 +1,10 @@
 import { screen } from "@testing-library/react"
 
-import setup from "../setupTests"
-import Index from "./Index"
+import setup from "../testHelpers"
+import ListMaker from "./ListMaker"
+import { useAuth } from "../hooks/auth"
+
+jest.mock("../hooks/auth")
 
 const mockedUseNavigate = jest.fn()
 jest.mock("react-router-dom", () => {
@@ -38,8 +41,10 @@ const enterListName = (user) => {
 const getListItems = () => screen.getAllByRole("listitem")
 const getListNameInput = () => screen.getByPlaceholderText(listNamePlaceHolderText)
 
+beforeEach(() => useAuth.mockReturnValue({}))
+
 test("I can add an ingrediant and it appears in the ingrediants list", async () => {
-    const { user } = setup(<Index />)
+    const { user } = setup(<ListMaker />)
     await addItemToList(user)("2 limes")
 
     expect(screen.getAllByRole("listitem")).toHaveLength(1)
@@ -52,7 +57,7 @@ test("I can add an ingrediant and it appears in the ingrediants list", async () 
 })
 
 test("If an item is already in the list a new item is added to the top", async () => {
-    const { user } = setup(<Index />)
+    const { user } = setup(<ListMaker />)
     await addItemToList(user)("2 limes", "3 apples")
 
     expect(screen.getAllByRole("listitem")).toHaveLength(2)
@@ -64,7 +69,7 @@ test("If an item is already in the list a new item is added to the top", async (
 })
 
 test("If I enter no ingrediant name I see an error message", async () => {
-    const { user } = setup(<Index />)
+    const { user } = setup(<ListMaker />)
     await addItemToList(user)("20")
 
     const errMsg = "Please enter an ingrediant name and optionally a quantity."
@@ -75,7 +80,7 @@ test("If I enter no ingrediant name I see an error message", async () => {
 })
 
 test("I can delete an item from the list", async () => {
-    const { user } = setup(<Index />)
+    const { user } = setup(<ListMaker />)
     await addItemToList(user)("2 limes", "3 apples")
 
     expect(getListItems()).toHaveLength(2)
@@ -89,7 +94,7 @@ test("I can delete an item from the list", async () => {
 })
 
 test("I can check off an item on the list and it moves to the bottom with a completed appearance", async () => {
-    const { user } = setup(<Index />)
+    const { user } = setup(<ListMaker />)
     await addItemToList(user)("2 limes", "3 apples")
 
     expect(getListItems()).toHaveLength(2)
@@ -101,14 +106,14 @@ test("I can check off an item on the list and it moves to the bottom with a comp
 })
 
 test("I can enter a name for the list", async () => {
-    const { user } = setup(<Index />)
+    const { user } = setup(<ListMaker />)
     const inputText = "My baked lasagne"
     await enterListName(user)(inputText)
     expect(getListNameInput()).toHaveValue(inputText)
 })
 
 test("If I reload the page the information I have entered has been saved", async () => {
-    const { user, unmount, localStorage } = setup(<Index />)
+    const { user, unmount, localStorage } = setup(<ListMaker />)
     const inputText = "My baked lasagne"
     await enterListName(user)(inputText)
     await addItemToList(user)("2 limes", "3 apples")
@@ -116,15 +121,15 @@ test("If I reload the page the information I have entered has been saved", async
     expect(getListNameInput()).toHaveValue(inputText)
     expect(getListItems()).toHaveLength(2)
 
-    unmount(<Index />)
-    setup(<Index />, { localStorage })
+    unmount(<ListMaker />)
+    setup(<ListMaker />, { localStorage })
 
     expect(getListNameInput()).toHaveValue(inputText)
     expect(getListItems()).toHaveLength(2)
 })
 
 test("If I click the Publish button, I will be taken to the signup page if I am not logged in", async () => {
-    const { user } = setup(<Index />)
+    const { user } = setup(<ListMaker />)
     const inputText = "My baked lasagne"
     await enterListName(user)(inputText)
     await addItemToList(user)("2 limes", "3 apples")

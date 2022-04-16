@@ -11,7 +11,7 @@ import { useImmer } from "../hooks/useImmer"
 import ModelIngrediant from "../models/Ingrediant"
 import ModelIngrediantList from "../models/IngrediantList"
 
-const Index = () => {
+const ListMaker = () => {
     const [ingrediantList, setIngrediantList] = useLocalState(new ModelIngrediantList({}), "ingrediant-list")
     const [ingrediantInput, setingrediantInput] = useImmer("", "ingrediant-input")
     const [appError, setAppError] = useImmer()
@@ -89,7 +89,7 @@ const Index = () => {
                 }}
                 color="secondary"
                 variant="contained"
-                size="large"
+                size="medium"
                 onClick={handlePublish}
             >
                 Publish
@@ -111,4 +111,4 @@ const Index = () => {
     )
 }
 
-export default Index
+export default ListMaker

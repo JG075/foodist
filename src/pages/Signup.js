@@ -6,13 +6,13 @@ import { useForm, Controller } from "react-hook-form"
 import { produce } from "immer"
 
 import { capitalize } from "../helpers/string"
-import ApiUser from "../api/User"
 import { useImmer } from "../hooks/useImmer"
 import theme from "../theme"
 import apiIngrediantList from "../api/IngrediantList"
 import ModelIngrediantList from "../models/IngrediantList"
 import useLocalState from "../hooks/useLocalState"
 import Title from "../components/Title"
+import { useAuth } from "../hooks/auth"
 
 const textFieldStyle = {
     width: "100%",
@@ -59,6 +59,7 @@ const Signup = (props) => {
     const [formError, setFormError] = useImmer("")
     const navigate = useNavigate()
     const [ingrediantList] = useLocalState(new ModelIngrediantList({}), "ingrediant-list")
+    const { signup } = useAuth()
 
     const onSubmit = async (data) => {
         if (data["password"] !== data["repeat password"]) {
@@ -68,24 +69,25 @@ const Signup = (props) => {
         setFormError("")
         setSubmitting(true)
         const formattedData = {
-            id: data.username,
+            username: data.username,
             email: data.email,
             password: data.password,
         }
         try {
-            const res = await ApiUser.post(formattedData)
+            const res = await signup(formattedData)
             if (ingrediantList) {
                 const updatedIngrediantList = produce(ingrediantList, (draft) => {
-                    draft.authorId = res.id
+                    draft.authorId = res.username
                 })
                 await apiIngrediantList.post(updatedIngrediantList.serialize())
             }
-            navigate(`/users/${res.id}/lists`)
+            navigate(`/users/${res.username}/lists`)
         } catch (err) {
-            if (err.response && /duplicate id/.test(err.response.data)) {
-                setError("username", {
+            if (err.response && /duplicate/i.test(err.response.data)) {
+                const duplicateField = err.response.data.replace(/duplicate\s/i, "")
+                setError(duplicateField, {
                     type: "custom",
-                    message: "The username you have entered has already been taken",
+                    message: `The ${duplicateField} you have entered has already been taken`,
                 })
             } else {
                 setFormError("Sorry something went wrong")
@@ -96,7 +98,7 @@ const Signup = (props) => {
 
     return (
         <div>
-            <Title>Signup</Title>
+            <Title>Sign up</Title>
             <form
                 onSubmit={handleSubmit(onSubmit)}
                 css={{
@@ -186,7 +188,7 @@ const Signup = (props) => {
                     css={{ margin: "10px 0" }}
                     loading={submitting}
                 >
-                    Submit
+                    Sign up
                 </LoadingButton>
                 {formError && (
                     <span css={{ color: theme.palette.error.main, textAlign: "center", marginTop: 20 }}>

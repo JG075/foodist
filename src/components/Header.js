@@ -1,9 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { Link } from "react-router-dom"
+import PropTypes from "prop-types"
 
 import { sectionStyle } from "../sharedStyles"
 
-const Header = (props) => {
+const Header = ({ user, onSignout }) => {
     return (
         <header
             css={{
@@ -42,11 +43,27 @@ const Header = (props) => {
                     },
                 }}
             >
-                <Link to="/signup">Signup</Link>
-                <Link to="/login">Login</Link>
+                {user && (
+                    <>
+                        <Link to="/" onClick={onSignout}>
+                            Sign out
+                        </Link>
+                    </>
+                )}
+                {!user && (
+                    <>
+                        <Link to="/signup">Sign up</Link>
+                        <Link to="/signin">Sign in</Link>
+                    </>
+                )}
             </nav>
         </header>
     )
+}
+
+Header.propTypes = {
+    user: PropTypes.object,
+    onSignout: PropTypes.func,
 }
 
 export default Header

@@ -3,21 +3,22 @@ import { immerable } from "immer"
 export default class User {
     [immerable] = true
 
-    constructor({ id, email }) {
-        this.id = id
+    constructor({ username, email }) {
+        this.username = username
         this.email = email
     }
 
-    static serialize = ({ id, email }) => {
+    serialize = () => {
+        const { username, email } = this
         return {
-            id,
+            username,
             email,
         }
     }
 
-    static deserialize = ({ id, email }) => {
+    static deserialize = ({ username, email }) => {
         return new User({
-            id,
+            username,
             email,
         })
     }

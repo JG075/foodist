@@ -2,17 +2,27 @@
 import "./App.css"
 import React from "react"
 import { ThemeProvider } from "@mui/material"
-import { Outlet } from "react-router-dom"
+import { Outlet, useNavigate } from "react-router-dom"
 
 import theme from "./theme"
 import Header from "./components/Header"
 import { sectionStyle } from "./sharedStyles"
+import { useAuth } from "./hooks/auth"
 
 function App() {
+    const { user, signout } = useAuth()
+    const navigate = useNavigate()
+
+    const handleOnSignOut = async (e) => {
+        e.preventDefault()
+        await signout()
+        navigate("/")
+    }
+
     return (
         <ThemeProvider theme={theme}>
             <div className="App">
-                <Header />
+                <Header user={user} onSignout={handleOnSignOut} />
                 <main
                     css={{
                         ...sectionStyle,
