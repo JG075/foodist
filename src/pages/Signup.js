@@ -13,6 +13,7 @@ import ModelIngrediantList from "../models/IngrediantList"
 import useLocalState from "../hooks/useLocalState"
 import Title from "../components/Title"
 import { useAuth } from "../hooks/auth"
+import ErrorMsg from "../components/ErrorMsg"
 
 const textFieldStyle = {
     width: "100%",
@@ -190,11 +191,7 @@ const Signup = (props) => {
                 >
                     Sign up
                 </LoadingButton>
-                {formError && (
-                    <span css={{ color: theme.palette.error.main, textAlign: "center", marginTop: 20 }}>
-                        {formError}
-                    </span>
-                )}
+                {formError && <ErrorMsg css={{ textAlign: "center", marginTop: 20 }}>{formError}</ErrorMsg>}
             </form>
         </div>
     )

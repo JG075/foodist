@@ -7,8 +7,11 @@ import Title from "../components/Title"
 import { useImmer } from "../hooks/useImmer"
 import IngrediantListsItem from "../components/IngrediantListsItem"
 import { LoadingButton } from "@mui/lab"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { useAuth } from "../hooks/auth"
+import { set } from "react-hook-form"
+import IngrediantList from "../models/IngrediantList"
+import ErrorMsg from "../components/ErrorMsg"
 
 const Lists = () => {
     const [errorMessage, setErrorMessage] = useImmer("")
@@ -37,13 +40,13 @@ const Lists = () => {
         fetchData()
     }, [username, setIsFetching, setLists, setErrorMessage])
 
-    let renderedListItems = []
-    if (lists && lists.length > 0) {
+    let renderedListItems = null
+    if (lists) {
         const items = lists.map((l) => {
             const to = `/users/${username}/lists/${l.id}`
             return <IngrediantListsItem key={l.id} name={l.name} to={to} />
         })
-        renderedListItems = <ul css={{ padding: 0, width: "100%" }}>{items}</ul>
+        renderedListItems = items.length > 0 ? <ul css={{ padding: 0, width: "100%" }}>{items}</ul> : []
     }
 
     if (user) {
@@ -65,7 +68,7 @@ const ListItems = ({ lists, emptyMsg, isFetching }) => {
     return (
         <>
             {isFetching && <CircularProgress />}
-            {lists && lists.length === 0 && emptyMsg}
+            {lists?.length === 0 && emptyMsg}
             {lists}
         </>
     )
@@ -75,7 +78,7 @@ const DefaultView = ({ username, lists, errorMessage, isFetching }) => {
     return (
         <div>
             <Title>{username}'s Lists</Title>
-            {errorMessage || (
+            {(errorMessage && <ErrorMsg>{errorMessage}</ErrorMsg>) || (
                 <ListItems
                     lists={lists}
                     emptyMsg="This user does not have any lists to show."
@@ -87,9 +90,20 @@ const DefaultView = ({ username, lists, errorMessage, isFetching }) => {
 }
 
 const LoggedInView = ({ user, lists, errorMessage, isFetching }) => {
-    const handleOnClick = () => {
-        // call api to create a new list
-        // redirect to that list id
+    const [isCreatingList, setIsCreatingList] = useImmer(false)
+    const [newListError, setNewListError] = useImmer("")
+    const navigate = useNavigate()
+
+    const handleOnClick = async () => {
+        setIsCreatingList(true)
+        const newIngrediantList = new IngrediantList({ authorId: user.username })
+        try {
+            const res = await apiIngrediantList.post(newIngrediantList)
+            navigate(`/users/${user.username}/lists/${res.id}`)
+        } catch (error) {
+            setNewListError("Sorry something went wrong.")
+        }
+        setIsCreatingList(false)
     }
 
     return (
@@ -107,10 +121,12 @@ const LoggedInView = ({ user, lists, errorMessage, isFetching }) => {
                 variant="contained"
                 size="medium"
                 onClick={handleOnClick}
+                loading={isCreatingList}
             >
                 Create List
             </LoadingButton>
-            {errorMessage || (
+            <ErrorMsg css={{ marginBottom: 10 }}>{newListError}</ErrorMsg>
+            {(errorMessage && <ErrorMsg>{errorMessage}</ErrorMsg>) || (
                 <ListItems
                     lists={lists}
                     emptyMsg="You don't have any lists to show. Make one!"

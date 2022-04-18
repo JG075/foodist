@@ -9,6 +9,7 @@ import theme from "../theme"
 import Title from "../components/Title"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../hooks/auth"
+import ErrorMsg from "../components/ErrorMsg"
 
 const textFieldStyle = {
     width: "100%",
@@ -113,9 +114,7 @@ const Signin = (props) => {
             >
                 Sign in
             </LoadingButton>
-            {formError && (
-                <span css={{ color: theme.palette.error.main, textAlign: "center", marginTop: 20 }}>{formError}</span>
-            )}
+            {formError && <ErrorMsg css={{ textAlign: "center", marginTop: 20 }}>{formError}</ErrorMsg>}
         </form>
     )
 }

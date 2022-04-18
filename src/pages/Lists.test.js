@@ -1,4 +1,4 @@
-import { screen, waitFor, act as actComponent, within } from "@testing-library/react"
+import { screen, waitFor, within } from "@testing-library/react"
 
 import apiIngrediantList from "../api/IngrediantList"
 import Ingrediant from "../models/Ingrediant"
@@ -7,9 +7,12 @@ import setup, { setupWithMemoryRouter } from "../testHelpers"
 import Lists from "./Lists"
 import Qty from "../lib/qty"
 import { useAuth } from "../hooks/auth"
+import IngrediantList from "../models/IngrediantList"
 
 jest.mock("../api/IngrediantList")
 jest.mock("../hooks/auth")
+
+const getCreateListButton = () => screen.getByRole("button", { name: /create list/i })
 
 const listsMock = [
     new ModelIngrediantList({
@@ -119,4 +122,56 @@ test.each(table)("I see each ingrediant list from the list returned by the API",
     const listItem = listItems[index]
     expect(listItem).toHaveTextContent(list.id)
     expect(screen.getAllByRole("link")[index]).toHaveAttribute("href", `/users/John/lists/${list.id}`)
+})
+
+test("If I click the 'Create List' button, I should see a loading icon", async () => {
+    useAuth.mockReturnValue({ user: { username: "Bob" } })
+    apiIngrediantList.getAll.mockResolvedValue([])
+    const { user } = setup(<Lists />)
+    await user.click(getCreateListButton())
+    expect(await within(getCreateListButton()).findByRole("progressbar")).toBeInTheDocument()
+})
+
+test("If I click the 'Create List' button, the API to create a list should be called", async () => {
+    const username = "Bob"
+    useAuth.mockReturnValue({ user: { username } })
+    apiIngrediantList.getAll.mockResolvedValue([])
+    const { user } = setup(<Lists />)
+    await user.click(getCreateListButton())
+    expect(apiIngrediantList.post).toBeCalledTimes(1)
+    const emptyList = new ModelIngrediantList({ authorId: username })
+    expect(apiIngrediantList.post.mock.calls[0][0]).toMatchObject(emptyList.serialize())
+})
+
+test("If I click the 'Create List' button, and the response is an errror, I should see an error message", async () => {
+    useAuth.mockReturnValue({ user: { username: "Bob" } })
+    apiIngrediantList.getAll.mockResolvedValue([])
+    apiIngrediantList.post.mockRejectedValue({ response: { status: 500 } })
+    const { user } = setup(<Lists />)
+    await user.click(getCreateListButton())
+    const errMsg = "Sorry something went wrong."
+    expect(await screen.findByText(errMsg)).toBeInTheDocument()
+    expect(within(getCreateListButton()).queryByRole("progressbar")).not.toBeInTheDocument()
+})
+
+test("If I click the 'Create List' button, and the response is successful, I should be taken to the list page", async () => {
+    const username = "Bob"
+    const listId = "ao230diwe"
+    useAuth.mockReturnValue({ user: { username } })
+    apiIngrediantList.getAll.mockResolvedValue([])
+    apiIngrediantList.post.mockResolvedValue({ id: listId })
+    const { user } = setup(<Lists />)
+    await user.click(getCreateListButton())
+    await waitFor(() => expect(window.location.pathname).toEqual(`/users/${username}/lists/${listId}`))
+})
+
+test("If a list has no name I see 'Unnamed list' as it's name", async () => {
+    useAuth.mockReturnValue({ user: { username: "Bob" } })
+    const listItem = new IngrediantList({
+        id: "qwer23",
+        name: "",
+    })
+    apiIngrediantList.getAll.mockResolvedValue([listItem])
+    setup(<Lists />)
+    expect(await screen.findByText("Unnamed list")).toBeInTheDocument()
 })

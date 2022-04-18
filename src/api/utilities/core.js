@@ -24,7 +24,11 @@ export default class ApiCore {
 
         if (options.post) {
             this.post = (model) => {
-                return apiProvider.post(options.url, model)
+                let formattedModel = model
+                if (options.model) {
+                    formattedModel = options.model.deserialize(model)
+                }
+                return apiProvider.post(options.url, formattedModel)
             }
         }
 
