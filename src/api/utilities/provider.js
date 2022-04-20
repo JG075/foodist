@@ -42,8 +42,8 @@ const patch = (resource, model) => {
 
 /** @param {string} resource */
 /** @param {string} id */
-const remove = (resource, id) => {
-    return instance.delete(`${BASE_URL}/${resource}`, id).then(handleResponse).catch(handleError)
+const remove = (resource) => {
+    return instance.delete(`${BASE_URL}/${resource}`).then(handleResponse).catch(handleError)
 }
 
 const apiProvider = {

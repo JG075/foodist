@@ -3,6 +3,7 @@ import { Link } from "react-router-dom"
 import PropTypes from "prop-types"
 
 import { sectionStyle } from "../sharedStyles"
+import theme from "../theme"
 
 const Header = ({ user, onSignout }) => {
     return (
@@ -27,7 +28,7 @@ const Header = ({ user, onSignout }) => {
                     fontWeight: "bold",
                 }}
             >
-                <a css={{ textDecoration: "none", color: "black" }} href="/">
+                <a css={{ textDecoration: "none", color: theme.palette.primary.dark }} href="/">
                     Foodist
                 </a>
             </span>

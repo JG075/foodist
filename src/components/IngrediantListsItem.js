@@ -19,7 +19,7 @@ const IngrediantListsItem = ({ name, to }) => {
                     marginBottom: "15px",
                 }}
             >
-                {name || "Unnamed list"}
+                {name}
                 <DoubleArrowIcon color="primary" />
             </ListItem>
         </Link>

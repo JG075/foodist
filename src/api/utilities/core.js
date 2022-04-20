@@ -14,9 +14,13 @@ export default class ApiCore {
 
         if (options.getSingle) {
             this.getSingle = async (id) => {
-                const item = await apiProvider.getSingle(options.url, id)
+                const items = await apiProvider.getSingle(options.url, id)
+                if (items.length === 0) {
+                    return null
+                }
+                const item = items[0]
                 if (options.model) {
-                    return new options.model(item)
+                    return options.model.deserialize(item)
                 }
                 return item
             }
@@ -34,19 +38,27 @@ export default class ApiCore {
 
         if (options.put) {
             this.put = (model) => {
-                return apiProvider.put(options.url, model)
+                let formattedModel = model
+                if (options.model) {
+                    formattedModel = options.model.deserialize(model)
+                }
+                return apiProvider.put(`${options.url}/${model.id}`, formattedModel)
             }
         }
 
         if (options.patch) {
             this.patch = (model) => {
-                return apiProvider.patch(options.url, model)
+                let formattedModel = model
+                if (options.model) {
+                    formattedModel = options.model.deserialize(model)
+                }
+                return apiProvider.patch(`${options.url}/${model.id}`, formattedModel)
             }
         }
 
         if (options.remove) {
             this.remove = (id) => {
-                return apiProvider.remove(options.url, id)
+                return apiProvider.remove(`${options.url}/${id}`)
             }
         }
     }

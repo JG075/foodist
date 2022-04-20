@@ -1,26 +1,26 @@
 /** @jsxImportSource @emotion/react */
 import CircularProgress from "@mui/material/CircularProgress"
 import { useEffect } from "react"
+import { LoadingButton } from "@mui/lab"
+import { useNavigate, useParams } from "react-router-dom"
 
 import apiIngrediantList from "../api/IngrediantList"
 import Title from "../components/Title"
 import { useImmer } from "../hooks/useImmer"
 import IngrediantListsItem from "../components/IngrediantListsItem"
-import { LoadingButton } from "@mui/lab"
-import { useNavigate, useParams } from "react-router-dom"
 import { useAuth } from "../hooks/auth"
-import { set } from "react-hook-form"
 import IngrediantList from "../models/IngrediantList"
 import ErrorMsg from "../components/ErrorMsg"
+import theme from "../theme"
 
-const Lists = () => {
+const Lists = ({ useAuthUser }) => {
     const [errorMessage, setErrorMessage] = useImmer("")
     const [lists, setLists] = useImmer()
     const [isFetching, setIsFetching] = useImmer(false)
     const params = useParams()
     const { user } = useAuth()
 
-    const username = user ? user.username : params.username
+    const username = useAuthUser ? user.username : params.username
 
     useEffect(() => {
         const fetchData = async () => {
@@ -44,15 +44,13 @@ const Lists = () => {
     if (lists) {
         const items = lists.map((l) => {
             const to = `/users/${username}/lists/${l.id}`
-            return <IngrediantListsItem key={l.id} name={l.name} to={to} />
+            return <IngrediantListsItem key={l.id} name={l.displayName} to={to} />
         })
         renderedListItems = items.length > 0 ? <ul css={{ padding: 0, width: "100%" }}>{items}</ul> : []
     }
 
-    if (user) {
-        return (
-            <LoggedInView user={user} lists={renderedListItems} errorMessage={errorMessage} isFetching={isFetching} />
-        )
+    if (useAuthUser) {
+        return <UseAuthView user={user} lists={renderedListItems} errorMessage={errorMessage} isFetching={isFetching} />
     }
     return (
         <DefaultView
@@ -68,7 +66,9 @@ const ListItems = ({ lists, emptyMsg, isFetching }) => {
     return (
         <>
             {isFetching && <CircularProgress />}
-            {lists?.length === 0 && emptyMsg}
+            {lists?.length === 0 && (
+                <div css={{ marginTop: 20, fontSize: 18, color: theme.palette.primary.main }}>{emptyMsg}</div>
+            )}
             {lists}
         </>
     )
@@ -89,7 +89,7 @@ const DefaultView = ({ username, lists, errorMessage, isFetching }) => {
     )
 }
 
-const LoggedInView = ({ user, lists, errorMessage, isFetching }) => {
+const UseAuthView = ({ user, lists, errorMessage, isFetching }) => {
     const [isCreatingList, setIsCreatingList] = useImmer(false)
     const [newListError, setNewListError] = useImmer("")
     const navigate = useNavigate()
@@ -116,7 +116,7 @@ const LoggedInView = ({ user, lists, errorMessage, isFetching }) => {
         >
             <Title>My Lists</Title>
             <LoadingButton
-                css={{ marginBottom: 20 }}
+                css={{ marginBottom: 10 }}
                 color="secondary"
                 variant="contained"
                 size="medium"

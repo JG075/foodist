@@ -5,9 +5,9 @@ import theme from "../theme"
 
 const ErrorMsg = ({ children, ...rest }) => {
     return (
-        <div css={{ color: theme.palette.error.main }} {...rest}>
+        <span css={{ color: theme.palette.error.main, margin: 0, display: "block" }} {...rest}>
             {children}
-        </div>
+        </span>
     )
 }
 

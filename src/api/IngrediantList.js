@@ -7,11 +7,11 @@ const single = "ingrediant-list"
 
 const apiIngrediantList = new ApiCore({
     getAll: true,
-    getSingle: false,
+    getSingle: true,
     post: true,
     put: false,
-    patch: false,
-    delete: false,
+    patch: true,
+    remove: true,
     url: url,
     plural: plural,
     single: single,

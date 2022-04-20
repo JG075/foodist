@@ -4,6 +4,7 @@ const theme = createTheme({
     palette: {
         primary: {
             main: "#6f6f6f",
+            dark: "#1f1f1f",
         },
         secondary: {
             main: "#4c8e48",
@@ -18,8 +19,13 @@ const theme = createTheme({
                     },
                 },
                 underline: {
+                    "&&::before": {
+                        borderBottom: "1px solid rgba(0, 0, 0, 0.42)",
+                        borderBottomStyle: "dashed",
+                    },
                     "&&:hover::before": {
                         borderBottom: "1px solid rgba(0, 0, 0, 0.42)",
+                        borderBottomStyle: "dashed",
                     },
                 },
             },

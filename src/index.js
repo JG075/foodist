@@ -51,7 +51,7 @@ const PublicRoute = ({ children, ...rest }) => {
 
 const IndexPage = () => {
     const { user } = useAuth()
-    return user ? <Lists /> : <ListMaker />
+    return user ? <Lists useAuthUser /> : <ListMaker useLocalView />
 }
 
 const Index = () => {
@@ -80,7 +80,7 @@ const Index = () => {
                             />
                             <Route path="/users/:username">
                                 <Route path="/users/:username/lists" element={<Lists />} />
-                                <Route path="/users/:username/lists/:listid" element={<ListMaker />} />
+                                <Route path="/users/:username/lists/:id" element={<ListMaker />} />
                             </Route>
                         </Route>
                     </Routes>

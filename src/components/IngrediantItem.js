@@ -6,7 +6,7 @@ import IconButton from "@mui/material/IconButton"
 import DeleteIcon from "@mui/icons-material/Delete"
 import ModelIngrediant from "../models/Ingrediant"
 
-function IngrediantItem({ item, onDelete, onItemCheck }) {
+function IngrediantItem({ item, onDelete, onItemCheck, allowEdit }) {
     const { name, qty, checked } = item
     return (
         <ListItem
@@ -39,16 +39,18 @@ function IngrediantItem({ item, onDelete, onItemCheck }) {
                     {qty.format()}
                 </span>
             </span>
-            <IconButton
-                aria-label="delete"
-                onClick={onDelete}
-                edge="end"
-                sx={{
-                    marginLeft: "auto",
-                }}
-            >
-                <DeleteIcon />
-            </IconButton>
+            {allowEdit && (
+                <IconButton
+                    aria-label="delete"
+                    onClick={onDelete}
+                    edge="end"
+                    sx={{
+                        marginLeft: "auto",
+                    }}
+                >
+                    <DeleteIcon />
+                </IconButton>
+            )}
         </ListItem>
     )
 }
@@ -57,6 +59,7 @@ IngrediantItem.propTypes = {
     item: PropTypes.instanceOf(ModelIngrediant),
     onDelete: PropTypes.func,
     onItemCheck: PropTypes.func,
+    allowEdit: PropTypes.bool,
 }
 
 export default IngrediantItem

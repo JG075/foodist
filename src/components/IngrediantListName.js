@@ -2,7 +2,9 @@
 import TextField from "@mui/material/TextField"
 import PropTypes from "prop-types"
 
-const IngrediantListName = ({ sx, value, onChange }) => {
+import theme from "../theme"
+
+const IngrediantListName = ({ sx, value, onChange, disabled }) => {
     return (
         <TextField
             autoComplete="off"
@@ -11,14 +13,22 @@ const IngrediantListName = ({ sx, value, onChange }) => {
             size="medium"
             value={value}
             onChange={onChange}
+            sx={sx}
             inputProps={{
                 sx: {
+                    color: theme.palette.primary.dark,
+                    textFillColor: theme.palette.primary.dark,
                     fontSize: "26px",
                     textAlign: "center",
                     fontWeight: "500",
+                    paddingBottom: "8px",
+                    "&.Mui-disabled": {
+                        textFillColor: theme.palette.primary.dark,
+                        opacity: 1,
+                    },
                 },
             }}
-            sx={sx}
+            disabled={disabled}
         />
     )
 }
