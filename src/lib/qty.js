@@ -1,5 +1,5 @@
 import Qty from "js-quantities"
-import { fraction as mfraction } from "mathjs"
+import { fraction as mfraction, round } from "mathjs"
 
 export const perferedAliases = [
     ["cu", "cup"],
@@ -8,19 +8,24 @@ export const perferedAliases = [
 
 export const fractionalUnits = ["", "tb", "tsp", "cu"]
 
+export const commonCookingFractions = ["1/8", "1/4", "1/3", "1/2", "2/3", "3/4"]
+
 Qty.formatter = (scalar, units) => {
     const [, preferedAlias] = perferedAliases.find(([alias, prefered]) => alias === units) || []
-    let parsedScalar
-    if (fractionalUnits.indexOf(units) !== -1) {
+
+    let outputUnit = preferedAlias || units
+    let outputScalar = scalar
+
+    // Output 1/4 instead of 0.25 for some units
+    if (fractionalUnits.includes(units)) {
         const fraction = mfraction(scalar)
-        parsedScalar = fraction.toFraction()
+        const fractionStr = fraction.toFraction()
+        outputScalar = commonCookingFractions.includes(fractionStr) ? fractionStr : round(scalar, 2)
+    } else {
+        outputScalar = round(scalar, 2)
     }
-    if (parsedScalar || preferedAlias) {
-        const firstPart = `${parsedScalar || scalar}`
-        const secondPart = `${preferedAlias || units}`
-        return secondPart ? `${firstPart} ${secondPart}` : firstPart
-    }
-    return Qty(`${scalar} ${units}`).toString()
+
+    return outputUnit ? `${outputScalar} ${outputUnit}` : `${outputScalar}`
 }
 
 export default Qty

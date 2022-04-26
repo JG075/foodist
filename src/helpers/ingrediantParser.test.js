@@ -23,16 +23,6 @@ test.each([
     expect(output.qty.format()).toEqual(expected.qty.format())
 })
 
-test.each(perferedAliases)("ingrediantParser(2 '%s' Lemons)", (defaultAlias, expected) => {
-    const output1 = ingrediantParser(`2 ${expected} Lemons`)
-    expect(output1.name).toEqual("Lemons")
-    expect(output1.qty.format()).toEqual(`2 ${expected}`)
-
-    const output2 = ingrediantParser(`2 ${defaultAlias} Lemons`)
-    expect(output2.name).toEqual("Lemons")
-    expect(output2.qty.format()).toEqual(`2 ${expected}`)
-})
-
 test("Ingrediant name can be escaped for edge cases", () => {
     const output1 = ingrediantParser('3 "Grams Pie"')
     expect(output1.name).toEqual("Grams Pie")
