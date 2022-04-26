@@ -5,6 +5,8 @@ import InputAdornment from "@mui/material/InputAdornment"
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn"
 import IconButton from "@mui/material/IconButton"
 
+import theme from "../theme"
+
 function IngrediantAdder({ value, onChange, onSubmit, error, helperText }) {
     return (
         <form onSubmit={onSubmit}>
@@ -25,11 +27,14 @@ function IngrediantAdder({ value, onChange, onSubmit, error, helperText }) {
                 error={error}
                 helperText={helperText}
                 sx={{
-                    margin: "25px 0 10px",
+                    margin: "20px 0 10px",
                 }}
                 css={{
                     ".MuiOutlinedInput-notchedOutline": {
-                        border: "2px solid #7a7a7a",
+                        border: `1px solid ${theme.palette.primary.light}`,
+                    },
+                    ".MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                        border: `1px solid ${theme.palette.primary.main}`,
                     },
                 }}
                 autoComplete="off"

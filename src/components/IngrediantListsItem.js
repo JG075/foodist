@@ -9,7 +9,7 @@ const IngrediantListsItem = ({ name, to }) => {
         <Link to={to} css={{ color: "black " }}>
             <ListItem
                 sx={{
-                    boxShadow: "0px 1px 0px 0px #4e1d1e",
+                    boxShadow: "0px 1px 0px 0px #a6a6a6",
                     border: "1px solid #9f9f9f",
                     borderRadius: "5px",
                     padding: "15px 20px",

@@ -21,8 +21,9 @@ import DeleteListButton from "../components/DeleteListButton"
 import DeleteListDialog from "../components/DeleteListDialog"
 import EmptyIngrediantsMsg from "../components/EmptyIngrediantsMsg"
 import ServesInput from "../components/ServesInput"
+import Qty from "../lib/qty"
 
-const List = ({ ingrediantList, onChange, allowEdit }) => {
+const List = ({ ingrediantList, onChange, allowEdit, onMakeForChange, makeForQty }) => {
     const handleItemCheck = (idToCheck) => {
         const newList = produce(ingrediantList, ({ ingrediants }) => {
             const itemIndex = ingrediants.findIndex(({ id }) => id === idToCheck)
@@ -63,18 +64,36 @@ const List = ({ ingrediantList, onChange, allowEdit }) => {
         onChange(newList)
     }
 
+    const handleMakeForChange = (e) => onMakeForChange(Number(e.target.value))
+
     if (ingrediantList.ingrediants.length === 0) {
         return <EmptyIngrediantsMsg />
     }
 
+    const makeForQtyValue = makeForQty || ingrediantList.serves
+
+    const visibleIngrediantList = produce(ingrediantList, (draft) => {
+        if (ingrediantList.serves === makeForQty) {
+            return draft
+        }
+        draft.ingrediants.forEach((i) => {
+            const newAmount = (i.qty.scalar / ingrediantList.serves) * makeForQtyValue
+            const newQty = Qty(i.qty)
+            newQty.scalar = newAmount
+            i.qty = newQty
+        })
+    })
+
     return (
         <IngrediantList
-            list={ingrediantList.ingrediants}
+            list={visibleIngrediantList.ingrediants}
             onItemDelete={handleItemDelete}
             onItemCheck={handleItemCheck}
             allowEdit={allowEdit}
             onCheckAll={handleCheckAll}
             onUncheckAll={handleUncheckAll}
+            makeForQty={makeForQtyValue}
+            onMakeForChange={handleMakeForChange}
         />
     )
 }
@@ -138,22 +157,45 @@ const Name = ({ ingrediantList, onChange, allowEdit, sx }) => {
     )
 }
 
-const Serves = ({ ingrediantList }) => {
-    return <ServesInput amount={ingrediantList.serves} />
+const Serves = ({ ingrediantList, onChange, allowEdit }) => {
+    const [serves, setServes] = useImmer(ingrediantList.serves.toString())
+
+    const handleOnChange = (e) => {
+        setServes(e.target.value)
+        if (!e.target.value || e.target.value < 1) {
+            return
+        }
+        const newList = produce(ingrediantList, (draft) => {
+            draft.serves = Number(e.target.value)
+        })
+        onChange(newList)
+    }
+
+    return <ServesInput amount={serves} onChange={handleOnChange} disabled={!allowEdit} />
 }
 
 const LocalListView = () => {
     const [ingrediantList, setIngrediantList] = useLocalState(new ModelIngrediantList({}), "ingrediant-list")
     const navigate = useNavigate()
+    const [makeForQty, setMakeForQty] = useImmer()
 
     const handlePublish = async (e) => navigate("/signup")
 
     const handleOnChange = (list) => setIngrediantList(list)
 
+    const handleServesChange = (ingrediantList) => {
+        setMakeForQty(ingrediantList.serves)
+        handleOnChange(ingrediantList)
+    }
+
+    const handleMakeForChange = (value) => {
+        setMakeForQty(value)
+    }
+
     return (
         <>
             <Name ingrediantList={ingrediantList} onChange={handleOnChange} allowEdit />
-            <Serves ingrediantList={ingrediantList} />
+            <Serves ingrediantList={ingrediantList} onChange={handleServesChange} allowEdit />
             <LoadingButton
                 sx={{
                     margin: "20px auto 0",
@@ -168,7 +210,13 @@ const LocalListView = () => {
                 Publish
             </LoadingButton>
             <Adder ingrediantList={ingrediantList} onChange={handleOnChange} />
-            <List ingrediantList={ingrediantList} onChange={handleOnChange} allowEdit />
+            <List
+                ingrediantList={ingrediantList}
+                onChange={handleOnChange}
+                onMakeForChange={handleMakeForChange}
+                makeForQty={makeForQty}
+                allowEdit
+            />
         </>
     )
 }
@@ -178,6 +226,7 @@ const ApiOwnerView = ({ pageState, ingrediantList, onChange }) => {
     const [isDeleting, setIsDeleting] = useImmer(false)
     const [showConfirmModal, setShowConfirmModal] = useImmer(false)
     const [deleteErrMsg, setDeleteErrMsg] = useImmer("")
+    const [makeForQty, setMakeForQty] = useImmer()
     const navigate = useNavigate()
 
     const apiUpdate = debounce(async (newIngrediantList) => {
@@ -217,6 +266,15 @@ const ApiOwnerView = ({ pageState, ingrediantList, onChange }) => {
         setDeleteErrMsg("")
     }
 
+    const handleServesChange = (ingrediantList) => {
+        setMakeForQty(ingrediantList.serves)
+        handleOnChange(ingrediantList)
+    }
+
+    const handleMakeForChange = (value) => {
+        setMakeForQty(value)
+    }
+
     return (
         <PageState pageState={pageState} addMarginTop>
             <div
@@ -236,19 +294,36 @@ const ApiOwnerView = ({ pageState, ingrediantList, onChange }) => {
                 />
             </div>
             <Name ingrediantList={ingrediantList} onChange={handleOnChange} allowEdit />
-            <Serves ingrediantList={ingrediantList} />
+            <Serves ingrediantList={ingrediantList} onChange={handleServesChange} allowEdit />
             <Adder ingrediantList={ingrediantList} onChange={handleOnChange} />
-            <List ingrediantList={ingrediantList} onChange={handleOnChange} allowEdit />
+            <List
+                ingrediantList={ingrediantList}
+                onChange={handleOnChange}
+                onMakeForChange={handleMakeForChange}
+                makeForQty={makeForQty}
+                allowEdit
+            />
         </PageState>
     )
 }
 
 const ApiNonOwnerView = ({ pageState, ingrediantList, onChange }) => {
+    const [makeForQty, setMakeForQty] = useImmer()
+
+    const handleMakeForChange = (value) => {
+        setMakeForQty(value)
+    }
+
     return (
         <PageState pageState={pageState} addMarginTop>
-            <Name ingrediantList={ingrediantList} onChange={onChange} sx={{ marginBottom: "20px" }} />
+            <Name ingrediantList={ingrediantList} onChange={onChange} />
             <Serves ingrediantList={ingrediantList} />
-            <List ingrediantList={ingrediantList} onChange={onChange} />
+            <List
+                ingrediantList={ingrediantList}
+                onChange={onChange}
+                makeForQty={makeForQty}
+                onMakeForChange={handleMakeForChange}
+            />
         </PageState>
     )
 }

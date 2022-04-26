@@ -48,6 +48,7 @@ const enterListName = (user) => {
 const getListItems = () => screen.getAllByRole("listitem")
 const getListNameInput = () => screen.getByPlaceholderText(listNamePlaceHolderText)
 const getServesInput = () => screen.getByRole("spinbutton", { name: /serves/i })
+const getMakeForInput = () => screen.getByRole("spinbutton", { name: /make for/i })
 
 let mockIngrediantList = null
 const mockIngrediantListAuthor = "John"
@@ -59,6 +60,7 @@ beforeEach(() => {
         id: "cxd24fa",
         name: "My Ingrediant List",
         authorId: mockIngrediantListAuthor,
+        serves: 1,
         ingrediants: [
             new ModelIngrediant({
                 name: "Apples",
@@ -76,8 +78,8 @@ beforeEach(() => {
     })
 })
 
-const setupLocalUser = async () => {
-    const { user } = setup(<ListMaker useLocalView />)
+const setupLocalUser = async (setupOptions) => {
+    const { user } = setup(<ListMaker useLocalView />, setupOptions)
     await addItemToList(user)("1 orange", "2 limes", "3 apples")
     return { user }
 }
@@ -184,6 +186,34 @@ describe("As all users", () => {
             })
         }
     )
+
+    test.each(testCases)(
+        "As: %s: If I change the 'Make for' amount it shows the correct ingrediant values",
+        async (label, setupFn = () => {}) => {
+            const { user } = await setupFn()
+            await user.clear(getMakeForInput())
+            const inputQty = 2
+            await user.type(getMakeForInput(), inputQty.toString())
+            const listItems = screen.getAllByRole("listitem")
+            listItems.forEach((item, i) => {
+                const originalQty = mockIngrediantList.ingrediants[i].qty
+                expect(item).toHaveTextContent((originalQty * 2).toString())
+            })
+        }
+    )
+
+    test.each(testCases)(
+        "As: %s: The 'Make for' amount is the same as the 'Serves' amount on load",
+        async (label, setupFn = () => {}) => {
+            const expectedAmount = 8
+            mockIngrediantList.serves = expectedAmount
+            const mockLocalStorage = {
+                "ingrediant-list": JSON.stringify(mockIngrediantList.serialize()),
+            }
+            await setupFn({ localStorage: mockLocalStorage })
+            await waitFor(() => expect(getMakeForInput()).toHaveValue(expectedAmount))
+        }
+    )
 })
 
 describe("As users with edit privileges", () => {
@@ -248,6 +278,20 @@ describe("As users with edit privileges", () => {
         await user.type(getServesInput(), serveAmount.toString())
         expect(getServesInput()).toHaveValue(serveAmount)
     })
+
+    test.each(testCases)(
+        "As: %s: If I change the Serves amount, the 'Make for' quantity also changes",
+        async (label, setupFn = () => {}) => {
+            apiIngrediantList.getSingle.mockResolvedValue(mockIngrediantList)
+            const { user } = await setupFn()
+            await waitFor(() => expect(getServesInput()).toHaveValue(1))
+            expect(getMakeForInput()).toHaveValue(1)
+            const newServesAmount = 4
+            await user.clear(getServesInput())
+            await user.type(getServesInput(), newServesAmount.toString())
+            await waitFor(() => expect(getMakeForInput()).toHaveValue(newServesAmount))
+        }
+    )
 })
 
 describe("As users that get the list from the API", () => {
@@ -358,6 +402,9 @@ describe("As a not logged in user viewing the index page", () => {
         const inputText = "My baked lasagne"
         await enterListName(user)(inputText)
         await addItemToList(user)("2 limes", "3 apples")
+        const servesAmount = "12"
+        await user.clear(getServesInput())
+        await user.type(getServesInput(), servesAmount)
 
         expect(getListNameInput()).toHaveValue(inputText)
         expect(getListItems()).toHaveLength(2)
@@ -367,6 +414,7 @@ describe("As a not logged in user viewing the index page", () => {
 
         expect(getListNameInput()).toHaveValue(inputText)
         expect(getListItems()).toHaveLength(2)
+        expect(getServesInput()).toHaveValue(Number(servesAmount))
     })
 
     test("If I click the Publish button, I will be taken to the signup page if I am not logged in", async () => {
@@ -387,6 +435,7 @@ describe("As a user, viewing a another user's list", () => {
         expect(await screen.findByRole("textbox")).toBeDisabled()
         expect(screen.queryByPlaceholderText(adderPlaceholderText)).not.toBeInTheDocument()
         expect(screen.queryByRole("button", { name: "delete" })).not.toBeInTheDocument()
+        expect(getServesInput()).toBeDisabled()
         await waitFor(() => expect(screen.queryByRole("progressbar")).not.toBeInTheDocument())
     })
 })
@@ -546,5 +595,20 @@ describe("As a signed in user, viewing my own list", () => {
         lastCall.ingrediants.forEach((i) => {
             expect(i.checked).toEqual(false)
         })
+    })
+
+    test("If I change the Serves amount the API is called", async () => {
+        mockIngrediantList.ingrediants.forEach((i) => (i.checked = true))
+        const { user } = setupWithMemoryRouter(<ListMaker />, {
+            routerPath: `/users/Bob/lists/${mockIngrediantList.id}`,
+            routePath: "/users/:username/lists/:id",
+        })
+        const servesAmount = "12"
+        await user.clear(await screen.findByRole("spinbutton", { name: /serves/i }))
+        await user.type(screen.getByRole("spinbutton", { name: /serves/i }), servesAmount)
+        await waitFor(() => expect(apiIngrediantList.patch).toBeCalled())
+        const mockCalls = apiIngrediantList.patch.mock.calls
+        const lastCall = mockCalls[mockCalls.length - 1][0]
+        expect(lastCall.serves.toString()).toEqual(servesAmount)
     })
 })

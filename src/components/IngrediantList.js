@@ -1,12 +1,22 @@
 /** @jsxImportSource @emotion/react */
-import IngrediantItem from "./IngrediantItem"
 import PropTypes from "prop-types"
 import List from "@mui/material/List"
-import ModelIngrediant from "../models/Ingrediant"
 import { Button, TextField } from "@mui/material"
+
+import ModelIngrediant from "../models/Ingrediant"
+import IngrediantItem from "./IngrediantItem"
 import theme from "../theme"
 
-const IngrediantList = ({ list, onItemDelete, onItemCheck, allowEdit, onCheckAll, onUncheckAll }) => {
+const IngrediantList = ({
+    list,
+    onItemDelete,
+    onItemCheck,
+    allowEdit,
+    onCheckAll,
+    onUncheckAll,
+    makeForQty,
+    onMakeForChange,
+}) => {
     const ingrediantItems = list.map((item) => (
         <IngrediantItem
             key={item.id}
@@ -32,7 +42,7 @@ const IngrediantList = ({ list, onItemDelete, onItemCheck, allowEdit, onCheckAll
                 css={{
                     display: "flex",
                     justifyContent: "flex-end",
-                    margin: "10px 0",
+                    margin: "5px 0",
                 }}
             >
                 <div
@@ -44,8 +54,11 @@ const IngrediantList = ({ list, onItemDelete, onItemCheck, allowEdit, onCheckAll
                         color: theme.palette.primary.main,
                     }}
                 >
-                    <span>Make for</span>
+                    <label htmlFor="make-for-quantity" css={{ fontWeight: "lighter" }}>
+                        Make for
+                    </label>
                     <TextField
+                        id="make-for-quantity"
                         type="number"
                         sx={{
                             marginLeft: "10px",
@@ -57,14 +70,15 @@ const IngrediantList = ({ list, onItemDelete, onItemCheck, allowEdit, onCheckAll
                             color: "secondary",
                         }}
                         inputProps={{
-                            maxLength: 3,
-                            defaultValue: 1,
+                            min: "1",
                             sx: {
                                 padding: "0 0 0 10px",
                             },
                         }}
                         size="small"
                         variant="outlined"
+                        value={makeForQty}
+                        onChange={onMakeForChange}
                     />
                 </div>
                 <Button onClick={onCheckAll} sx={checkButtonStyle}>
@@ -88,6 +102,8 @@ IngrediantList.propTypes = {
     allowEdit: PropTypes.bool,
     onCheckAll: PropTypes.func,
     onUncheckAll: PropTypes.func,
+    onMakeForChange: PropTypes.func,
+    makeForQty: PropTypes.number,
 }
 
 export default IngrediantList

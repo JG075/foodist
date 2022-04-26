@@ -11,7 +11,7 @@ function IngrediantItem({ item, onDelete, onItemCheck, allowEdit }) {
     return (
         <ListItem
             sx={{
-                boxShadow: "0px 1px 0px 0px #4e1d1e",
+                boxShadow: "0px 1px 0px 0px #a6a6a6",
                 border: "1px solid #9f9f9f",
                 borderRadius: "5px",
                 padding: "6px 12px",

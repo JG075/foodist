@@ -4,7 +4,7 @@ import PropTypes from "prop-types"
 
 import theme from "../theme"
 
-const ServesInput = ({ amount }) => {
+const ServesInput = ({ amount, onChange, disabled }) => {
     return (
         <div
             css={{
@@ -16,32 +16,40 @@ const ServesInput = ({ amount }) => {
                 color: theme.palette.primary.main,
             }}
         >
-            <label htmlFor="serves-amount">Serves</label>
+            <label htmlFor="serves-amount" css={{ marginBottom: 1 }}>
+                Serves
+            </label>
             <TextField
                 id="serves-amount"
                 type="number"
                 value={amount}
                 sx={{
                     marginLeft: "10px",
-                    width: "70px",
-                    "input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button": {
-                        opacity: 1,
-                    },
-                    color: "secondary",
+                    width: "40px",
+                    color: "primary",
                 }}
                 inputProps={{
-                    maxLength: 3,
-                    defaultValue: 1,
+                    min: "1",
+                    sx: {
+                        textAlign: "center",
+                        padding: 0,
+                        fontSize: "18px",
+                        color: theme.palette.primary.main,
+                    },
                 }}
                 size="small"
-                variant="outlined"
+                variant="standard"
+                onChange={onChange}
+                disabled={disabled}
             />
         </div>
     )
 }
 
 ServesInput.propTypes = {
-    amount: PropTypes.number,
+    amount: PropTypes.string,
+    onChange: PropTypes.func,
+    disabled: PropTypes.bool,
 }
 
 export default ServesInput
