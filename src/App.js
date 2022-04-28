@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import "./App.css"
 import React from "react"
 import { ThemeProvider } from "@mui/material"
@@ -6,8 +5,10 @@ import { Outlet, useNavigate } from "react-router-dom"
 
 import theme from "./theme"
 import Header from "./components/Header"
-import { sectionStyle, mq } from "./sharedStyles"
 import { useAuth } from "./hooks/auth"
+import MainErrorBoundary from "./components/MainErrorBoundary"
+import MainContainer from "./components/MainContainer"
+import AppErrorBoundary from "./components/AppErrorBoundary"
 
 function App() {
     const { user, signout } = useAuth()
@@ -20,26 +21,18 @@ function App() {
     }
 
     return (
-        <ThemeProvider theme={theme}>
-            <div className="App">
-                <Header user={user} onSignout={handleOnSignOut} />
-                <main
-                    css={{
-                        ...sectionStyle,
-                        textAlign: "center",
-                        margin: "0 auto",
-                        padding: "20px",
-                        boxShadow: "5px 10px 0px 3px #8e484a",
-                        marginTop: 20,
-                        [mq[0]]: {
-                            padding: "20px 40px 40px",
-                        },
-                    }}
-                >
-                    <Outlet />
-                </main>
-            </div>
-        </ThemeProvider>
+        <AppErrorBoundary>
+            <ThemeProvider theme={theme}>
+                <div className="App">
+                    <Header user={user} onSignout={handleOnSignOut} />
+                    <MainContainer>
+                        <MainErrorBoundary>
+                            <Outlet />
+                        </MainErrorBoundary>
+                    </MainContainer>
+                </div>
+            </ThemeProvider>
+        </AppErrorBoundary>
     )
 }
 
