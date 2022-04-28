@@ -1,12 +1,14 @@
 /** @jsxImportSource @emotion/react */
+import React from "react"
 import PropTypes from "prop-types"
 import ListItem from "@mui/material/ListItem"
 import Checkbox from "@mui/material/Checkbox"
 import IconButton from "@mui/material/IconButton"
 import DeleteIcon from "@mui/icons-material/Delete"
+
 import ModelIngrediant from "../models/Ingrediant"
 
-function IngrediantItem({ item, onDelete, onItemCheck, allowEdit }) {
+const IngrediantItem = React.forwardRef(({ item, onDelete, onItemCheck, allowEdit }, ref) => {
     const { name, qty, checked } = item
     return (
         <ListItem
@@ -27,6 +29,7 @@ function IngrediantItem({ item, onDelete, onItemCheck, allowEdit }) {
                     },
                 }
             }
+            ref={ref}
         >
             <Checkbox checked={checked} edge="start" onChange={onItemCheck} />
             <span className="ingrediant">
@@ -53,7 +56,7 @@ function IngrediantItem({ item, onDelete, onItemCheck, allowEdit }) {
             )}
         </ListItem>
     )
-}
+})
 
 IngrediantItem.propTypes = {
     item: PropTypes.instanceOf(ModelIngrediant),

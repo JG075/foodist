@@ -1,4 +1,5 @@
 /** @jsxImportSource @emotion/react */
+import { createRef } from "react"
 import PropTypes from "prop-types"
 import List from "@mui/material/List"
 import { Button, TextField } from "@mui/material"
@@ -18,15 +19,17 @@ const IngrediantList = ({
     makeForQty,
     onMakeForChange,
 }) => {
-    const ingrediantItems = list.map((item) => {
+    const ingrediantItems = list.map((item, i) => {
+        const itemRef = createRef(null)
         return (
-            <CSSTransition key={item.id} timeout={500} classNames="ingrediantList-item">
+            <CSSTransition key={item.id} timeout={500} classNames="ingrediantList-item" nodeRef={itemRef}>
                 <IngrediantItem
                     key={item.id}
                     item={item}
                     onDelete={() => onItemDelete(item.id)}
                     onItemCheck={() => onItemCheck(item.id)}
                     allowEdit={allowEdit}
+                    ref={itemRef}
                 />
             </CSSTransition>
         )
