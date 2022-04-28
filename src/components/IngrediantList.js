@@ -2,10 +2,12 @@
 import PropTypes from "prop-types"
 import List from "@mui/material/List"
 import { Button, TextField } from "@mui/material"
+import { CSSTransition, TransitionGroup } from "react-transition-group"
 
 import ModelIngrediant from "../models/Ingrediant"
 import IngrediantItem from "./IngrediantItem"
 import theme from "../theme"
+import { useEffect, useReducer, useRef, useState } from "react"
 
 const IngrediantList = ({
     list,
@@ -17,15 +19,19 @@ const IngrediantList = ({
     makeForQty,
     onMakeForChange,
 }) => {
-    const ingrediantItems = list.map((item) => (
-        <IngrediantItem
-            key={item.id}
-            item={item}
-            onDelete={() => onItemDelete(item.id)}
-            onItemCheck={() => onItemCheck(item.id)}
-            allowEdit={allowEdit}
-        />
-    ))
+    const ingrediantItems = list.map((item) => {
+        return (
+            <CSSTransition key={item.id} timeout={500} classNames="ingrediantList-item">
+                <IngrediantItem
+                    key={item.id}
+                    item={item}
+                    onDelete={() => onItemDelete(item.id)}
+                    onItemCheck={() => onItemCheck(item.id)}
+                    allowEdit={allowEdit}
+                />
+            </CSSTransition>
+        )
+    })
 
     const checkButtonStyle = {
         textTransform: "none",
@@ -88,9 +94,11 @@ const IngrediantList = ({
                     Uncheck all
                 </Button>
             </div>
-            <List dense sx={{ width: "100%", bgcolor: "background.paper" }}>
-                {ingrediantItems}
-            </List>
+            <div css={{ overflow: "hidden" }}>
+                <List dense sx={{ width: "100%", bgcolor: "background.paper", position: "relative" }}>
+                    <TransitionGroup component={null}>{ingrediantItems}</TransitionGroup>
+                </List>
+            </div>
         </div>
     )
 }

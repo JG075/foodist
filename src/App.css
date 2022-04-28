@@ -1,0 +1,38 @@
+.ingrediantList-item-enter {
+    opacity: 0;
+    margin: -66px 0 10px 0 !important;
+}
+
+.ingrediantList-item-enter-active {
+    opacity: 1;
+    margin: 0 0 10px 0 !important;
+    transition: all 400ms ease-in-out;
+    transition-property: margin opacity;
+}
+
+@keyframes animateOut {
+    from {
+        opacity: 1;
+        height: 56px;
+    }
+
+    20% {
+        opacity: 0;
+        height: 56px;
+        margin-bottom: 10px;
+    }
+
+    to {
+        opacity: 0;
+        height: 0;
+        margin-bottom: -13px;
+    }
+}
+
+.ingrediantList-item-exit-active {
+    animation-duration: 500ms;
+    animation-name: animateOut;
+    animation-delay: 0s;
+    animation-timing-function: ease-out;
+    animation-fill-mode: forwards;
+}

@@ -64,7 +64,9 @@ const List = ({ ingrediantList, onChange, allowEdit, onMakeForChange, makeForQty
         onChange(newList)
     }
 
-    const handleMakeForChange = (e) => onMakeForChange(Number(e.target.value))
+    const handleMakeForChange = (e) => {
+        onMakeForChange(Number(e.target.value))
+    }
 
     if (ingrediantList.ingrediants.length === 0) {
         return <EmptyIngrediantsMsg />

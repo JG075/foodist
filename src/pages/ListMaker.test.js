@@ -258,7 +258,7 @@ describe("As users with edit privileges", () => {
 
         await user.click(screen.getAllByRole("button", { name: "delete" })[0])
 
-        expect(getListItems()).toHaveLength(2)
+        await waitFor(() => expect(getListItems()).toHaveLength(2))
         expect(getListItems()[0]).toHaveTextContent("Limes")
         expect(getListItems()[0]).toHaveTextContent("2")
     })
