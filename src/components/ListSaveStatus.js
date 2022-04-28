@@ -82,7 +82,7 @@ const ListSaveStatus = ({ saveState }) => {
                     borderStyle: "solid",
                     borderColor: hasError ? theme.palette.error.main : "#658f65",
                     borderRadius: "4px",
-                    fontSize: "14px",
+                    fontSize: "0.875rem",
                 }}
             >
                 <div>{hasError ? "Error saving" : displayText}</div>

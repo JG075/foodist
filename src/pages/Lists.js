@@ -67,7 +67,7 @@ const ListItems = ({ lists, emptyMsg, isFetching }) => {
         <>
             {isFetching && <CircularProgress />}
             {lists?.length === 0 && (
-                <div css={{ marginTop: 20, fontSize: 18, color: theme.palette.primary.main }}>{emptyMsg}</div>
+                <div css={{ marginTop: 20, fontSize: "1.125rem", color: theme.palette.primary.main }}>{emptyMsg}</div>
             )}
             {lists}
         </>

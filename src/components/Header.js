@@ -23,7 +23,7 @@ const Header = ({ user, onSignout }) => {
             <span
                 css={{
                     margin: 0,
-                    fontSize: 26,
+                    fontSize: "1.625rem",
                     padding: "0px 20px 0 0",
                     fontWeight: "bold",
                 }}
@@ -34,7 +34,7 @@ const Header = ({ user, onSignout }) => {
             </span>
             <nav
                 css={{
-                    fontSize: 18,
+                    fontSize: "1.125rem",
                     fontWeight: 500,
                     a: {
                         color: "black",

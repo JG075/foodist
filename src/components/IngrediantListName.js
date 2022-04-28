@@ -18,7 +18,7 @@ const IngrediantListName = ({ sx, value, onChange, disabled }) => {
                 sx: {
                     color: theme.palette.primary.dark,
                     textFillColor: theme.palette.primary.dark,
-                    fontSize: "26px",
+                    fontSize: "1.625rem",
                     textAlign: "center",
                     fontWeight: "500",
                     paddingBottom: "8px",

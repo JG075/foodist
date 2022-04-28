@@ -23,7 +23,7 @@ const EmptyIngrediantsMsg = () => {
                     </g>
                 </g>
             </svg>
-            <div css={{ fontSize: 20, marginTop: -10, marginBottom: 15 }}>No ingrediants added yet.</div>
+            <div css={{ fontSize: "1.25rem", marginTop: -10, marginBottom: 15 }}>No ingrediants added yet.</div>
         </div>
     )
 }

@@ -12,7 +12,7 @@ const ServesInput = ({ amount, onChange, disabled }) => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: "18px",
+                fontSize: "1.125rem",
                 color: theme.palette.primary.main,
             }}
         >
@@ -33,7 +33,7 @@ const ServesInput = ({ amount, onChange, disabled }) => {
                     sx: {
                         textAlign: "center",
                         padding: 0,
-                        fontSize: "18px",
+                        fontSize: "1.125rem",
                         color: theme.palette.primary.main,
                     },
                 }}
