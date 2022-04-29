@@ -2,7 +2,7 @@
 import { useNavigate, useParams } from "react-router-dom"
 import LoadingButton from "@mui/lab/LoadingButton"
 import { produce } from "immer"
-import { useEffect, useRef } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import debounce from "lodash/debounce"
 
 import IngrediantAdder from "../components/IngrediantAdder"
@@ -68,23 +68,25 @@ const List = ({ ingrediantList, onChange, allowEdit, onMakeForChange, makeForQty
         onMakeForChange(Number(e.target.value))
     }
 
+    const visibleIngrediantList = useMemo(
+        () =>
+            produce(ingrediantList, (draft) => {
+                if (!makeForQty || ingrediantList.serves === makeForQty) {
+                    return draft
+                }
+                draft.ingrediants.forEach((i) => {
+                    const newAmount = (i.qty.scalar / ingrediantList.serves) * makeForQty
+                    const newQty = Qty(i.qty)
+                    newQty.scalar = newAmount
+                    i.qty = newQty
+                })
+            }),
+        [ingrediantList, makeForQty]
+    )
+
     if (ingrediantList.ingrediants.length === 0) {
         return <EmptyIngrediantsMsg />
     }
-
-    const makeForQtyValue = makeForQty || ingrediantList.serves
-
-    const visibleIngrediantList = produce(ingrediantList, (draft) => {
-        if (ingrediantList.serves === makeForQty) {
-            return draft
-        }
-        draft.ingrediants.forEach((i) => {
-            const newAmount = (i.qty.scalar / ingrediantList.serves) * makeForQtyValue
-            const newQty = Qty(i.qty)
-            newQty.scalar = newAmount
-            i.qty = newQty
-        })
-    })
 
     return (
         <IngrediantList
@@ -94,7 +96,7 @@ const List = ({ ingrediantList, onChange, allowEdit, onMakeForChange, makeForQty
             allowEdit={allowEdit}
             onCheckAll={handleCheckAll}
             onUncheckAll={handleUncheckAll}
-            makeForQty={makeForQtyValue}
+            makeForQty={makeForQty || ingrediantList.serves}
             onMakeForChange={handleMakeForChange}
         />
     )
