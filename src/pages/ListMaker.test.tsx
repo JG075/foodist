@@ -37,7 +37,7 @@ jest.mock("react-router-dom", () => {
 })
 
 const adderPlaceholderText = "Enter an ingrediant and quantity e.g. 2 lemons, mozzarella 50g"
-const listNamePlaceHolderText = "Give your list a name"
+const listNamePlaceHolderText = "Give your recipe a name"
 
 const addItemToList = (user: UserEvent) => {
     return async (...args: string[]) => {
@@ -119,8 +119,8 @@ const setupRestrictedUser = async () => {
     const mockUser = new User({ username: mockIngrediantListAuthor, email: "johnsemail@somehting.com" })
     useAuthMock.mockReturnValue(createUseAuthMockReturnValue(mockUser))
     const { user } = setupWithMemoryRouter(<ListMaker />, {
-        routerPath: `/users/Bob/lists/${mockIngrediantList.id}`,
-        routePath: "/users/:username/lists/:id",
+        routerPath: `/users/Bob/recipes/${mockIngrediantList.id}`,
+        routePath: "/users/:username/recipes/:id",
     })
     await screen.findByPlaceholderText(adderPlaceholderText)
     return { user }
@@ -316,8 +316,8 @@ describe("As users that get the list from the API", () => {
     test.each(testCases)("As: %s: The api is called with the id of the list", async (label, setupFn) => {
         const listId = "sfd0iw02"
         setupWithMemoryRouter(<ListMaker />, {
-            routerPath: `/users/John/lists/${listId}`,
-            routePath: "/users/:username/lists/:id",
+            routerPath: `/users/John/recipes/${listId}`,
+            routePath: "/users/:username/recipes/:id",
         })
         expect(apiIngrediantList.getSingle).toBeCalledWith({ id: listId })
         await waitForElementToBeRemoved(screen.queryByRole("progressbar"))
@@ -455,8 +455,8 @@ describe("As a signed in user, viewing my own list", () => {
 
     test("I see edit functions", async () => {
         setupWithMemoryRouter(<ListMaker />, {
-            routerPath: `/users/Bob/lists/${mockIngrediantList!.id}`,
-            routePath: "/users/:username/lists/:id",
+            routerPath: `/users/Bob/recipes/${mockIngrediantList!.id}`,
+            routePath: "/users/:username/recipes/:id",
         })
         expect(await screen.findByPlaceholderText(adderPlaceholderText)).toBeEnabled()
         expect(screen.getByPlaceholderText(adderPlaceholderText)).toBeInTheDocument()
@@ -466,8 +466,8 @@ describe("As a signed in user, viewing my own list", () => {
     test("If I change the name the API is called with the updated list", async () => {
         mockIngrediantList!.name = ""
         const { user } = setupWithMemoryRouter(<ListMaker />, {
-            routerPath: `/users/Bob/lists/${mockIngrediantList!.id}`,
-            routePath: "/users/:username/lists/:id",
+            routerPath: `/users/Bob/recipes/${mockIngrediantList!.id}`,
+            routePath: "/users/:username/recipes/:id",
         })
         const newName = "New list name"
         await user.type(await screen.findByPlaceholderText(listNamePlaceHolderText), newName)
@@ -480,8 +480,8 @@ describe("As a signed in user, viewing my own list", () => {
 
     test("If I add an item the API is called with the updated list", async () => {
         const { user } = setupWithMemoryRouter(<ListMaker />, {
-            routerPath: `/users/Bob/lists/${mockIngrediantList!.id}`,
-            routePath: "/users/:username/lists/:id",
+            routerPath: `/users/Bob/recipes/${mockIngrediantList!.id}`,
+            routePath: "/users/:username/recipes/:id",
         })
         await addItemToList(user)("2 pears")
         expect(await screen.findByText("Saving", { exact: false })).toBeInTheDocument()
@@ -495,8 +495,8 @@ describe("As a signed in user, viewing my own list", () => {
 
     test("If I delete an item the API is called with the updated list", async () => {
         const { user } = setupWithMemoryRouter(<ListMaker />, {
-            routerPath: `/users/Bob/lists/${mockIngrediantList!.id}`,
-            routePath: "/users/:username/lists/:id",
+            routerPath: `/users/Bob/recipes/${mockIngrediantList!.id}`,
+            routePath: "/users/:username/recipes/:id",
         })
         const deleteButtons = await screen.findAllByRole("button", { name: "delete" })
         await user.click(deleteButtons[0])
@@ -511,8 +511,8 @@ describe("As a signed in user, viewing my own list", () => {
 
     test("If I check an item the API is called with the updated list", async () => {
         const { user } = setupWithMemoryRouter(<ListMaker />, {
-            routerPath: `/users/Bob/lists/${mockIngrediantList!.id}`,
-            routePath: "/users/:username/lists/:id",
+            routerPath: `/users/Bob/recipes/${mockIngrediantList!.id}`,
+            routePath: "/users/:username/recipes/:id",
         })
         const checkBoxes = await screen.findAllByRole("checkbox")
         await user.click(checkBoxes[0])
@@ -527,8 +527,8 @@ describe("As a signed in user, viewing my own list", () => {
     test("If there is an error saving the list, I should see an error message", async () => {
         apiIngrediantList.patch.mockRejectedValue({ response: { status: 500 } })
         const { user } = setupWithMemoryRouter(<ListMaker />, {
-            routerPath: `/users/Bob/lists/${mockIngrediantList!.id}`,
-            routePath: "/users/:username/lists/:id",
+            routerPath: `/users/Bob/recipes/${mockIngrediantList!.id}`,
+            routePath: "/users/:username/recipes/:id",
         })
         const checkBoxes = await screen.findAllByRole("checkbox")
         await user.click(checkBoxes[0])
@@ -537,8 +537,8 @@ describe("As a signed in user, viewing my own list", () => {
 
     test("If I click the delete button, the API is called to delete the list, then I am redirected", async () => {
         const { user } = setupWithMemoryRouter(<ListMaker />, {
-            routerPath: `/users/Bob/lists/${mockIngrediantList!.id}`,
-            routePath: "/users/:username/lists/:id",
+            routerPath: `/users/Bob/recipes/${mockIngrediantList!.id}`,
+            routePath: "/users/:username/recipes/:id",
         })
         const deleteListButton = await screen.findByLabelText("delete list")
 
@@ -556,8 +556,8 @@ describe("As a signed in user, viewing my own list", () => {
 
     test("If there is an error deleting the list, I see an error message", async () => {
         const { user } = setupWithMemoryRouter(<ListMaker />, {
-            routerPath: `/users/Bob/lists/${mockIngrediantList!.id}`,
-            routePath: "/users/:username/lists/:id",
+            routerPath: `/users/Bob/recipes/${mockIngrediantList!.id}`,
+            routePath: "/users/:username/recipes/:id",
         })
         apiIngrediantList.remove.mockRejectedValue({ response: { status: 500 } })
         const deleteListButton = await screen.findByLabelText("delete list")
@@ -575,8 +575,8 @@ describe("As a signed in user, viewing my own list", () => {
 
     test("If I click 'Check all' it checks all the items and  the API is called", async () => {
         const { user } = setupWithMemoryRouter(<ListMaker />, {
-            routerPath: `/users/Bob/lists/${mockIngrediantList!.id}`,
-            routePath: "/users/:username/lists/:id",
+            routerPath: `/users/Bob/recipes/${mockIngrediantList!.id}`,
+            routePath: "/users/:username/recipes/:id",
         })
         await user.click(await screen.findByRole("button", { name: /^check all/i }))
         await waitFor(() => expect(apiIngrediantList.patch).toBeCalled())
@@ -590,8 +590,8 @@ describe("As a signed in user, viewing my own list", () => {
     test("If I click 'Uncheck all' it checks all the items and  the API is called", async () => {
         mockIngrediantList!.ingrediants.forEach((i) => (i.checked = true))
         const { user } = setupWithMemoryRouter(<ListMaker />, {
-            routerPath: `/users/Bob/lists/${mockIngrediantList!.id}`,
-            routePath: "/users/:username/lists/:id",
+            routerPath: `/users/Bob/recipes/${mockIngrediantList!.id}`,
+            routePath: "/users/:username/recipes/:id",
         })
         await user.click(await screen.findByRole("button", { name: /uncheck all/i }))
         await waitFor(() => expect(apiIngrediantList.patch).toBeCalled())
@@ -605,8 +605,8 @@ describe("As a signed in user, viewing my own list", () => {
     test("If I change the Serves amount the API is called", async () => {
         mockIngrediantList!.ingrediants.forEach((i) => (i.checked = true))
         const { user } = setupWithMemoryRouter(<ListMaker />, {
-            routerPath: `/users/Bob/lists/${mockIngrediantList!.id}`,
-            routePath: "/users/:username/lists/:id",
+            routerPath: `/users/Bob/recipes/${mockIngrediantList!.id}`,
+            routePath: "/users/:username/recipes/:id",
         })
         const servesAmount = "12"
         await user.clear(await screen.findByRole("spinbutton", { name: /serves/i }))

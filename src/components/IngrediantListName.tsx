@@ -16,7 +16,7 @@ const IngrediantListName = ({ sx, value, onChange, disabled }: IngrediantListNam
         <TextField
             autoComplete="off"
             variant="standard"
-            placeholder="Give your list a name"
+            placeholder="Give your recipe a name"
             size="medium"
             value={value}
             onChange={onChange}

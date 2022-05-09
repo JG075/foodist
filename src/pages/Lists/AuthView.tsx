@@ -28,7 +28,7 @@ const AuthView = ({ user, lists, pageState }: AuthViewProps) => {
         const newIngrediantList = new IngrediantList({ authorId: user.username })
         try {
             const res = await apiIngrediantList.post(newIngrediantList)
-            navigate(`/users/${user.username}/lists/${res.id}`)
+            navigate(`/users/${user.username}/recipes/${res.id}`)
         } catch (error) {
             setNewListError("Sorry something went wrong.")
         }
@@ -43,7 +43,7 @@ const AuthView = ({ user, lists, pageState }: AuthViewProps) => {
                 alignItems: "center",
             }}
         >
-            <Title>My Lists</Title>
+            <Title>My Recipes</Title>
             <LoadingButton
                 css={{ marginBottom: 10 }}
                 color="secondary"
@@ -52,7 +52,7 @@ const AuthView = ({ user, lists, pageState }: AuthViewProps) => {
                 onClick={handleOnClick}
                 loading={isCreatingList}
             >
-                Create List
+                Create Recipe
             </LoadingButton>
             {newListError && <ErrorMsg css={{ marginBottom: 10 }}>{newListError}</ErrorMsg>}
             <PageState pageState={pageState}>

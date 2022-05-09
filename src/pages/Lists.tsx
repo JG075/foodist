@@ -44,10 +44,11 @@ const Lists = ({ user }: ListsProps) => {
     let renderedListItems: ReactNode | null = null
     if (lists) {
         const items = lists.map((l) => {
-            const to = `/users/${username}/lists/${l.id}`
+            const to = `/users/${username}/recipes/${l.id}`
             return <IngrediantListsItem key={l.id} name={l.displayName} to={to} />
         })
-        renderedListItems = items.length > 0 ? <ul css={{ padding: 0, width: "100%" }}>{items}</ul> : null
+        renderedListItems =
+            items.length > 0 ? <ul css={{ padding: 0, width: "100%", marginBottom: 0 }}>{items}</ul> : null
     }
 
     if (user) {

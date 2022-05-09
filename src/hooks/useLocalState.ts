@@ -4,7 +4,7 @@ import { useImmer } from "use-immer"
 const useLocalState = (defaultValue: any, key: string, model?: any) => {
     const [value, setValue] = useImmer(() => {
         const localValue = window.localStorage.getItem(key)
-        if (localValue === null) {
+        if (typeof localValue !== "string" || localValue === "null") {
             return defaultValue
         }
         const parsedValue = JSON.parse(localValue)

@@ -10,13 +10,7 @@ export interface ListItemsProps {
 
 const ListItems = ({ lists, emptyMsg }: ListItemsProps) => {
     return (
-        <>
-            {lists ? (
-                lists
-            ) : (
-                <div css={{ marginTop: 20, fontSize: "1.125rem", color: theme.palette.primary.main }}>{emptyMsg}</div>
-            )}
-        </>
+        <>{lists ? lists : <div css={{ fontSize: "1.125rem", color: theme.palette.primary.main }}>{emptyMsg}</div>}</>
     )
 }
 

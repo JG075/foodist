@@ -30,7 +30,7 @@ class AppErrorBoundary extends React.Component<AppErrorBoundaryProps, AppErrorBo
         if (this.state.hasError) {
             return (
                 <MainContainer>
-                    <ErrorMsg css={{ marginTop: "20px" }}>Sorry, something went wrong.</ErrorMsg>
+                    <ErrorMsg>Sorry, something went wrong.</ErrorMsg>
                 </MainContainer>
             )
         }

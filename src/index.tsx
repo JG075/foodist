@@ -80,8 +80,8 @@ const Index = () => {
                                 }
                             />
                             <Route path="/users/:username">
-                                <Route path="/users/:username/lists" element={<Lists />} />
-                                <Route path="/users/:username/lists/:id" element={<ListMaker />} />
+                                <Route path="/users/:username/recipes" element={<Lists />} />
+                                <Route path="/users/:username/recipes/:id" element={<ListMaker />} />
                             </Route>
                         </Route>
                     </Routes>

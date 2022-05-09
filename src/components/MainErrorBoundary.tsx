@@ -27,7 +27,7 @@ class MainErrorBoundary extends React.Component<MainErrorBoundaryProps, MainErro
 
     render() {
         if (this.state.hasError) {
-            return <ErrorMsg css={{ marginTop: "20px" }}>Sorry, something went wrong.</ErrorMsg>
+            return <ErrorMsg>Sorry, something went wrong.</ErrorMsg>
         }
         return this.props.children
     }

@@ -48,7 +48,7 @@ const listsMock = [
     }),
 ]
 
-const getCreateListButton = (finderFn = screen.getByRole) => finderFn("button", { name: /create list/i })
+const getRecipeListButton = (finderFn = screen.getByRole) => finderFn("button", { name: /create recipe/i })
 
 const testUser = new User({ username: "bob", email: "bob@test.com" })
 const sharedTestCases = [[<Lists />], [<Lists user={testUser} />]]
@@ -87,8 +87,8 @@ describe("As a user viewing another user's list", () => {
         const username = "John"
         apiIngrediantList.getAll.mockImplementation(jest.fn())
         setupWithMemoryRouter(<Lists />, {
-            routerPath: `/users/${username}/lists`,
-            routePath: "/users/:username/lists",
+            routerPath: `/users/${username}/recipes`,
+            routePath: "/users/:username/recipes",
         })
         await waitFor(() => expect(apiIngrediantList.getAll.mock.calls[0][0]).toMatchObject({ authorId: username }))
         expect(apiIngrediantList.getAll).toBeCalledTimes(1)
@@ -97,7 +97,7 @@ describe("As a user viewing another user's list", () => {
     test("I see the title with the creator's username", async () => {
         // Prevent calling the API as we just want to test if the title is there
         apiIngrediantList.getAll.mockImplementation(() => "")
-        setupWithMemoryRouter(<Lists />, { routerPath: "/users/John/lists", routePath: "/users/:username/lists" })
+        setupWithMemoryRouter(<Lists />, { routerPath: "/users/John/recipes", routePath: "/users/:username/recipes" })
         expect(await screen.findByText("John's Lists")).toBeInTheDocument()
     })
 
@@ -128,19 +128,19 @@ describe("As a user viewing another user's list", () => {
         expect(await screen.findByText("Unnamed list")).toBeInTheDocument()
     })
 
-    test("The 'Create list' button is not shown", async () => {
+    test("The 'Create Recipe' button is not shown", async () => {
         setup(<Lists />)
-        await waitFor(() => expect(getCreateListButton(screen.queryByRole)).not.toBeInTheDocument())
+        await waitFor(() => expect(getRecipeListButton(screen.queryByRole)).not.toBeInTheDocument())
     })
 
     test("I see each ingrediant list from the list returned by the API", async () => {
         apiIngrediantList.getAll.mockResolvedValue(listsMock)
-        setupWithMemoryRouter(<Lists />, { routerPath: "/users/John/lists", routePath: "/users/:username/lists" })
+        setupWithMemoryRouter(<Lists />, { routerPath: "/users/John/recipes", routePath: "/users/:username/recipes" })
         const listItems = await screen.findAllByRole("listitem")
         listsMock.forEach(async (item, index) => {
             const listItem = listItems[index]
             expect(listItem).toHaveTextContent(item.name)
-            expect(screen.getAllByRole("link")[index]).toHaveAttribute("href", `/users/John/lists/${item.id}`)
+            expect(screen.getAllByRole("link")[index]).toHaveAttribute("href", `/users/John/recipes/${item.id}`)
         })
     })
 })
@@ -155,11 +155,11 @@ describe("As a logged in user viewing the home page (useAuthUser is enabled)", (
         expect(apiIngrediantList.getAll).toBeCalledTimes(1)
     })
 
-    test("The title becomes 'My Lists'", async () => {
+    test("The title becomes 'My Recipes'", async () => {
         // Prevent calling the API as we just want to test if the title is there
         apiIngrediantList.getAll.mockImplementation(() => "")
         setup(<Lists user={testUser} />)
-        expect(await screen.findByText("My Lists")).toBeInTheDocument()
+        expect(await screen.findByText("My Recipes")).toBeInTheDocument()
     })
 
     test("If I am logged in and I have no lists, I see some text that states this", async () => {
@@ -173,14 +173,14 @@ describe("As a logged in user viewing the home page (useAuthUser is enabled)", (
     test("If I click the 'Create List' button, I should see a loading icon", async () => {
         apiIngrediantList.getAll.mockResolvedValue([])
         const { user } = setup(<Lists user={testUser} />)
-        await user.click(getCreateListButton())
-        expect(await within(getCreateListButton()).findByRole("progressbar")).toBeInTheDocument()
+        await user.click(getRecipeListButton())
+        expect(await within(getRecipeListButton()).findByRole("progressbar")).toBeInTheDocument()
     })
 
     test("If I click the 'Create List' button, the API to create a list should be called", async () => {
         apiIngrediantList.getAll.mockResolvedValue([])
         const { user } = setup(<Lists user={testUser} />)
-        await user.click(getCreateListButton())
+        await user.click(getRecipeListButton())
         expect(apiIngrediantList.post).toBeCalledTimes(1)
         const emptyList = new ModelIngrediantList({ authorId: testUser.username })
         expect(apiIngrediantList.post.mock.calls[0][0]).toMatchObject(emptyList.serialize())
@@ -191,10 +191,10 @@ describe("As a logged in user viewing the home page (useAuthUser is enabled)", (
         apiIngrediantList.getAll.mockResolvedValue([])
         apiIngrediantList.post.mockRejectedValue({ response: { status: 500 } })
         const { user } = setup(<Lists user={testUser} />)
-        await user.click(getCreateListButton())
+        await user.click(getRecipeListButton())
         const errMsg = "Sorry something went wrong."
         expect(await screen.findByText(errMsg)).toBeInTheDocument()
-        expect(within(getCreateListButton()).queryByRole("progressbar")).not.toBeInTheDocument()
+        expect(within(getRecipeListButton()).queryByRole("progressbar")).not.toBeInTheDocument()
     })
 
     test("If I click the 'Create List' button, and the response is successful, I should be taken to the list page", async () => {
@@ -202,8 +202,8 @@ describe("As a logged in user viewing the home page (useAuthUser is enabled)", (
         apiIngrediantList.getAll.mockResolvedValue([])
         apiIngrediantList.post.mockResolvedValue({ id: listId })
         const { user } = setup(<Lists user={testUser} />)
-        await user.click(getCreateListButton())
-        await waitFor(() => expect(window.location.pathname).toEqual(`/users/${testUser.username}/lists/${listId}`))
+        await user.click(getRecipeListButton())
+        await waitFor(() => expect(window.location.pathname).toEqual(`/users/${testUser.username}/recipes/${listId}`))
     })
 
     test("I see each ingrediant list from the list returned by the API", async () => {
@@ -215,7 +215,7 @@ describe("As a logged in user viewing the home page (useAuthUser is enabled)", (
             expect(listItem).toHaveTextContent(item.name)
             expect(screen.getAllByRole("link")[index]).toHaveAttribute(
                 "href",
-                `/users/${testUser.username}/lists/${item.id}`
+                `/users/${testUser.username}/recipes/${item.id}`
             )
         })
     })

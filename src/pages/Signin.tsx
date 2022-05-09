@@ -119,7 +119,7 @@ const Signin = () => {
             >
                 Sign in
             </LoadingButton>
-            {formError && <ErrorMsg css={{ textAlign: "center", marginTop: 20 }}>{formError}</ErrorMsg>}
+            {formError && <ErrorMsg css={{ textAlign: "center" }}>{formError}</ErrorMsg>}
         </form>
     )
 }

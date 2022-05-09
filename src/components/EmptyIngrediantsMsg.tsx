@@ -1,5 +1,7 @@
 /** @jsxImportSource @emotion/react */
 
+import theme from "../theme"
+
 const EmptyIngrediantsMsg = () => {
     return (
         <div css={{ opacity: 0.6, marginTop: -10 }}>
@@ -23,7 +25,9 @@ const EmptyIngrediantsMsg = () => {
                     </g>
                 </g>
             </svg>
-            <div css={{ fontSize: "1.25rem", marginTop: -10, marginBottom: 15 }}>No ingrediants added yet.</div>
+            <div css={{ fontSize: "1.25rem", marginTop: -10, marginBottom: 15, color: theme.palette.primary.main }}>
+                No ingrediants added yet.
+            </div>
         </div>
     )
 }
