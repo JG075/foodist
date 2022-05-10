@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom"
 import { useImmer } from "use-immer"
 import debounce from "lodash/debounce"
 
-import PageState, { PageStates } from "../../components/PageState"
 import IngrediantList from "../../models/IngrediantList"
 import ListSaveStatus, { ListSaveStates } from "../../components/ListSaveStatus"
 import apiIngrediantList from "../../api/IngrediantList"
@@ -16,12 +15,11 @@ import Adder from "./Components/Adder"
 import List from "./Components/List"
 
 interface ApiOwnerViewProps {
-    pageState: PageStates
-    ingrediantList: IngrediantList | null
+    ingrediantList: IngrediantList
     onChange: (ingrediantList: IngrediantList) => void
 }
 
-const ApiOwnerView = ({ pageState, ingrediantList, onChange }: ApiOwnerViewProps) => {
+const ApiOwnerView = ({ ingrediantList, onChange }: ApiOwnerViewProps) => {
     const [saveState, setSaveState] = useImmer(ListSaveStates.SAVED)
     const [isDeleting, setIsDeleting] = useImmer(false)
     const [showConfirmModal, setShowConfirmModal] = useImmer(false)
@@ -76,7 +74,7 @@ const ApiOwnerView = ({ pageState, ingrediantList, onChange }: ApiOwnerViewProps
     }
 
     return (
-        <PageState pageState={pageState}>
+        <>
             <div
                 css={{
                     display: "flex",
@@ -94,17 +92,17 @@ const ApiOwnerView = ({ pageState, ingrediantList, onChange }: ApiOwnerViewProps
                     errorMsg={deleteErrMsg}
                 />
             </div>
-            <Name ingrediantList={ingrediantList as IngrediantList} onChange={handleOnChange} allowEdit />
-            <Serves ingrediantList={ingrediantList as IngrediantList} onChange={handleServesChange} allowEdit />
-            <Adder ingrediantList={ingrediantList as IngrediantList} onChange={handleOnChange} />
+            <Name ingrediantList={ingrediantList} onChange={handleOnChange} allowEdit />
+            <Serves ingrediantList={ingrediantList} onChange={handleServesChange} allowEdit />
+            <Adder ingrediantList={ingrediantList} onChange={handleOnChange} />
             <List
-                ingrediantList={ingrediantList as IngrediantList}
+                ingrediantList={ingrediantList}
                 onChange={handleOnChange}
                 onMakeForChange={handleMakeForChange}
                 makeForQty={makeForQty}
                 allowEdit
             />
-        </PageState>
+        </>
     )
 }
 

@@ -13,7 +13,7 @@ export interface AuthContextInterface {
 const authContext = createContext<AuthContextInterface | null>(null)
 
 export const useProvideAuth = () => {
-    const [user, setUser] = useLocalState(null, "user")
+    const [user, setUser] = useLocalState<User | null>(null, "user")
 
     const signin = async (data: SignInModel) => {
         const user = await apiAuth.signin(data)

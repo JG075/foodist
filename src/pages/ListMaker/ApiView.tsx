@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom"
 import { useImmer } from "use-immer"
 
 import apiIngrediantList from "../../api/IngrediantList"
-import { PageStates } from "../../components/PageState"
+import PageState, { PageStates } from "../../components/PageState"
 import { useAuth } from "../../hooks/auth"
 import IngrediantList from "../../models/IngrediantList"
 import ApiNonOwnerView from "./ApiNonOwnerView"
@@ -40,10 +40,13 @@ const ApiView = () => {
         isOwner = ingrediantList.belongsTo(user.username)
     }
 
+    let component = null
     if (isOwner) {
-        return <ApiOwnerView pageState={pageState} ingrediantList={ingrediantList} onChange={handleOnChange} />
+        component = <ApiOwnerView ingrediantList={ingrediantList as IngrediantList} onChange={handleOnChange} />
+    } else {
+        component = <ApiNonOwnerView ingrediantList={ingrediantList as IngrediantList} />
     }
-    return <ApiNonOwnerView pageState={pageState} ingrediantList={ingrediantList} onChange={handleOnChange} />
+    return <PageState pageState={pageState}>{component}</PageState>
 }
 
 export default ApiView

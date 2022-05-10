@@ -6,13 +6,15 @@ import setup from "../testHelpers"
 const TestComponent = ({
     defaultValue,
     localStorageKey,
+    model,
     valueToSet,
 }: {
     defaultValue: any
     localStorageKey: string
+    model?: any
     valueToSet?: any
 }) => {
-    const [value, setValue] = useLocalState(defaultValue, localStorageKey)
+    const [value, setValue] = useLocalState(defaultValue, localStorageKey, model)
 
     const handleOnClick = () => setValue(valueToSet)
 
@@ -39,7 +41,9 @@ test("If the default value provided has a static deserialize method on its paren
         static deserialize = mockDeserialize
     }
     const defaultValue = new Test()
-    setup(<TestComponent defaultValue={defaultValue} localStorageKey={key} />, { localStorage: { [key]: value } })
+    setup(<TestComponent defaultValue={defaultValue} localStorageKey={key} model={Test} />, {
+        localStorage: { [key]: value },
+    })
     expect(mockDeserialize.mock.calls[0][0]).toMatchObject(JSON.parse(value))
     expect(await screen.findByText(deserializedValue)).toBeInTheDocument()
 })

@@ -442,6 +442,60 @@ describe("As a user, viewing a another user's list", () => {
         expect(getServesInput()).toBeDisabled()
         await waitFor(() => expect(screen.queryByRole("progressbar")).not.toBeInTheDocument())
     })
+
+    test("If the recipe from the API has ingrediants checked, I see them unchecked", async () => {
+        mockIngrediantList!.ingrediants.forEach((i) => (i.checked = true))
+        apiIngrediantList.getSingle.mockResolvedValue(mockIngrediantList)
+        setup(<ListMaker />)
+        const listItems = await screen.findAllByRole("listitem")
+        listItems.forEach((item) => {
+            expect(within(item).getByRole("checkbox")).not.toBeChecked()
+        })
+    })
+
+    test("If I check an ingrediant and then reload the page, I see the item is checked", async () => {
+        mockIngrediantList!.ingrediants.forEach((i) => (i.checked = false))
+        apiIngrediantList.getSingle.mockResolvedValue(mockIngrediantList)
+        const { user, localStorage, unmount } = setup(<ListMaker />)
+        const checkBoxes = await screen.findAllByRole("checkbox")
+        await user.click(checkBoxes[0])
+        unmount()
+        setup(<ListMaker />, { localStorage })
+        const newCheckBoxes = await screen.findAllByRole("checkbox")
+        expect(newCheckBoxes[newCheckBoxes.length - 1]).toBeChecked()
+    })
+
+    test("If the list from the API has changed, after having previously loaded the list, my changes are merged", async () => {
+        mockIngrediantList!.ingrediants.forEach((i) => (i.checked = false))
+        apiIngrediantList.getSingle.mockResolvedValue(mockIngrediantList)
+        const { user, localStorage, unmount } = setup(<ListMaker />)
+        const listItems = await screen.findAllByRole("listitem")
+        const firstListItem = listItems[0]
+        await user.click(within(firstListItem).getByRole("checkbox"))
+        expect(getListNameInput()).toHaveValue(mockIngrediantList!.name)
+        unmount()
+        const newMockedIngrediantList = Object.assign(
+            Object.create(Object.getPrototypeOf(mockIngrediantList)),
+            mockIngrediantList
+        )
+        newMockedIngrediantList.name = "My new name"
+        const newItem = new Ingrediant({
+            id: "123",
+            name: "pudding",
+            qty: new Qty("20g"),
+            checked: false,
+        })
+        const removedItem = newMockedIngrediantList.ingrediants.pop()
+        newMockedIngrediantList.ingrediants = [newItem, ...newMockedIngrediantList.ingrediants]
+        apiIngrediantList.getSingle.mockResolvedValue(newMockedIngrediantList)
+        setup(<ListMaker />, { localStorage })
+        const newListItems = await screen.findAllByRole("listitem")
+        expect(getListNameInput()).toHaveValue(newMockedIngrediantList.name)
+        expect(newListItems[0]).toHaveTextContent(newItem.name)
+        expect(newListItems[2].textContent).toEqual(firstListItem.textContent)
+        expect(within(newListItems[2]).getByRole("checkbox")).toBeChecked()
+        expect(screen.queryByText(removedItem.name)).not.toBeInTheDocument()
+    })
 })
 
 describe("As a signed in user, viewing my own list", () => {

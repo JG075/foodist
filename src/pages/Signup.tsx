@@ -63,7 +63,7 @@ const Signup = () => {
     const [submitting, setSubmitting] = useImmer(false)
     const [formError, setFormError] = useImmer("")
     const navigate = useNavigate()
-    const [ingrediantList] = useLocalState(null, "ingrediant-list", IngrediantList)
+    const [ingrediantList] = useLocalState<IngrediantList | null>(null, "ingrediant-list", IngrediantList)
     const { signup } = useAuth()
 
     const onSubmit = async (data: typeof defaultValues) => {

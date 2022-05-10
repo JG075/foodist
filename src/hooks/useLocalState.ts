@@ -1,15 +1,14 @@
 import { useEffect } from "react"
-import { useImmer } from "use-immer"
+import { Updater, useImmer } from "use-immer"
 
-const useLocalState = (defaultValue: any, key: string, model?: any) => {
+const useLocalState = <T>(defaultValue: T, key: string, model?: any): [T, Updater<T>] => {
     const [value, setValue] = useImmer(() => {
         const localValue = window.localStorage.getItem(key)
         if (typeof localValue !== "string" || localValue === "null") {
             return defaultValue
         }
         const parsedValue = JSON.parse(localValue)
-        const instanceClass = model || defaultValue?.constructor
-        return instanceClass?.deserialize ? instanceClass.deserialize(parsedValue) : parsedValue
+        return model?.deserialize ? model.deserialize(parsedValue) : parsedValue
     })
 
     useEffect(() => {

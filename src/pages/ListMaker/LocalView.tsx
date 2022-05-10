@@ -10,7 +10,7 @@ import Name from "./Components/Name"
 import Serves from "./Components/Serves"
 
 const LocalView = () => {
-    const [ingrediantList, setIngrediantList] = useLocalState(new IngrediantList({}), "ingrediant-list")
+    const [ingrediantList, setIngrediantList] = useLocalState(new IngrediantList({}), "ingrediant-list", IngrediantList)
     const navigate = useNavigate()
     const [makeForQty, setMakeForQty] = useImmer<number | null>(null)
 
