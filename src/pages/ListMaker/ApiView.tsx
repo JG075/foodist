@@ -21,7 +21,7 @@ const ApiView = () => {
         const fetchList = async () => {
             setPageState(PageStates.ISFETCHING)
             try {
-                const res = await apiIngrediantList.getSingle({ id })
+                const res = await apiIngrediantList.getSingle({ id: id as string })
                 if (res) {
                     setIngrediantList(res)
                     setPageState(PageStates.READY)

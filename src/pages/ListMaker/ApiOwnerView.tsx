@@ -13,6 +13,8 @@ import Name from "./Components/Name"
 import Serves from "./Components/Serves"
 import Adder from "./Components/Adder"
 import List from "./Components/List"
+import { mq } from "../../sharedStyles"
+import Extras from "./Components/Extras"
 
 interface ApiOwnerViewProps {
     ingrediantList: IngrediantList
@@ -79,7 +81,9 @@ const ApiOwnerView = ({ ingrediantList, onChange }: ApiOwnerViewProps) => {
                 css={{
                     display: "flex",
                     justifyContent: "end",
-                    marginTop: -20,
+                    [mq[0]]: {
+                        marginTop: -20,
+                    },
                 }}
             >
                 <ListSaveStatus saveState={saveState} />
@@ -93,6 +97,7 @@ const ApiOwnerView = ({ ingrediantList, onChange }: ApiOwnerViewProps) => {
                 />
             </div>
             <Name ingrediantList={ingrediantList} onChange={handleOnChange} allowEdit />
+            <Extras ingrediantList={ingrediantList} onChange={handleOnChange} allowEdit />
             <Serves ingrediantList={ingrediantList} onChange={handleServesChange} allowEdit />
             <Adder ingrediantList={ingrediantList} onChange={handleOnChange} />
             <List

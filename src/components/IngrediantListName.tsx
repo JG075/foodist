@@ -28,7 +28,7 @@ const IngrediantListName = ({ sx, value, onChange, disabled }: IngrediantListNam
                     fontSize: "1.625rem",
                     textAlign: "center",
                     fontWeight: "500",
-                    paddingBottom: "8px",
+                    paddingBottom: "4px",
                     "&.Mui-disabled": {
                         textFillColor: theme.palette.primary.dark,
                         opacity: 1,

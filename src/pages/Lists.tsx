@@ -47,8 +47,7 @@ const Lists = ({ user }: ListsProps) => {
             const to = `/users/${username}/recipes/${l.id}`
             return <IngrediantListsItem key={l.id} name={l.displayName} to={to} />
         })
-        renderedListItems =
-            items.length > 0 ? <ul css={{ padding: 0, width: "100%", marginBottom: 0 }}>{items}</ul> : null
+        renderedListItems = items.length > 0 ? <ul css={{ padding: 0, width: "100%", margin: 0 }}>{items}</ul> : null
     }
 
     if (user) {

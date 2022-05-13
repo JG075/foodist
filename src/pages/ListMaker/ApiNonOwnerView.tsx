@@ -10,6 +10,7 @@ import Serves from "./Components/Serves"
 import useLocalState from "../../hooks/useLocalState"
 import { mergeWith, omit } from "lodash"
 import PageState, { PageStates } from "../../components/PageState"
+import Extras from "./Components/Extras"
 
 interface ApiNonOwnerViewProps {
     ingrediantList: IngrediantList
@@ -74,7 +75,8 @@ const ApiNonOwnerView = ({ ingrediantList }: ApiNonOwnerViewProps) => {
         <PageState pageState={pageState}>
             {localList && (
                 <>
-                    <Name ingrediantList={localList} onChange={onListChange} />
+                    <Name ingrediantList={localList} />
+                    <Extras ingrediantList={ingrediantList} />
                     <Serves ingrediantList={localList} />
                     <List
                         ingrediantList={localList}

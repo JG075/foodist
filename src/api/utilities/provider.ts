@@ -7,13 +7,13 @@ const instance = axios.create({
     withCredentials: true,
 })
 
-const getAll = (resource: string, params?: string) => {
+const getAll = (resource: string, params?: { [key: string]: string }) => {
     const searchParams = new URLSearchParams(params)
     const paramsString = params ? `?${searchParams}` : ""
     return instance.get(`${BASE_URL}/${resource}/${paramsString}`).then(handleResponse).catch(handleError)
 }
 
-const getSingle = (resource: string, params?: string) => {
+const getSingle = (resource: string, params?: { [key: string]: string }) => {
     const searchParams = new URLSearchParams(params)
     const paramsString = params ? `?${searchParams}` : ""
     return instance.get(`${BASE_URL}/${resource}/${paramsString}`).then(handleResponse).catch(handleError)

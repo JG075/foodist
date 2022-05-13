@@ -35,7 +35,7 @@ function IngrediantAdder({ value, onChange, onSubmit, error, helperText }: Ingre
                 error={error}
                 helperText={helperText}
                 sx={{
-                    margin: "20px 0 10px",
+                    margin: "15px 0 10px",
                 }}
                 css={{
                     ".MuiOutlinedInput-notchedOutline": {

@@ -1,6 +1,7 @@
 import LoadingButton from "@mui/lab/LoadingButton"
 import { useNavigate } from "react-router-dom"
 import { useImmer } from "use-immer"
+import Extras from "./Components/Extras"
 
 import useLocalState from "../../hooks/useLocalState"
 import IngrediantList from "../../models/IngrediantList"
@@ -16,7 +17,9 @@ const LocalView = () => {
 
     const handlePublish = async () => navigate("/signup")
 
-    const handleOnChange = (list: IngrediantList) => setIngrediantList(list)
+    const handleOnChange = (list: IngrediantList) => {
+        setIngrediantList(list)
+    }
 
     const handleServesChange = (ingrediantList: IngrediantList) => {
         setMakeForQty(ingrediantList.serves)
@@ -30,6 +33,7 @@ const LocalView = () => {
     return (
         <>
             <Name ingrediantList={ingrediantList} onChange={handleOnChange} allowEdit />
+            <Extras ingrediantList={ingrediantList} onChange={handleOnChange} allowEdit />
             <Serves ingrediantList={ingrediantList} onChange={handleServesChange} allowEdit />
             <LoadingButton
                 sx={{

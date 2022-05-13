@@ -33,7 +33,7 @@ const IngrediantList = ({
     const ingrediantItems = list.map((item, i) => {
         const itemRef: Ref<HTMLLIElement> = createRef()
         return (
-            <CSSTransition key={item.id} timeout={500} classNames="ingrediantList-item" nodeRef={itemRef}>
+            <CSSTransition key={item.id} timeout={300} classNames="ingrediantList-item" nodeRef={itemRef}>
                 <IngrediantItem
                     key={item.id}
                     item={item}

@@ -13,8 +13,24 @@ const router = jsonServer.router("db.json")
 const middlewares = jsonServer.defaults()
 const fs = require("fs")
 const cors = require("cors")
+const AWS = require("aws-sdk")
+const { randomUUID } = require("crypto")
+const multer = require("multer")
 
 const oneDay = 1000 * 60 * 60 * 24
+
+const S3_BUCKET = ***REMOVED***
+const REGION = ***REMOVED***
+
+AWS.config.update({
+    accessKeyId: ***REMOVED***,
+    secretAccessKey: ***REMOVED***,
+})
+
+const myBucket = new AWS.S3({
+    params: { Bucket: S3_BUCKET },
+    region: REGION,
+})
 
 // middleware
 
@@ -25,7 +41,7 @@ server.use(
     })
 )
 server.use(express.json())
-server.use(express.urlencoded({ extended: false }))
+server.use(express.urlencoded({ extended: true }))
 server.use(
     session({
         resave: false, // don't save session if unmodified
@@ -122,6 +138,23 @@ server.post("/signin", function (req, res, next) {
             req.session.error = "Authentication failed, please check your username and password."
             res.status(403).send()
         }
+    })
+})
+
+server.post("/image-upload", multer().single("image"), function (req, res, next) {
+    const fileName = `${randomUUID()}-${req.file.originalname}`
+    const params = {
+        Body: req.file.buffer,
+        Bucket: S3_BUCKET,
+        Key: fileName,
+    }
+
+    myBucket.putObject(params, (err, data) => {
+        if (err) {
+            res.status(err.code).send(err.message)
+        }
+        const url = `https://${S3_BUCKET}.s3.${REGION}.amazonaws.com/${fileName}`
+        res.jsonp({ url })
     })
 })
 

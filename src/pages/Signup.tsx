@@ -84,7 +84,7 @@ const Signup = () => {
                 const updatedIngrediantList = produce(ingrediantList, (draft) => {
                     draft.authorId = res.username
                 })
-                await apiIngrediantList.post(updatedIngrediantList.serialize())
+                await apiIngrediantList.post(updatedIngrediantList)
             }
             navigate("/")
         } catch (err) {

@@ -4,7 +4,7 @@ import axios from "axios"
 import setup from "../testHelpers"
 import Signup from "./Signup"
 import { useAuth } from "../hooks/auth"
-import ApiIngrediantList from "../api/IngrediantList"
+import apiIngrediantList from "../api/IngrediantList"
 import ModelIngrediantList from "../models/IngrediantList"
 import ModelIngrediant from "../models/Ingrediant"
 import Qty from "../lib/qty"
@@ -14,6 +14,7 @@ jest.mock("../api/IngrediantList")
 jest.mock("../hooks/auth")
 jest.mock("axios")
 
+const apiIngrediantListMock = apiIngrediantList as jest.Mocked<typeof apiIngrediantList>
 const useAuthMock = useAuth as jest.Mock<ReturnType<typeof useAuth>>
 const axiosMock = axios as jest.Mocked<typeof axios>
 
@@ -272,13 +273,14 @@ test("If there is IngrediantList in the state it should set the authorId and mak
             "ingrediant-list": JSON.stringify(ingrediantList.serialize()),
         },
     })
-    ApiIngrediantList.post.mockResolvedValue(Promise.resolve({}))
+    apiIngrediantListMock.post.mockResolvedValue(Promise.resolve({}))
     enterValidData()
     let arg
     await waitFor(() => {
-        arg = ApiIngrediantList.post.mock.calls[0][0]
+        arg = apiIngrediantListMock.post.mock.calls[0][0]
         expect(arg.authorId).toEqual(authorId)
     })
     ingrediantList.authorId = authorId
-    expect(arg).toMatchObject(ingrediantList.serialize())
+    expect(arg).toMatchObject(ingrediantList)
+    await waitFor(() => expect(window.location.pathname).toEqual("/"))
 })

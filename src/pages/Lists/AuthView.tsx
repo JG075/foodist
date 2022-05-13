@@ -45,7 +45,7 @@ const AuthView = ({ user, lists, pageState }: AuthViewProps) => {
         >
             <Title>My Recipes</Title>
             <LoadingButton
-                css={{ marginBottom: 10 }}
+                css={{ marginBottom: 30 }}
                 color="secondary"
                 variant="contained"
                 size="medium"
@@ -54,7 +54,7 @@ const AuthView = ({ user, lists, pageState }: AuthViewProps) => {
             >
                 Create Recipe
             </LoadingButton>
-            {newListError && <ErrorMsg css={{ marginBottom: 10 }}>{newListError}</ErrorMsg>}
+            {newListError && <ErrorMsg css={{ marginBottom: 30 }}>{newListError}</ErrorMsg>}
             <PageState pageState={pageState}>
                 <ListItems lists={lists} emptyMsg="You don't have any lists to show. Make one!" />
             </PageState>

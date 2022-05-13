@@ -10,7 +10,6 @@ const apiIngrediantList = createAPI({
     plural: plural,
     single: single,
     model: IngrediantList,
-    methods: ["getAll", "getSingle", "post", "put", "patch", "remove"],
 })
 
 export default apiIngrediantList

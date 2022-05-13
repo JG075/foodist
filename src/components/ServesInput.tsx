@@ -13,7 +13,7 @@ const ServesInput = ({ amount, onChange, disabled }: ServesInputProps) => {
     return (
         <div
             css={{
-                margin: "20px 0 0",
+                margin: "15px 0 0",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",

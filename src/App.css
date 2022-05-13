@@ -6,7 +6,7 @@
 .ingrediantList-item-enter-active {
     opacity: 1;
     margin: 0 0 10px 0 !important;
-    transition: all 400ms ease-in-out;
+    transition: all 300ms ease-in-out;
     transition-property: margin opacity;
 }
 
@@ -30,9 +30,18 @@
 }
 
 .ingrediantList-item-exit-active {
-    animation-duration: 500ms;
+    animation-duration: 300ms;
     animation-name: animateOut;
     animation-delay: 0s;
     animation-timing-function: ease-out;
     animation-fill-mode: forwards;
+}
+
+.ingrediantList-description-enter {
+    opacity: 0;
+}
+
+.ingrediantList-description-enter-active {
+    opacity: 1;
+    transition: opacity 200ms ease-in-out;
 }
