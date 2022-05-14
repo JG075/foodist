@@ -11,12 +11,15 @@ test.each([
     ["350g Cheese", { name: "Cheese", qty: new Qty("350g") }],
     ["350 g Cheese", { name: "Cheese", qty: new Qty("350g") }],
     ["350 grams Cheese", { name: "Cheese", qty: new Qty("350g") }],
+    ["Grams Cheese 350", { name: "Grams Cheese", qty: new Qty("350") }],
     ["500ml Orange Juice", { name: "Orange Juice", qty: new Qty("500ml") }],
     ["500 ml Orange Juice", { name: "Orange Juice", qty: new Qty("500ml") }],
     ["500 milliliters Orange Juice", { name: "Orange Juice", qty: new Qty("500ml") }],
     ["Orange Juice 500ml", { name: "Orange Juice", qty: new Qty("500ml") }],
     ["Orange Juice 500 ml", { name: "Orange Juice", qty: new Qty("500ml") }],
     ["Orange Juice 500 milliliters", { name: "Orange Juice", qty: new Qty("500ml") }],
+    ["50 grams Flour (Use 14% Protein Flour)", { name: "Flour (Use 14% Protein Flour)", qty: new Qty("50 grams") }],
+    ["Flour (Use 14% Protein Flour) 50 grams ", { name: "Flour (Use 14% Protein Flour)", qty: new Qty("50 grams") }],
 ])("ingrediantParser('%s')", (input, expected) => {
     const output = ingrediantParser(input)
     expect(output.name).toEqual(expected.name)

@@ -81,6 +81,7 @@ const ApiOwnerView = ({ ingrediantList, onChange }: ApiOwnerViewProps) => {
                 css={{
                     display: "flex",
                     justifyContent: "end",
+                    marginBottom: 10,
                     [mq[0]]: {
                         marginTop: -20,
                     },

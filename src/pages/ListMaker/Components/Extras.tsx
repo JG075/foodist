@@ -74,9 +74,12 @@ const Extras = ({ ingrediantList, onChange, allowEdit }: ExtrasProps) => {
         onChange(newIngrediantList)
     }
 
+    const renderDescription = ingrediantList.description || showDescription
+    const renderImage = ingrediantList.imageUrl || submitting
+
     return (
         <div>
-            {(ingrediantList.imageUrl || submitting) && (
+            {renderImage && (
                 <IngrediantListImage
                     url={ingrediantList.imageUrl}
                     isLoading={submitting}
@@ -84,10 +87,10 @@ const Extras = ({ ingrediantList, onChange, allowEdit }: ExtrasProps) => {
                     allowEdit={allowEdit}
                 />
             )}
-            {allowEdit && (
+            {allowEdit && (!renderImage || !renderDescription) && (
                 <div css={{ display: "flex", justifyContent: "center", marginTop: 20 }}>
-                    {!ingrediantList.imageUrl && <ImageAdder onUpload={handleOnUpload} />}
-                    {!(ingrediantList.description || showDescription) && (
+                    {!renderImage && <ImageAdder onUpload={handleOnUpload} />}
+                    {!renderDescription && (
                         <DescriptionAdder sx={{ marginLeft: "10px" }} onClick={handleDescriptionClick} />
                     )}
                 </div>
@@ -100,8 +103,11 @@ const Extras = ({ ingrediantList, onChange, allowEdit }: ExtrasProps) => {
                 classNames="ingrediantList-description"
             >
                 <>
-                    {(ingrediantList.description || showDescription) && (
+                    {renderDescription && (
                         <IngrediantListDescription
+                            sx={{
+                                marginTop: "10px",
+                            }}
                             ref={ingrediantListDescriptionRef}
                             onChange={handleDescriptionChange}
                             value={ingrediantList.description}
