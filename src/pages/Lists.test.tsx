@@ -1,23 +1,23 @@
 import { screen, waitFor, within } from "@testing-library/react"
 import axios from "axios"
 
-import apiIngrediantList from "../api/IngrediantList"
+import apiRecipe from "../api/Recipe"
 import Ingrediant from "../models/Ingrediant"
-import ModelIngrediantList from "../models/IngrediantList"
+import ModelRecipe from "../models/Recipe"
 import setup, { setupWithMemoryRouter } from "../testHelpers"
 import Lists from "./Lists"
 import Qty from "../lib/qty"
-import IngrediantList from "../models/IngrediantList"
+import Recipe from "../models/Recipe"
 import User from "../models/User"
 
-jest.mock("../api/IngrediantList")
+jest.mock("../api/Recipe")
 jest.mock("axios")
 
-const apiIngrediantListMock = apiIngrediantList as jest.Mocked<typeof apiIngrediantList>
+const apiRecipeMock = apiRecipe as jest.Mocked<typeof apiRecipe>
 const axiosMock = axios as jest.Mocked<typeof axios>
 
 const listsMock = [
-    new ModelIngrediantList({
+    new ModelRecipe({
         id: "List 1",
         authorId: "John",
         name: "My List 1",
@@ -32,7 +32,7 @@ const listsMock = [
             }),
         ],
     }),
-    new ModelIngrediantList({
+    new ModelRecipe({
         id: "List 2",
         authorId: "John",
         name: "My List 2",
@@ -57,7 +57,7 @@ const sharedTestCases = [[<Lists />], [<Lists user={testUser} />]]
 describe("As any user", () => {
     test.each(sharedTestCases)("I see a loading indicator, while it is fetching the user's list", async (Component) => {
         const unresolvedPromise = new Promise<any[]>((resolve, reject) => {})
-        apiIngrediantListMock.getAll.mockReturnValue(unresolvedPromise)
+        apiRecipeMock.getAll.mockReturnValue(unresolvedPromise)
         setup(Component)
         expect(await screen.findByRole("progressbar")).toBeInTheDocument()
     })
@@ -65,7 +65,7 @@ describe("As any user", () => {
     test.each(sharedTestCases)(
         "I don't see a loading indicator, when it is done fetching the list",
         async (Component) => {
-            apiIngrediantListMock.getAll.mockResolvedValue(listsMock)
+            apiRecipeMock.getAll.mockResolvedValue(listsMock)
             setup(Component)
             await waitFor(() => expect(screen.queryByRole("progressbar")).not.toBeInTheDocument())
         }
@@ -75,7 +75,7 @@ describe("As any user", () => {
         "I see an error message if there is a problem requesting the user's list",
         async (Component) => {
             axiosMock.isAxiosError.mockImplementation(() => true)
-            apiIngrediantListMock.getAll.mockRejectedValue({ response: { status: 500 } })
+            apiRecipeMock.getAll.mockRejectedValue({ response: { status: 500 } })
             setup(Component)
             const errMsg = "Sorry, something went wrong."
             expect(await screen.findByText(errMsg)).toBeInTheDocument()
@@ -84,34 +84,34 @@ describe("As any user", () => {
 })
 
 describe("As a user viewing another user's list", () => {
-    test("When I load the page, the ingrediantList api is only called with the username from the params", async () => {
+    test("When I load the page, the recipe api is only called with the username from the params", async () => {
         const username = "John"
-        apiIngrediantListMock.getAll.mockImplementation(jest.fn())
+        apiRecipeMock.getAll.mockImplementation(jest.fn())
         setupWithMemoryRouter(<Lists />, {
             routerPath: `/users/${username}/recipes`,
             routePath: "/users/:username/recipes",
         })
-        await waitFor(() => expect(apiIngrediantListMock.getAll.mock.calls[0][0]).toMatchObject({ authorId: username }))
-        expect(apiIngrediantListMock.getAll).toBeCalledTimes(1)
+        await waitFor(() => expect(apiRecipeMock.getAll.mock.calls[0][0]).toMatchObject({ authorId: username }))
+        expect(apiRecipeMock.getAll).toBeCalledTimes(1)
     })
 
     test("I see the title with the creator's username", async () => {
         // Prevent calling the API as we just want to test if the title is there
-        apiIngrediantListMock.getAll.mockImplementation(jest.fn())
+        apiRecipeMock.getAll.mockImplementation(jest.fn())
         setupWithMemoryRouter(<Lists />, { routerPath: "/users/John/recipes", routePath: "/users/:username/recipes" })
         expect(await screen.findByText("John's Lists")).toBeInTheDocument()
     })
 
     test("I see a 'User not found' message, if the user does not exist", async () => {
         axiosMock.isAxiosError.mockImplementation(() => true)
-        apiIngrediantListMock.getAll.mockRejectedValue({ response: { status: 404 } })
+        apiRecipeMock.getAll.mockRejectedValue({ response: { status: 404 } })
         setup(<Lists />)
         const errMsg = "Sorry we couldn't find what you were looking for."
         expect(await screen.findByText(errMsg)).toBeInTheDocument()
     })
 
     test("If the user has no lists, I see some text that states this", async () => {
-        apiIngrediantListMock.getAll.mockResolvedValue([])
+        apiRecipeMock.getAll.mockResolvedValue([])
         setup(<Lists />)
         const errMsg = "This user does not have any lists to show."
         expect(await screen.findByText(errMsg)).toBeInTheDocument()
@@ -119,12 +119,12 @@ describe("As a user viewing another user's list", () => {
     })
 
     test("If a list has no name I see 'Unnamed list' as it's name", async () => {
-        apiIngrediantListMock.getAll.mockResolvedValue(listsMock)
-        const listItem = new IngrediantList({
+        apiRecipeMock.getAll.mockResolvedValue(listsMock)
+        const listItem = new Recipe({
             id: "qwer23",
             name: "",
         })
-        apiIngrediantListMock.getAll.mockResolvedValue([listItem])
+        apiRecipeMock.getAll.mockResolvedValue([listItem])
         setup(<Lists />)
         expect(await screen.findByText("Unnamed list")).toBeInTheDocument()
     })
@@ -135,7 +135,7 @@ describe("As a user viewing another user's list", () => {
     })
 
     test("I see each ingrediant list from the list returned by the API", async () => {
-        apiIngrediantListMock.getAll.mockResolvedValue(listsMock)
+        apiRecipeMock.getAll.mockResolvedValue(listsMock)
         setupWithMemoryRouter(<Lists />, { routerPath: "/users/John/recipes", routePath: "/users/:username/recipes" })
         const listItems = await screen.findAllByRole("listitem")
         listsMock.forEach(async (item, index) => {
@@ -147,24 +147,24 @@ describe("As a user viewing another user's list", () => {
 })
 
 describe("As a logged in user viewing the home page (useAuthUser is enabled)", () => {
-    test("When I load the page, the ingrediantList api is only called with the username from the params", async () => {
-        apiIngrediantListMock.getAll.mockImplementation(jest.fn())
+    test("When I load the page, the recipe api is only called with the username from the params", async () => {
+        apiRecipeMock.getAll.mockImplementation(jest.fn())
         setup(<Lists user={testUser} />)
         await waitFor(() =>
-            expect(apiIngrediantListMock.getAll.mock.calls[0][0]).toMatchObject({ authorId: testUser.username })
+            expect(apiRecipeMock.getAll.mock.calls[0][0]).toMatchObject({ authorId: testUser.username })
         )
-        expect(apiIngrediantListMock.getAll).toBeCalledTimes(1)
+        expect(apiRecipeMock.getAll).toBeCalledTimes(1)
     })
 
     test("The title becomes 'My Recipes'", async () => {
         // Prevent calling the API as we just want to test if the title is there
-        apiIngrediantListMock.getAll.mockImplementation(jest.fn())
+        apiRecipeMock.getAll.mockImplementation(jest.fn())
         setup(<Lists user={testUser} />)
         expect(await screen.findByText("My Recipes")).toBeInTheDocument()
     })
 
     test("If I am logged in and I have no lists, I see some text that states this", async () => {
-        apiIngrediantListMock.getAll.mockResolvedValue([])
+        apiRecipeMock.getAll.mockResolvedValue([])
         setup(<Lists user={testUser} />)
         const errMsg = "You don't have any lists to show. Make one!"
         expect(await screen.findByText(errMsg)).toBeInTheDocument()
@@ -172,25 +172,25 @@ describe("As a logged in user viewing the home page (useAuthUser is enabled)", (
     })
 
     test("If I click the 'Create List' button, I should see a loading icon", async () => {
-        apiIngrediantListMock.getAll.mockResolvedValue([])
+        apiRecipeMock.getAll.mockResolvedValue([])
         const { user } = setup(<Lists user={testUser} />)
         await user.click(getRecipeListButton())
         expect(await within(getRecipeListButton()).findByRole("progressbar")).toBeInTheDocument()
     })
 
     test("If I click the 'Create List' button, the API to create a list should be called", async () => {
-        apiIngrediantListMock.getAll.mockResolvedValue([])
+        apiRecipeMock.getAll.mockResolvedValue([])
         const { user } = setup(<Lists user={testUser} />)
         await user.click(getRecipeListButton())
-        expect(apiIngrediantListMock.post).toBeCalledTimes(1)
-        const emptyList = new ModelIngrediantList({ authorId: testUser.username })
-        expect(apiIngrediantListMock.post.mock.calls[0][0]).toMatchObject(emptyList.serialize())
+        expect(apiRecipeMock.post).toBeCalledTimes(1)
+        const emptyList = new ModelRecipe({ authorId: testUser.username })
+        expect(apiRecipeMock.post.mock.calls[0][0]).toMatchObject(emptyList.serialize())
     })
 
     test("If I click the 'Create List' button, and the response is an errror, I should see an error message", async () => {
         axiosMock.isAxiosError.mockImplementation(() => true)
-        apiIngrediantListMock.getAll.mockResolvedValue([])
-        apiIngrediantListMock.post.mockRejectedValue({ response: { status: 500 } })
+        apiRecipeMock.getAll.mockResolvedValue([])
+        apiRecipeMock.post.mockRejectedValue({ response: { status: 500 } })
         const { user } = setup(<Lists user={testUser} />)
         await user.click(getRecipeListButton())
         const errMsg = "Sorry something went wrong."
@@ -200,15 +200,15 @@ describe("As a logged in user viewing the home page (useAuthUser is enabled)", (
 
     test("If I click the 'Create List' button, and the response is successful, I should be taken to the list page", async () => {
         const listId = "ao230diwe"
-        apiIngrediantListMock.getAll.mockResolvedValue([])
-        apiIngrediantListMock.post.mockResolvedValue({ id: listId })
+        apiRecipeMock.getAll.mockResolvedValue([])
+        apiRecipeMock.post.mockResolvedValue({ id: listId })
         const { user } = setup(<Lists user={testUser} />)
         await user.click(getRecipeListButton())
         await waitFor(() => expect(window.location.pathname).toEqual(`/users/${testUser.username}/recipes/${listId}`))
     })
 
     test("I see each ingrediant list from the list returned by the API", async () => {
-        apiIngrediantListMock.getAll.mockResolvedValue(listsMock)
+        apiRecipeMock.getAll.mockResolvedValue(listsMock)
         setup(<Lists user={testUser} />)
         const listItems = await screen.findAllByRole("listitem")
         listsMock.forEach(async (item, index) => {

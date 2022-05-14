@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom"
 import { useImmer } from "use-immer"
 import debounce from "lodash/debounce"
 
-import IngrediantList from "../../models/IngrediantList"
+import Recipe from "../../models/Recipe"
 import ListSaveStatus, { ListSaveStates } from "../../components/ListSaveStatus"
-import apiIngrediantList from "../../api/IngrediantList"
+import apiRecipe from "../../api/Recipe"
 import DeleteListButton from "../../components/DeleteListButton"
 import DeleteListDialog from "../../components/DeleteListDialog"
 import Name from "./Components/Name"
@@ -17,11 +17,11 @@ import { mq } from "../../sharedStyles"
 import Extras from "./Components/Extras"
 
 interface ApiOwnerViewProps {
-    ingrediantList: IngrediantList
-    onChange: (ingrediantList: IngrediantList) => void
+    recipe: Recipe
+    onChange: (recipe: Recipe) => void
 }
 
-const ApiOwnerView = ({ ingrediantList, onChange }: ApiOwnerViewProps) => {
+const ApiOwnerView = ({ recipe, onChange }: ApiOwnerViewProps) => {
     const [saveState, setSaveState] = useImmer(ListSaveStates.SAVED)
     const [isDeleting, setIsDeleting] = useImmer(false)
     const [showConfirmModal, setShowConfirmModal] = useImmer(false)
@@ -29,10 +29,10 @@ const ApiOwnerView = ({ ingrediantList, onChange }: ApiOwnerViewProps) => {
     const [makeForQty, setMakeForQty] = useImmer<number | null>(null)
     const navigate = useNavigate()
 
-    const apiUpdate = debounce(async (newIngrediantList) => {
+    const apiUpdate = debounce(async (newRecipe) => {
         setSaveState(ListSaveStates.SAVING)
         try {
-            await apiIngrediantList.patch(newIngrediantList)
+            await apiRecipe.patch(newRecipe)
             setSaveState(ListSaveStates.SAVED)
         } catch (error) {
             setSaveState(ListSaveStates.ERROR)
@@ -41,16 +41,16 @@ const ApiOwnerView = ({ ingrediantList, onChange }: ApiOwnerViewProps) => {
 
     const apiUpdateRef = useRef(apiUpdate)
 
-    const handleOnChange = (newIngrediantList: IngrediantList) => {
-        onChange(newIngrediantList)
-        apiUpdateRef.current(newIngrediantList)
+    const handleOnChange = (newRecipe: Recipe) => {
+        onChange(newRecipe)
+        apiUpdateRef.current(newRecipe)
     }
 
     const handleOnDelete = async () => {
         if (!isDeleting) {
             setIsDeleting(true)
             try {
-                await apiIngrediantList.remove(ingrediantList!.id)
+                await apiRecipe.remove(recipe!.id)
                 navigate("/")
             } catch (error) {
                 setDeleteErrMsg("Sorry something went wrong.")
@@ -66,9 +66,9 @@ const ApiOwnerView = ({ ingrediantList, onChange }: ApiOwnerViewProps) => {
         setDeleteErrMsg("")
     }
 
-    const handleServesChange = (ingrediantList: IngrediantList) => {
-        setMakeForQty(ingrediantList.serves)
-        handleOnChange(ingrediantList)
+    const handleServesChange = (recipe: Recipe) => {
+        setMakeForQty(recipe.serves)
+        handleOnChange(recipe)
     }
 
     const handleMakeForChange = (value: number) => {
@@ -97,12 +97,12 @@ const ApiOwnerView = ({ ingrediantList, onChange }: ApiOwnerViewProps) => {
                     errorMsg={deleteErrMsg}
                 />
             </div>
-            <Name ingrediantList={ingrediantList} onChange={handleOnChange} allowEdit />
-            <Extras ingrediantList={ingrediantList} onChange={handleOnChange} allowEdit />
-            <Serves ingrediantList={ingrediantList} onChange={handleServesChange} allowEdit />
-            <Adder ingrediantList={ingrediantList} onChange={handleOnChange} />
+            <Name recipe={recipe} onChange={handleOnChange} allowEdit />
+            <Extras recipe={recipe} onChange={handleOnChange} allowEdit />
+            <Serves recipe={recipe} onChange={handleServesChange} allowEdit />
+            <Adder recipe={recipe} onChange={handleOnChange} />
             <List
-                ingrediantList={ingrediantList}
+                recipe={recipe}
                 onChange={handleOnChange}
                 onMakeForChange={handleMakeForChange}
                 makeForQty={makeForQty}

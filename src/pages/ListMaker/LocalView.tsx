@@ -4,26 +4,26 @@ import { useImmer } from "use-immer"
 import Extras from "./Components/Extras"
 
 import useLocalState from "../../hooks/useLocalState"
-import IngrediantList from "../../models/IngrediantList"
+import Recipe from "../../models/Recipe"
 import Adder from "./Components/Adder"
 import List from "./Components/List"
 import Name from "./Components/Name"
 import Serves from "./Components/Serves"
 
 const LocalView = () => {
-    const [ingrediantList, setIngrediantList] = useLocalState(new IngrediantList({}), "ingrediant-list", IngrediantList)
+    const [recipe, setRecipe] = useLocalState(new Recipe({}), "recipe", Recipe)
     const navigate = useNavigate()
     const [makeForQty, setMakeForQty] = useImmer<number | null>(null)
 
     const handlePublish = async () => navigate("/signup")
 
-    const handleOnChange = (list: IngrediantList) => {
-        setIngrediantList(list)
+    const handleOnChange = (list: Recipe) => {
+        setRecipe(list)
     }
 
-    const handleServesChange = (ingrediantList: IngrediantList) => {
-        setMakeForQty(ingrediantList.serves)
-        handleOnChange(ingrediantList)
+    const handleServesChange = (recipe: Recipe) => {
+        setMakeForQty(recipe.serves)
+        handleOnChange(recipe)
     }
 
     const handleMakeForChange = (value: number) => {
@@ -32,9 +32,9 @@ const LocalView = () => {
 
     return (
         <>
-            <Name ingrediantList={ingrediantList} onChange={handleOnChange} allowEdit />
-            <Extras ingrediantList={ingrediantList} onChange={handleOnChange} allowEdit />
-            <Serves ingrediantList={ingrediantList} onChange={handleServesChange} allowEdit />
+            <Name recipe={recipe} onChange={handleOnChange} allowEdit />
+            <Extras recipe={recipe} onChange={handleOnChange} allowEdit />
+            <Serves recipe={recipe} onChange={handleServesChange} allowEdit />
             <LoadingButton
                 sx={{
                     margin: "20px auto 0",
@@ -48,9 +48,9 @@ const LocalView = () => {
             >
                 Publish
             </LoadingButton>
-            <Adder ingrediantList={ingrediantList} onChange={handleOnChange} />
+            <Adder recipe={recipe} onChange={handleOnChange} />
             <List
-                ingrediantList={ingrediantList}
+                recipe={recipe}
                 onChange={handleOnChange}
                 onMakeForChange={handleMakeForChange}
                 makeForQty={makeForQty}

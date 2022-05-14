@@ -7,12 +7,12 @@ import { produce } from "immer"
 import { useImmer } from "use-immer"
 
 import { capitalize } from "../helpers/string"
-import apiIngrediantList from "../api/IngrediantList"
+import apiRecipe from "../api/Recipe"
 import useLocalState from "../hooks/useLocalState"
 import Title from "../components/Title"
 import { useAuth } from "../hooks/auth"
 import ErrorMsg from "../components/ErrorMsg"
-import IngrediantList from "../models/IngrediantList"
+import Recipe from "../models/Recipe"
 import { handleNonAxiosError } from "../helpers/handleAxiosError"
 
 const textFieldStyle = {
@@ -63,7 +63,7 @@ const Signup = () => {
     const [submitting, setSubmitting] = useImmer(false)
     const [formError, setFormError] = useImmer("")
     const navigate = useNavigate()
-    const [ingrediantList] = useLocalState<IngrediantList | null>(null, "ingrediant-list", IngrediantList)
+    const [recipe] = useLocalState<Recipe | null>(null, "recipe", Recipe)
     const { signup } = useAuth()
 
     const onSubmit = async (data: typeof defaultValues) => {
@@ -80,11 +80,11 @@ const Signup = () => {
         }
         try {
             const res = await signup(formattedData)
-            if (ingrediantList instanceof IngrediantList) {
-                const updatedIngrediantList = produce(ingrediantList, (draft) => {
+            if (recipe instanceof Recipe) {
+                const updatedRecipe = produce(recipe, (draft) => {
                     draft.authorId = res.username
                 })
-                await apiIngrediantList.post(updatedIngrediantList)
+                await apiRecipe.post(updatedRecipe)
             }
             navigate("/")
         } catch (err) {

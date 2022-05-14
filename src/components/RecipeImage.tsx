@@ -3,14 +3,14 @@ import DeleteIcon from "@mui/icons-material/Delete"
 import IconButton, { IconButtonProps } from "@mui/material/IconButton"
 import CircularProgress from "@mui/material/CircularProgress"
 
-export interface IngrediantListImageProps {
+export interface RecipeImageProps {
     url: string
     isLoading: boolean
     onDelete: IconButtonProps["onClick"]
     allowEdit?: boolean
 }
 
-const IngrediantListImage = ({ url, isLoading, onDelete, allowEdit }: IngrediantListImageProps) => {
+const RecipeImage = ({ url, isLoading, onDelete, allowEdit }: RecipeImageProps) => {
     return (
         <div
             css={{
@@ -77,4 +77,4 @@ const IngrediantListImage = ({ url, isLoading, onDelete, allowEdit }: Ingrediant
     )
 }
 
-export default IngrediantListImage
+export default RecipeImage

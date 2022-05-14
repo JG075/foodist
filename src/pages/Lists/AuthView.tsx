@@ -4,10 +4,10 @@ import { useNavigate } from "react-router-dom"
 import { useImmer } from "use-immer"
 import { ReactNode } from "react"
 
-import apiIngrediantList from "../../api/IngrediantList"
+import apiRecipe from "../../api/Recipe"
 import ErrorMsg from "../../components/ErrorMsg"
 import Title from "../../components/Title"
-import IngrediantList from "../../models/IngrediantList"
+import Recipe from "../../models/Recipe"
 import ListItems from "./Components/ListItems"
 import PageState, { PageStates } from "../../components/PageState"
 import User from "../../models/User"
@@ -25,9 +25,9 @@ const AuthView = ({ user, lists, pageState }: AuthViewProps) => {
 
     const handleOnClick = async () => {
         setIsCreatingList(true)
-        const newIngrediantList = new IngrediantList({ authorId: user.username })
+        const newRecipe = new Recipe({ authorId: user.username })
         try {
-            const res = await apiIngrediantList.post(newIngrediantList)
+            const res = await apiRecipe.post(newRecipe)
             navigate(`/users/${user.username}/recipes/${res.id}`)
         } catch (error) {
             setNewListError("Sorry something went wrong.")

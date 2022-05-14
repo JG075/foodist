@@ -4,17 +4,17 @@ import axios from "axios"
 import setup from "../testHelpers"
 import Signup from "./Signup"
 import { useAuth } from "../hooks/auth"
-import apiIngrediantList from "../api/IngrediantList"
-import ModelIngrediantList from "../models/IngrediantList"
+import apiRecipe from "../api/Recipe"
+import ModelRecipe from "../models/Recipe"
 import ModelIngrediant from "../models/Ingrediant"
 import Qty from "../lib/qty"
 import User from "../models/User"
 
-jest.mock("../api/IngrediantList")
+jest.mock("../api/Recipe")
 jest.mock("../hooks/auth")
 jest.mock("axios")
 
-const apiIngrediantListMock = apiIngrediantList as jest.Mocked<typeof apiIngrediantList>
+const apiRecipeMock = apiRecipe as jest.Mocked<typeof apiRecipe>
 const useAuthMock = useAuth as jest.Mock<ReturnType<typeof useAuth>>
 const axiosMock = axios as jest.Mocked<typeof axios>
 
@@ -249,13 +249,13 @@ test("If I enter valid data I should be taken to my home page", async () => {
     expect(window.location.pathname).toEqual("/")
 })
 
-test("If there is IngrediantList in the state it should set the authorId and make a post request", async () => {
+test("If there is Recipe in the state it should set the authorId and make a post request", async () => {
     const authorId = "John"
     const res = Promise.resolve({ username: authorId })
     const useAuthMockReturnValue = createUseAuthMockReturnValue()
     useAuthMockReturnValue.signup.mockImplementation(() => res)
     useAuthMock.mockReturnValue(useAuthMockReturnValue)
-    const ingrediantList = new ModelIngrediantList({
+    const recipe = new ModelRecipe({
         name: "fruit recipe",
         ingrediants: [
             new ModelIngrediant({
@@ -270,17 +270,17 @@ test("If there is IngrediantList in the state it should set the authorId and mak
     })
     setup(<Signup />, {
         localStorage: {
-            "ingrediant-list": JSON.stringify(ingrediantList.serialize()),
+            recipe: JSON.stringify(recipe.serialize()),
         },
     })
-    apiIngrediantListMock.post.mockResolvedValue(Promise.resolve({}))
+    apiRecipeMock.post.mockResolvedValue(Promise.resolve({}))
     enterValidData()
     let arg
     await waitFor(() => {
-        arg = apiIngrediantListMock.post.mock.calls[0][0]
+        arg = apiRecipeMock.post.mock.calls[0][0]
         expect(arg.authorId).toEqual(authorId)
     })
-    ingrediantList.authorId = authorId
-    expect(arg).toMatchObject(ingrediantList)
+    recipe.authorId = authorId
+    expect(arg).toMatchObject(recipe)
     await waitFor(() => expect(window.location.pathname).toEqual("/"))
 })

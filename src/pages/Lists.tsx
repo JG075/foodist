@@ -2,10 +2,10 @@
 import { ReactNode, useEffect } from "react"
 import { useParams } from "react-router-dom"
 
-import IngrediantListsItem from "../components/IngrediantListsItem"
-import apiIngrediantList from "../api/IngrediantList"
+import RecipesItem from "../components/RecipesItem"
+import apiRecipe from "../api/Recipe"
 import { useImmer } from "use-immer"
-import IngrediantList from "../models/IngrediantList"
+import Recipe from "../models/Recipe"
 import AuthView from "./Lists/AuthView"
 import DefaultView from "./Lists/DefaultView"
 import { PageStates } from "../components/PageState"
@@ -17,7 +17,7 @@ interface ListsProps {
 }
 
 const Lists = ({ user }: ListsProps) => {
-    const [lists, setLists] = useImmer<IngrediantList[] | null>(null)
+    const [lists, setLists] = useImmer<Recipe[] | null>(null)
     const [pageState, setPageState] = useImmer(PageStates.ISFETCHING)
     const params = useParams()
     const paramsUsername = params.username as string
@@ -26,7 +26,7 @@ const Lists = ({ user }: ListsProps) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const result = await apiIngrediantList.getAll({ authorId: username })
+                const result = await apiRecipe.getAll({ authorId: username })
                 setLists(result)
                 setPageState(PageStates.READY)
             } catch (err) {
@@ -45,7 +45,7 @@ const Lists = ({ user }: ListsProps) => {
     if (lists) {
         const items = lists.map((l) => {
             const to = `/users/${username}/recipes/${l.id}`
-            return <IngrediantListsItem key={l.id} name={l.displayName} to={to} />
+            return <RecipesItem key={l.id} name={l.displayName} to={to} />
         })
         renderedListItems = items.length > 0 ? <ul css={{ padding: 0, width: "100%", margin: 0 }}>{items}</ul> : null
     }

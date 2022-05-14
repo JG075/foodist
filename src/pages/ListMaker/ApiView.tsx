@@ -2,28 +2,28 @@ import { useEffect } from "react"
 import { useParams } from "react-router-dom"
 import { useImmer } from "use-immer"
 
-import apiIngrediantList from "../../api/IngrediantList"
+import apiRecipe from "../../api/Recipe"
 import PageState, { PageStates } from "../../components/PageState"
 import { useAuth } from "../../hooks/auth"
-import IngrediantList from "../../models/IngrediantList"
+import Recipe from "../../models/Recipe"
 import ApiNonOwnerView from "./ApiNonOwnerView"
 import ApiOwnerView from "./ApiOwnerView"
 
 const ApiView = () => {
-    const [ingrediantList, setIngrediantList] = useImmer<null | IngrediantList>(null)
+    const [recipe, setRecipe] = useImmer<null | Recipe>(null)
     const [pageState, setPageState] = useImmer(PageStates.ISFETCHING)
     const { user } = useAuth()
     const { id } = useParams()
 
-    const handleOnChange = (list: IngrediantList) => setIngrediantList(list)
+    const handleOnChange = (list: Recipe) => setRecipe(list)
 
     useEffect(() => {
         const fetchList = async () => {
             setPageState(PageStates.ISFETCHING)
             try {
-                const res = await apiIngrediantList.getSingle({ id: id as string })
+                const res = await apiRecipe.getSingle({ id: id as string })
                 if (res) {
-                    setIngrediantList(res)
+                    setRecipe(res)
                     setPageState(PageStates.READY)
                 } else {
                     setPageState(PageStates.NOTFOUND)
@@ -33,18 +33,18 @@ const ApiView = () => {
             }
         }
         fetchList()
-    }, [id, setIngrediantList, setPageState])
+    }, [id, setRecipe, setPageState])
 
     let isOwner = false
-    if (ingrediantList && user?.username) {
-        isOwner = ingrediantList.belongsTo(user.username)
+    if (recipe && user?.username) {
+        isOwner = recipe.belongsTo(user.username)
     }
 
     let component = null
     if (isOwner) {
-        component = <ApiOwnerView ingrediantList={ingrediantList as IngrediantList} onChange={handleOnChange} />
+        component = <ApiOwnerView recipe={recipe as Recipe} onChange={handleOnChange} />
     } else {
-        component = <ApiNonOwnerView ingrediantList={ingrediantList as IngrediantList} />
+        component = <ApiNonOwnerView recipe={recipe as Recipe} />
     }
     return <PageState pageState={pageState}>{component}</PageState>
 }

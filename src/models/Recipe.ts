@@ -2,7 +2,7 @@ import { immerable } from "immer"
 
 import Ingrediant from "./Ingrediant"
 
-interface IngrediantListAttrs {
+interface RecipeAttrs {
     id: string
     authorId: string
     name: string
@@ -12,8 +12,8 @@ interface IngrediantListAttrs {
     ingrediants: Ingrediant[] | any[]
 }
 
-interface IngrediantList extends IngrediantListAttrs {}
-class IngrediantList {
+interface Recipe extends RecipeAttrs {}
+class Recipe {
     [immerable] = true
 
     constructor({
@@ -24,7 +24,7 @@ class IngrediantList {
         description = "",
         serves = 1,
         ingrediants = [],
-    }: Partial<IngrediantListAttrs>) {
+    }: Partial<RecipeAttrs>) {
         this.id = id
         this.authorId = authorId
         this.name = name
@@ -34,10 +34,10 @@ class IngrediantList {
         this.ingrediants = ingrediants
     }
 
-    static deserialize = (model: IngrediantList) => {
+    static deserialize = (model: Recipe) => {
         const { id, authorId, name, imageUrl, description, serves, ingrediants } = model
         const ingrediantsItems = ingrediants.map((i) => Ingrediant.deserialize(i))
-        return new IngrediantList({
+        return new Recipe({
             id,
             authorId,
             name,
@@ -75,4 +75,4 @@ class IngrediantList {
     }
 }
 
-export default IngrediantList
+export default Recipe

@@ -12,10 +12,9 @@ const MainContainer = (props: MainContainerProps) => (
         css={{
             ...sectionStyle,
             textAlign: "center",
-            margin: "0 auto",
+            margin: "20px auto 30px",
             padding: "20px",
             boxShadow: "5px 10px 0px 3px #8e484a",
-            marginTop: 20,
             [mq[0]]: {
                 padding: "40px 40px 40px",
             },

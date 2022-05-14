@@ -1,26 +1,26 @@
 import { produce } from "immer"
 import { useMemo } from "react"
 
-import IngrediantList from "../../../components/IngrediantList"
-import IngrediantListModel from "../../../models/IngrediantList"
+import Recipe from "../../../components/Recipe"
+import RecipeModel from "../../../models/Recipe"
 import Qty from "../../../lib/qty"
 import EmptyIngrediantsMsg from "../../../components/EmptyIngrediantsMsg"
 
 interface ListProps {
-    ingrediantList: IngrediantListModel
-    onChange: (ingrediantList: IngrediantListModel) => void
+    recipe: RecipeModel
+    onChange: (recipe: RecipeModel) => void
     allowEdit?: boolean
     onMakeForChange: (n: number) => void
     makeForQty: number | null
 }
 
-const List = ({ ingrediantList, onChange, allowEdit, onMakeForChange, makeForQty }: ListProps) => {
+const List = ({ recipe, onChange, allowEdit, onMakeForChange, makeForQty }: ListProps) => {
     const handleItemCheck = (idToCheck: string) => {
-        const newList = produce(ingrediantList, ({ ingrediants }) => {
+        const newList = produce(recipe, ({ ingrediants }) => {
             const itemIndex = ingrediants.findIndex(({ id }) => id === idToCheck)
             const item = ingrediants[itemIndex]
             ingrediants.splice(itemIndex, 1)
-            const firstCheckedIndex = ingrediantList.firstCheckedIndex
+            const firstCheckedIndex = recipe.firstCheckedIndex
             if (item.checked) {
                 item.checked = false
                 ingrediants.splice(firstCheckedIndex, 0, item)
@@ -34,7 +34,7 @@ const List = ({ ingrediantList, onChange, allowEdit, onMakeForChange, makeForQty
     }
 
     const handleItemDelete = (idToDelete: string) => {
-        const newList = produce(ingrediantList, ({ ingrediants }) => {
+        const newList = produce(recipe, ({ ingrediants }) => {
             const index = ingrediants.findIndex(({ id }) => id === idToDelete)
             if (index !== -1) ingrediants.splice(index, 1)
         })
@@ -42,14 +42,14 @@ const List = ({ ingrediantList, onChange, allowEdit, onMakeForChange, makeForQty
     }
 
     const handleCheckAll = () => {
-        const newList = produce(ingrediantList, ({ ingrediants }) => {
+        const newList = produce(recipe, ({ ingrediants }) => {
             ingrediants.forEach((i) => (i.checked = true))
         })
         onChange(newList)
     }
 
     const handleUncheckAll = () => {
-        const newList = produce(ingrediantList, ({ ingrediants }) => {
+        const newList = produce(recipe, ({ ingrediants }) => {
             ingrediants.forEach((i) => (i.checked = false))
         })
         onChange(newList)
@@ -59,34 +59,34 @@ const List = ({ ingrediantList, onChange, allowEdit, onMakeForChange, makeForQty
         onMakeForChange(Number(e.target.value))
     }
 
-    const visibleIngrediantList = useMemo(
+    const visibleRecipe = useMemo(
         () =>
-            produce(ingrediantList, (draft) => {
-                if (!makeForQty || ingrediantList.serves === makeForQty) {
+            produce(recipe, (draft) => {
+                if (!makeForQty || recipe.serves === makeForQty) {
                     return draft
                 }
                 draft.ingrediants.forEach((i) => {
-                    const newAmount = (i.qty.scalar / ingrediantList.serves) * makeForQty
+                    const newAmount = (i.qty.scalar / recipe.serves) * makeForQty
                     const newQty = Qty(`${newAmount} ${i.qty.units()}`)
                     i.qty = newQty
                 })
             }),
-        [ingrediantList, makeForQty]
+        [recipe, makeForQty]
     )
 
-    if (ingrediantList.ingrediants.length === 0) {
+    if (recipe.ingrediants.length === 0) {
         return <EmptyIngrediantsMsg />
     }
 
     return (
-        <IngrediantList
-            list={visibleIngrediantList.ingrediants}
+        <Recipe
+            list={visibleRecipe.ingrediants}
             onItemDelete={handleItemDelete}
             onItemCheck={handleItemCheck}
             allowEdit={allowEdit}
             onCheckAll={handleCheckAll}
             onUncheckAll={handleUncheckAll}
-            makeForQty={makeForQty || ingrediantList.serves}
+            makeForQty={makeForQty || recipe.serves}
             onMakeForChange={handleMakeForChange}
         />
     )

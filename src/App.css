@@ -1,9 +1,9 @@
-.ingrediantList-item-enter {
+.recipe-item-enter {
     opacity: 0;
     margin: -66px 0 10px 0 !important;
 }
 
-.ingrediantList-item-enter-active {
+.recipe-item-enter-active {
     opacity: 1;
     margin: 0 0 10px 0 !important;
     transition: all 300ms ease-in-out;
@@ -29,7 +29,7 @@
     }
 }
 
-.ingrediantList-item-exit-active {
+.recipe-item-exit-active {
     animation-duration: 300ms;
     animation-name: animateOut;
     animation-delay: 0s;
@@ -37,11 +37,11 @@
     animation-fill-mode: forwards;
 }
 
-.ingrediantList-description-enter {
+.recipe-description-enter {
     opacity: 0;
 }
 
-.ingrediantList-description-enter-active {
+.recipe-description-enter-active {
     opacity: 1;
     transition: opacity 200ms ease-in-out;
 }

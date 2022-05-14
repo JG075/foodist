@@ -4,14 +4,14 @@ import TextField, { TextFieldProps } from "@mui/material/TextField"
 
 import theme from "../theme"
 
-interface IngrediantListNameProps {
+interface RecipeNameProps {
     sx: SxProps
     value: TextFieldProps["value"]
     onChange: TextFieldProps["onChange"]
     disabled: TextFieldProps["disabled"]
 }
 
-const IngrediantListName = ({ sx, value, onChange, disabled }: IngrediantListNameProps) => {
+const RecipeName = ({ sx, value, onChange, disabled }: RecipeNameProps) => {
     return (
         <TextField
             autoComplete="off"
@@ -40,4 +40,4 @@ const IngrediantListName = ({ sx, value, onChange, disabled }: IngrediantListNam
     )
 }
 
-export default IngrediantListName
+export default RecipeName

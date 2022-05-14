@@ -4,12 +4,12 @@ import { Link, LinkProps } from "react-router-dom"
 import ListItem from "@mui/material/ListItem"
 import DoubleArrowIcon from "@mui/icons-material/DoubleArrow"
 
-interface IngrediantListsItemProps {
+interface RecipesItemProps {
     name: ReactNode
     to: LinkProps["to"]
 }
 
-const IngrediantListsItem = ({ name, to }: IngrediantListsItemProps) => {
+const RecipesItem = ({ name, to }: RecipesItemProps) => {
     return (
         <Link to={to} css={{ color: "black " }}>
             <ListItem
@@ -31,4 +31,4 @@ const IngrediantListsItem = ({ name, to }: IngrediantListsItemProps) => {
     )
 }
 
-export default IngrediantListsItem
+export default RecipesItem

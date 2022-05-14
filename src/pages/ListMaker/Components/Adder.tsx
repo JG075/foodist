@@ -3,15 +3,15 @@ import { produce } from "immer"
 
 import ingrediantParser from "../../../helpers/ingrediantParser"
 import Ingrediant from "../../../models/Ingrediant"
-import IngrediantList from "../../../models/IngrediantList"
+import Recipe from "../../../models/Recipe"
 import IngrediantAdder from "../../../components/IngrediantAdder"
 
 interface AdderProps {
-    ingrediantList: IngrediantList
-    onChange: (ingrediantList: IngrediantList) => void
+    recipe: Recipe
+    onChange: (recipe: Recipe) => void
 }
 
-const Adder = ({ ingrediantList, onChange }: AdderProps) => {
+const Adder = ({ recipe, onChange }: AdderProps) => {
     const [ingrediantInput, setingrediantInput] = useImmer("")
     const [error, setError] = useImmer("")
 
@@ -34,7 +34,7 @@ const Adder = ({ ingrediantList, onChange }: AdderProps) => {
             return
         }
         const newIngrediant = new Ingrediant(parsedIngrediant)
-        const newList = produce(ingrediantList, ({ ingrediants }) => {
+        const newList = produce(recipe, ({ ingrediants }) => {
             ingrediants.unshift(newIngrediant)
         })
         onChange(newList)

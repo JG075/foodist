@@ -8,28 +8,28 @@ import apiImage from "../../../api/Image"
 import DescriptionAdder from "../../../components/DescriptionAdder"
 import ErrorMsg from "../../../components/ErrorMsg"
 import ImageAdder from "../../../components/ImageAdder"
-import IngrediantListDescription from "../../../components/IngrediantListDescription"
-import IngrediantListImage from "../../../components/IngrediantListImage"
+import RecipeDescription from "../../../components/RecipeDescription"
+import RecipeImage from "../../../components/RecipeImage"
 import { handleNonAxiosError } from "../../../helpers/handleAxiosError"
-import IngrediantList from "../../../models/IngrediantList"
+import Recipe from "../../../models/Recipe"
 
 interface ExtrasProps {
-    ingrediantList: IngrediantList
-    onChange?: (ingrediantList: IngrediantList) => void
+    recipe: Recipe
+    onChange?: (recipe: Recipe) => void
     allowEdit?: boolean
 }
 
-const Extras = ({ ingrediantList, onChange, allowEdit }: ExtrasProps) => {
+const Extras = ({ recipe, onChange, allowEdit }: ExtrasProps) => {
     const [submitting, setSubitting] = useImmer(false)
     const [errorMsg, setErrorMsg] = useImmer("")
     const [showDescription, setShowDescription] = useImmer(false)
-    const ingrediantListDescriptionRef = useRef()
+    const recipeDescriptionRef = useRef()
 
     useEffect(() => {
-        if (submitting && ingrediantList.imageUrl) {
+        if (submitting && recipe.imageUrl) {
             setSubitting(false)
         }
-    }, [submitting, ingrediantList.imageUrl, setSubitting])
+    }, [submitting, recipe.imageUrl, setSubitting])
 
     const handleOnUpload = async (file: File) => {
         if (!onChange) {
@@ -40,10 +40,10 @@ const Extras = ({ ingrediantList, onChange, allowEdit }: ExtrasProps) => {
         setSubitting(true)
         try {
             const image = await apiImage.upload(formdata)
-            const newIngrediantList = produce(ingrediantList, (draft) => {
+            const newRecipe = produce(recipe, (draft) => {
                 draft.imageUrl = image.url
             })
-            onChange(newIngrediantList)
+            onChange(newRecipe)
         } catch (err) {
             handleNonAxiosError(err)
             setErrorMsg("Sorry something went wrong.")
@@ -54,10 +54,10 @@ const Extras = ({ ingrediantList, onChange, allowEdit }: ExtrasProps) => {
         if (!onChange) {
             return
         }
-        const newIngrediantList = produce(ingrediantList, (draft) => {
+        const newRecipe = produce(recipe, (draft) => {
             draft.imageUrl = ""
         })
-        onChange(newIngrediantList)
+        onChange(newRecipe)
     }
 
     const handleDescriptionClick = () => {
@@ -68,20 +68,20 @@ const Extras = ({ ingrediantList, onChange, allowEdit }: ExtrasProps) => {
         if (!onChange) {
             return
         }
-        const newIngrediantList = produce(ingrediantList, (draft) => {
+        const newRecipe = produce(recipe, (draft) => {
             draft.description = e.target.value
         })
-        onChange(newIngrediantList)
+        onChange(newRecipe)
     }
 
-    const renderDescription = ingrediantList.description || showDescription
-    const renderImage = ingrediantList.imageUrl || submitting
+    const renderDescription = recipe.description || showDescription
+    const renderImage = recipe.imageUrl || submitting
 
     return (
         <div>
             {renderImage && (
-                <IngrediantListImage
-                    url={ingrediantList.imageUrl}
+                <RecipeImage
+                    url={recipe.imageUrl}
                     isLoading={submitting}
                     onDelete={handleOnDelete}
                     allowEdit={allowEdit}
@@ -97,20 +97,20 @@ const Extras = ({ ingrediantList, onChange, allowEdit }: ExtrasProps) => {
             )}
             {errorMsg && <ErrorMsg css={{ marginTop: 10 }}>{errorMsg}</ErrorMsg>}
             <CSSTransition
-                nodeRef={ingrediantListDescriptionRef}
+                nodeRef={recipeDescriptionRef}
                 in={showDescription}
                 timeout={200}
-                classNames="ingrediantList-description"
+                classNames="recipe-description"
             >
                 <>
                     {renderDescription && (
-                        <IngrediantListDescription
+                        <RecipeDescription
                             sx={{
                                 marginTop: "10px",
                             }}
-                            ref={ingrediantListDescriptionRef}
+                            ref={recipeDescriptionRef}
                             onChange={handleDescriptionChange}
-                            value={ingrediantList.description}
+                            value={recipe.description}
                         />
                     )}
                 </>

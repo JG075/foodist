@@ -2,9 +2,9 @@ import React from "react"
 import TextField, { StandardTextFieldProps } from "@mui/material/TextField"
 import { omit } from "lodash"
 
-export interface IngrediantListDescriptionProps extends StandardTextFieldProps {}
+export interface RecipeDescriptionProps extends StandardTextFieldProps {}
 
-const IngrediantListDescription = React.forwardRef((props: IngrediantListDescriptionProps, ref) => {
+const RecipeDescription = React.forwardRef((props: RecipeDescriptionProps, ref) => {
     return (
         <TextField
             sx={{ width: "100%", ...props.sx }}
@@ -19,4 +19,4 @@ const IngrediantListDescription = React.forwardRef((props: IngrediantListDescrip
     )
 })
 
-export default IngrediantListDescription
+export default RecipeDescription

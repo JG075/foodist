@@ -9,7 +9,7 @@ import Ingrediant from "../models/Ingrediant"
 import IngrediantItem, { IngrediantItemProps } from "./IngrediantItem"
 import theme from "../theme"
 
-export interface IngrediantListProps {
+export interface RecipeProps {
     list: Ingrediant[]
     onItemDelete: (id: string) => void
     onItemCheck: (id: string) => void
@@ -20,7 +20,7 @@ export interface IngrediantListProps {
     makeForQty: TextFieldProps["value"]
 }
 
-const IngrediantList = ({
+const Recipe = ({
     list,
     onItemDelete,
     onItemCheck,
@@ -29,11 +29,11 @@ const IngrediantList = ({
     onUncheckAll,
     makeForQty,
     onMakeForChange,
-}: IngrediantListProps) => {
+}: RecipeProps) => {
     const ingrediantItems = list.map((item, i) => {
         const itemRef: Ref<HTMLLIElement> = createRef()
         return (
-            <CSSTransition key={item.id} timeout={300} classNames="ingrediantList-item" nodeRef={itemRef}>
+            <CSSTransition key={item.id} timeout={300} classNames="recipe-item" nodeRef={itemRef}>
                 <IngrediantItem
                     key={item.id}
                     item={item}
@@ -116,4 +116,4 @@ const IngrediantList = ({
     )
 }
 
-export default IngrediantList
+export default Recipe
