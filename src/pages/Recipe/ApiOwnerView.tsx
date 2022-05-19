@@ -7,14 +7,15 @@ import debounce from "lodash/debounce"
 import Recipe from "../../models/Recipe"
 import ListSaveStatus, { ListSaveStates } from "../../components/ListSaveStatus"
 import apiRecipe from "../../api/Recipe"
-import DeleteListButton from "../../components/DeleteListButton"
-import DeleteListDialog from "../../components/DeleteListDialog"
+import DeleteListButton from "../../components/DeleteRecipeButton"
+import DeleteRecipeDialog from "../../components/DeleteRecipeDialog"
 import Name from "./Components/Name"
 import Serves from "./Components/Serves"
 import Adder from "./Components/Adder"
 import List from "./Components/List"
 import { mq } from "../../sharedStyles"
 import Extras from "./Components/Extras"
+import DeleteRecipeButton from "../../components/DeleteRecipeButton"
 
 interface ApiOwnerViewProps {
     recipe: Recipe
@@ -88,8 +89,8 @@ const ApiOwnerView = ({ recipe, onChange }: ApiOwnerViewProps) => {
                 }}
             >
                 <ListSaveStatus saveState={saveState} />
-                <DeleteListButton onClick={handleDeleteClick} sx={{ marginLeft: "10px" }} />
-                <DeleteListDialog
+                <DeleteRecipeButton onClick={handleDeleteClick} sx={{ marginLeft: "10px" }} />
+                <DeleteRecipeDialog
                     isOpen={showConfirmModal}
                     onClose={handleConfirmClose}
                     onDelete={handleOnDelete}

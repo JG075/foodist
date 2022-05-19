@@ -7,7 +7,7 @@ import App from "./App"
 import reportWebVitals from "./reportWebVitals"
 import Signup from "./pages/Signup"
 import Signin from "./pages/Signin"
-import ListMaker from "./pages/ListMaker"
+import Recipe from "./pages/Recipe"
 import Lists from "./pages/Lists"
 import { ProvideAuth } from "./hooks/auth"
 import { useAuth } from "./hooks/auth"
@@ -52,7 +52,7 @@ const PublicRoute = ({ children, ...rest }: { children: ReactElement }) => {
 
 const IndexPage = () => {
     const { user } = useAuth()
-    return user ? <Lists user={user} /> : <ListMaker useLocalView />
+    return user ? <Lists user={user} /> : <Recipe useLocalView />
 }
 
 const Index = () => {
@@ -81,7 +81,7 @@ const Index = () => {
                             />
                             <Route path="/users/:username">
                                 <Route path="/users/:username/recipes" element={<Lists />} />
-                                <Route path="/users/:username/recipes/:id" element={<ListMaker />} />
+                                <Route path="/users/:username/recipes/:id" element={<Recipe />} />
                             </Route>
                         </Route>
                     </Routes>

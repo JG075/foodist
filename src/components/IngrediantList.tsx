@@ -9,7 +9,9 @@ import Ingrediant from "../models/Ingrediant"
 import IngrediantItem, { IngrediantItemProps } from "./IngrediantItem"
 import theme from "../theme"
 
-export interface RecipeProps {
+const transitionTimeout = process.env.NODE_ENV === "test" ? 0 : 300
+
+export interface IngrediantListProps {
     list: Ingrediant[]
     onItemDelete: (id: string) => void
     onItemCheck: (id: string) => void
@@ -20,7 +22,7 @@ export interface RecipeProps {
     makeForQty: TextFieldProps["value"]
 }
 
-const Recipe = ({
+const IngrediantList = ({
     list,
     onItemDelete,
     onItemCheck,
@@ -29,11 +31,11 @@ const Recipe = ({
     onUncheckAll,
     makeForQty,
     onMakeForChange,
-}: RecipeProps) => {
+}: IngrediantListProps) => {
     const ingrediantItems = list.map((item, i) => {
         const itemRef: Ref<HTMLLIElement> = createRef()
         return (
-            <CSSTransition key={item.id} timeout={300} classNames="recipe-item" nodeRef={itemRef}>
+            <CSSTransition key={item.id} timeout={transitionTimeout} classNames="ingrediantList-item" nodeRef={itemRef}>
                 <IngrediantItem
                     key={item.id}
                     item={item}
@@ -116,4 +118,4 @@ const Recipe = ({
     )
 }
 
-export default Recipe
+export default IngrediantList

@@ -8,7 +8,7 @@ import DialogTitle from "@mui/material/DialogTitle"
 
 import ErrorMsg from "./ErrorMsg"
 
-interface DeleteListDialogProps {
+interface DeleteRecipeDialogProps {
     isOpen: DialogProps["open"]
     onClose: ButtonProps["onClick"]
     onDelete: LoadingButtonProps["onClick"]
@@ -16,7 +16,7 @@ interface DeleteListDialogProps {
     errorMsg: ReactNode
 }
 
-const DeleteListDialog = ({ isOpen, onClose, onDelete, isDeleting, errorMsg }: DeleteListDialogProps) => {
+const DeleteRecipeDialog = ({ isOpen, onClose, onDelete, isDeleting, errorMsg }: DeleteRecipeDialogProps) => {
     return (
         <Dialog
             open={isOpen}
@@ -24,7 +24,7 @@ const DeleteListDialog = ({ isOpen, onClose, onDelete, isDeleting, errorMsg }: D
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >
-            <DialogTitle id="alert-dialog-title">{"Are you sure you want to delete this list?"}</DialogTitle>
+            <DialogTitle id="alert-dialog-title">{"Are you sure you want to delete this recipe?"}</DialogTitle>
             <DialogActions>
                 <Button onClick={onClose}>Cancel</Button>
                 <LoadingButton loading={isDeleting} onClick={onDelete} color="error" autoFocus>
@@ -42,4 +42,4 @@ const DeleteListDialog = ({ isOpen, onClose, onDelete, isDeleting, errorMsg }: D
     )
 }
 
-export default DeleteListDialog
+export default DeleteRecipeDialog

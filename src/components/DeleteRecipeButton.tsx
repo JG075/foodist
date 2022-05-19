@@ -2,12 +2,12 @@ import { LoadingButton, LoadingButtonProps } from "@mui/lab"
 import DeleteIcon from "@mui/icons-material/Delete"
 import { SxProps } from "@mui/system"
 
-interface DeleteListButtonProps {
+interface DeleteRecipeButtonProps {
     onClick: LoadingButtonProps["onClick"]
     sx: SxProps
 }
 
-const DeleteListButton = ({ onClick, sx }: DeleteListButtonProps) => {
+const DeleteRecipeButton = ({ onClick, sx }: DeleteRecipeButtonProps) => {
     return (
         <LoadingButton
             sx={{
@@ -16,7 +16,7 @@ const DeleteListButton = ({ onClick, sx }: DeleteListButtonProps) => {
                 ".MuiButton-startIcon": { margin: "0" },
                 ...sx,
             }}
-            aria-label="delete list"
+            aria-label="delete recipe"
             startIcon={<DeleteIcon />}
             variant="outlined"
             onClick={onClick}
@@ -24,4 +24,4 @@ const DeleteListButton = ({ onClick, sx }: DeleteListButtonProps) => {
     )
 }
 
-export default DeleteListButton
+export default DeleteRecipeButton

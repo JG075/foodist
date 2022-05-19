@@ -1,7 +1,7 @@
 import { produce } from "immer"
 import { useMemo } from "react"
 
-import Recipe from "../../../components/Recipe"
+import IngrediantList from "../../../components/IngrediantList"
 import RecipeModel from "../../../models/Recipe"
 import Qty from "../../../lib/qty"
 import EmptyIngrediantsMsg from "../../../components/EmptyIngrediantsMsg"
@@ -79,7 +79,7 @@ const List = ({ recipe, onChange, allowEdit, onMakeForChange, makeForQty }: List
     }
 
     return (
-        <Recipe
+        <IngrediantList
             list={visibleRecipe.ingrediants}
             onItemDelete={handleItemDelete}
             onItemCheck={handleItemCheck}

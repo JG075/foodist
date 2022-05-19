@@ -4,7 +4,7 @@ import axios from "axios"
 import apiRecipe from "../api/Recipe"
 import Ingrediant from "../models/Ingrediant"
 import ModelRecipe from "../models/Recipe"
-import setup, { setupWithMemoryRouter } from "../testHelpers"
+import setup, { queryFactory, setupWithMemoryRouter } from "../testHelpers"
 import Lists from "./Lists"
 import Qty from "../lib/qty"
 import Recipe from "../models/Recipe"
@@ -49,7 +49,12 @@ const listsMock = [
     }),
 ]
 
-const getRecipeListButton = (finderFn = screen.getByRole) => finderFn("button", { name: /create recipe/i })
+const recipeListButton = queryFactory({ matcher: "Role" }, "button", { name: /create recipe/i })
+const progressBar = queryFactory({ matcher: "Role" }, "progressbar")
+const createListProgressBar = queryFactory(
+    { matcher: "Role", getElement: () => within(recipeListButton.get()) },
+    "progressbar"
+)
 
 const testUser = new User({ username: "bob", email: "bob@test.com" })
 const sharedTestCases = [[<Lists />], [<Lists user={testUser} />]]
@@ -59,7 +64,7 @@ describe("As any user", () => {
         const unresolvedPromise = new Promise<any[]>((resolve, reject) => {})
         apiRecipeMock.getAll.mockReturnValue(unresolvedPromise)
         setup(Component)
-        expect(await screen.findByRole("progressbar")).toBeInTheDocument()
+        expect(await progressBar.find()).toBeInTheDocument()
     })
 
     test.each(sharedTestCases)(
@@ -67,7 +72,7 @@ describe("As any user", () => {
         async (Component) => {
             apiRecipeMock.getAll.mockResolvedValue(listsMock)
             setup(Component)
-            await waitFor(() => expect(screen.queryByRole("progressbar")).not.toBeInTheDocument())
+            await waitFor(() => expect(progressBar.query()).not.toBeInTheDocument())
         }
     )
 
@@ -115,7 +120,7 @@ describe("As a user viewing another user's list", () => {
         setup(<Lists />)
         const errMsg = "This user does not have any lists to show."
         expect(await screen.findByText(errMsg)).toBeInTheDocument()
-        await waitFor(() => expect(screen.queryByRole("progressbar")).not.toBeInTheDocument())
+        await waitFor(() => expect(progressBar.query()).not.toBeInTheDocument())
     })
 
     test("If a list has no name I see 'Unnamed list' as it's name", async () => {
@@ -131,7 +136,7 @@ describe("As a user viewing another user's list", () => {
 
     test("The 'Create Recipe' button is not shown", async () => {
         setup(<Lists />)
-        await waitFor(() => expect(getRecipeListButton(screen.queryByRole)).not.toBeInTheDocument())
+        await waitFor(() => expect(recipeListButton.query()).not.toBeInTheDocument())
     })
 
     test("I see each ingrediant list from the list returned by the API", async () => {
@@ -168,20 +173,20 @@ describe("As a logged in user viewing the home page (useAuthUser is enabled)", (
         setup(<Lists user={testUser} />)
         const errMsg = "You don't have any lists to show. Make one!"
         expect(await screen.findByText(errMsg)).toBeInTheDocument()
-        await waitFor(() => expect(screen.queryByRole("progressbar")).not.toBeInTheDocument())
+        await waitFor(() => expect(progressBar.query()).not.toBeInTheDocument())
     })
 
     test("If I click the 'Create List' button, I should see a loading icon", async () => {
         apiRecipeMock.getAll.mockResolvedValue([])
         const { user } = setup(<Lists user={testUser} />)
-        await user.click(getRecipeListButton())
-        expect(await within(getRecipeListButton()).findByRole("progressbar")).toBeInTheDocument()
+        await user.click(recipeListButton.get())
+        expect(await createListProgressBar.find()).toBeInTheDocument()
     })
 
     test("If I click the 'Create List' button, the API to create a list should be called", async () => {
         apiRecipeMock.getAll.mockResolvedValue([])
         const { user } = setup(<Lists user={testUser} />)
-        await user.click(getRecipeListButton())
+        await user.click(recipeListButton.get())
         expect(apiRecipeMock.post).toBeCalledTimes(1)
         const emptyList = new ModelRecipe({ authorId: testUser.username })
         expect(apiRecipeMock.post.mock.calls[0][0]).toMatchObject(emptyList.serialize())
@@ -192,10 +197,10 @@ describe("As a logged in user viewing the home page (useAuthUser is enabled)", (
         apiRecipeMock.getAll.mockResolvedValue([])
         apiRecipeMock.post.mockRejectedValue({ response: { status: 500 } })
         const { user } = setup(<Lists user={testUser} />)
-        await user.click(getRecipeListButton())
+        await user.click(recipeListButton.get())
         const errMsg = "Sorry something went wrong."
         expect(await screen.findByText(errMsg)).toBeInTheDocument()
-        expect(within(getRecipeListButton()).queryByRole("progressbar")).not.toBeInTheDocument()
+        expect(createListProgressBar.query()).not.toBeInTheDocument()
     })
 
     test("If I click the 'Create List' button, and the response is successful, I should be taken to the list page", async () => {
@@ -203,7 +208,7 @@ describe("As a logged in user viewing the home page (useAuthUser is enabled)", (
         apiRecipeMock.getAll.mockResolvedValue([])
         apiRecipeMock.post.mockResolvedValue({ id: listId })
         const { user } = setup(<Lists user={testUser} />)
-        await user.click(getRecipeListButton())
+        await user.click(recipeListButton.get())
         await waitFor(() => expect(window.location.pathname).toEqual(`/users/${testUser.username}/recipes/${listId}`))
     })
 

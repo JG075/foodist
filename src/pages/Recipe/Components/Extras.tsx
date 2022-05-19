@@ -13,6 +13,8 @@ import RecipeImage from "../../../components/RecipeImage"
 import { handleNonAxiosError } from "../../../helpers/handleAxiosError"
 import Recipe from "../../../models/Recipe"
 
+const transitionTimeout = process.env.NODE_ENV === "test" ? 0 : 300
+
 interface ExtrasProps {
     recipe: Recipe
     onChange?: (recipe: Recipe) => void
@@ -99,7 +101,7 @@ const Extras = ({ recipe, onChange, allowEdit }: ExtrasProps) => {
             <CSSTransition
                 nodeRef={recipeDescriptionRef}
                 in={showDescription}
-                timeout={200}
+                timeout={transitionTimeout}
                 classNames="recipe-description"
             >
                 <>
