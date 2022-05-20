@@ -7,7 +7,6 @@ import debounce from "lodash/debounce"
 import Recipe from "../../models/Recipe"
 import ListSaveStatus, { ListSaveStates } from "../../components/ListSaveStatus"
 import apiRecipe from "../../api/Recipe"
-import DeleteListButton from "../../components/DeleteRecipeButton"
 import DeleteRecipeDialog from "../../components/DeleteRecipeDialog"
 import Name from "./Components/Name"
 import Serves from "./Components/Serves"
@@ -17,17 +16,17 @@ import { mq } from "../../sharedStyles"
 import Extras from "./Components/Extras"
 import DeleteRecipeButton from "../../components/DeleteRecipeButton"
 
-interface ApiOwnerViewProps {
+interface OwnerViewProps {
     recipe: Recipe
-    onChange: (recipe: Recipe) => void
 }
 
-const ApiOwnerView = ({ recipe, onChange }: ApiOwnerViewProps) => {
+const OwnerView = ({ recipe: initialRecipe }: OwnerViewProps) => {
     const [saveState, setSaveState] = useImmer(ListSaveStates.SAVED)
     const [isDeleting, setIsDeleting] = useImmer(false)
     const [showConfirmModal, setShowConfirmModal] = useImmer(false)
     const [deleteErrMsg, setDeleteErrMsg] = useImmer("")
     const [makeForQty, setMakeForQty] = useImmer<number | null>(null)
+    const [recipe, setRecipe] = useImmer(initialRecipe)
     const navigate = useNavigate()
 
     const apiUpdate = debounce(async (newRecipe) => {
@@ -43,7 +42,7 @@ const ApiOwnerView = ({ recipe, onChange }: ApiOwnerViewProps) => {
     const apiUpdateRef = useRef(apiUpdate)
 
     const handleOnChange = (newRecipe: Recipe) => {
-        onChange(newRecipe)
+        setRecipe(newRecipe)
         apiUpdateRef.current(newRecipe)
     }
 
@@ -113,4 +112,4 @@ const ApiOwnerView = ({ recipe, onChange }: ApiOwnerViewProps) => {
     )
 }
 
-export default ApiOwnerView
+export default OwnerView

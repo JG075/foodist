@@ -71,7 +71,7 @@ class Recipe {
     }
 
     get displayName() {
-        return this.name || "Unnamed list"
+        return this.name || "Unnamed recipe"
     }
 }
 

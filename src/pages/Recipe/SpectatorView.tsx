@@ -12,11 +12,11 @@ import { mergeWith, omit } from "lodash"
 import PageState, { PageStates } from "../../components/PageState"
 import Extras from "./Components/Extras"
 
-interface ApiNonOwnerViewProps {
+interface SpectatorViewProps {
     recipe: Recipe
 }
 
-const ApiNonOwnerView = ({ recipe }: ApiNonOwnerViewProps) => {
+const SpectatorView = ({ recipe }: SpectatorViewProps) => {
     const [makeForQty, setMakeForQty] = useImmer<null | number>(null)
     const localStorageKey = recipe ? `recipe-${recipe?.id}` : ""
     const [localList, setLocalList] = useLocalState<null | Recipe>(null, localStorageKey, Recipe)
@@ -88,4 +88,4 @@ const ApiNonOwnerView = ({ recipe }: ApiNonOwnerViewProps) => {
     )
 }
 
-export default ApiNonOwnerView
+export default SpectatorView

@@ -123,7 +123,7 @@ describe("As a user viewing another user's list", () => {
         await waitFor(() => expect(progressBar.query()).not.toBeInTheDocument())
     })
 
-    test("If a list has no name I see 'Unnamed list' as it's name", async () => {
+    test("If a list has no name I see 'Unnamed recipe' as it's name", async () => {
         apiRecipeMock.getAll.mockResolvedValue(listsMock)
         const listItem = new Recipe({
             id: "qwer23",
@@ -131,7 +131,7 @@ describe("As a user viewing another user's list", () => {
         })
         apiRecipeMock.getAll.mockResolvedValue([listItem])
         setup(<Lists />)
-        expect(await screen.findByText("Unnamed list")).toBeInTheDocument()
+        expect(await screen.findByText("Unnamed recipe")).toBeInTheDocument()
     })
 
     test("The 'Create Recipe' button is not shown", async () => {
