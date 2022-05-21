@@ -14,6 +14,7 @@
         "aws-sdk": "^2.1132.0",
         "axios": "^0.26.1",
         "create-react-app": "^5.0.1",
+        "dotenv": "^16.0.1",
         "js-quantities": "^1.7.6",
         "lodash": "^4.17.21",
         "mathjs": "^10.4.3",

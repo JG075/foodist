@@ -4,6 +4,7 @@
  * Module dependencies.
  */
 
+require("dotenv").config()
 const express = require("express")
 const hash = require("pbkdf2-password")()
 const session = require("express-session")
@@ -19,12 +20,12 @@ const multer = require("multer")
 
 const oneDay = 1000 * 60 * 60 * 24
 
-const S3_BUCKET = ***REMOVED***
-const REGION = ***REMOVED***
+const S3_BUCKET = process.env.S3_BUCKET
+const REGION = process.env.S3_REGION
 
 AWS.config.update({
-    accessKeyId: ***REMOVED***,
-    secretAccessKey: ***REMOVED***,
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 })
 
 const myBucket = new AWS.S3({
