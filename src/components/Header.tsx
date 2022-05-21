@@ -33,9 +33,9 @@ const Header = ({ user, onSignout }: HeaderProps) => {
                     fontWeight: "bold",
                 }}
             >
-                <a css={{ textDecoration: "none", color: theme.palette.primary.dark }} href="/">
+                <Link css={{ textDecoration: "none", color: theme.palette.primary.dark }} to="/">
                     Foodist
-                </a>
+                </Link>
             </span>
             <nav
                 css={{

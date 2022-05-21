@@ -1,16 +1,14 @@
 {
     "name": "foodist",
     "version": "0.1.0",
-    "private": true,
+    "private": false,
+    "homepage": "https://jg075.github.io/foodist/",
     "dependencies": {
         "@emotion/react": "^11.9.0",
         "@emotion/styled": "^11.8.1",
         "@mui/icons-material": "^5.6.1",
         "@mui/lab": "^5.0.0-alpha.76",
         "@mui/material": "^5.6.1",
-        "@testing-library/jest-dom": "^5.16.4",
-        "@testing-library/react": "^13.0.1",
-        "@testing-library/user-event": "^14.1.0",
         "aws-sdk": "^2.1132.0",
         "axios": "^0.26.1",
         "create-react-app": "^5.0.1",
@@ -31,6 +29,9 @@
         "web-vitals": "^2.1.4"
     },
     "devDependencies": {
+        "@testing-library/jest-dom": "^5.16.4",
+        "@testing-library/react": "^13.0.1",
+        "@testing-library/user-event": "^14.1.0",
         "@types/jest": "^27.4.1",
         "@types/js-quantities": "^1.6.3",
         "@types/lodash": "^4.14.182",
@@ -43,6 +44,7 @@
         "cors": "^2.8.5",
         "express": "^4.17.3",
         "express-session": "^1.17.2",
+        "gh-pages": "^4.0.0",
         "json-server": "^0.17.0",
         "pbkdf2-password": "^1.2.1"
     },
@@ -50,7 +52,9 @@
         "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
-        "eject": "react-scripts eject"
+        "eject": "react-scripts eject",
+        "predeploy": "npm run build",
+        "deploy": "gh-pages -d build"
     },
     "eslintConfig": {
         "extends": [

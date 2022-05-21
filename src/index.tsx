@@ -58,7 +58,7 @@ const IndexPage = () => {
 const Index = () => {
     return (
         <ProvideAuth>
-            <Router>
+            <Router basename={process.env.PUBLIC_URL}>
                 <React.StrictMode>
                     <Routes>
                         <Route path="/" element={<App />}>
