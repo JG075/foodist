@@ -25,6 +25,9 @@ const IngrediantItem = React.forwardRef<HTMLLIElement, IngrediantItemProps>(
                     borderRadius: "5px",
                     padding: "6px 12px",
                     marginBottom: "10px",
+                    "&:last-child": {
+                        marginBottom: 0,
+                    },
                 }}
                 css={
                     checked && {

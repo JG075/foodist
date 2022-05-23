@@ -9,7 +9,7 @@ export default class Ingrediant {
     qty: Qty
     checked: boolean
 
-    constructor({ id = uuidv4(), name = "", qty = new Qty(), checked = false }) {
+    constructor({ id = uuidv4(), name = "", qty = new Qty("1"), checked = false }) {
         this.id = id
         this.name = name
         this.qty = qty

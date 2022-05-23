@@ -226,7 +226,7 @@ export const runEditTests = (
             const recipe = new RecipeModel({})
             const { user } = await setupFn({ recipe })
             await addItemToList(user)("3 cherries")
-            const listItems = listItem.getAll()
+            const listItems = await listItem.findAll()
             expect(listItems).toHaveLength(1)
             const firstItem = listItems[0]
             expect(firstItem).toHaveTextContent("Cherries")

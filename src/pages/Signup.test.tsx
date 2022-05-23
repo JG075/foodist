@@ -4,7 +4,6 @@ import axios from "axios"
 import setup, { queryFactory } from "../testHelpers"
 import Signup from "./Signup"
 import { useAuth } from "../hooks/auth"
-import apiRecipe from "../api/Recipe"
 import ModelRecipe from "../models/Recipe"
 import ModelIngrediant from "../models/Ingrediant"
 import Qty from "../lib/qty"
@@ -15,7 +14,6 @@ jest.mock("../api/Recipe")
 jest.mock("../hooks/auth")
 jest.mock("axios")
 
-const apiRecipeMock = apiRecipe as jest.Mocked<typeof apiRecipe>
 const useAuthMock = useAuth as jest.Mock<Partial<ReturnType<typeof useAuth>>>
 const axiosMock = axios as jest.Mocked<typeof axios>
 
@@ -175,10 +173,12 @@ test("If I enter valid data it should make a post request", async () => {
     setup(<Signup />)
     enterValidData()
     await waitFor(() => expect(signupMock).toBeCalledTimes(1))
-    const arg = signupMock.mock.calls[0][0]
-    expect(arg.username).toEqual(username)
-    expect(arg.email).toEqual(email)
-    expect(arg.password).toEqual(password)
+    const {
+        user: { username, email, password },
+    } = signupMock.mock.calls[0][0]
+    expect(username).toEqual(username)
+    expect(email).toEqual(email)
+    expect(password).toEqual(password)
 })
 
 test("If the username I entered is taken I should see a useful message", async () => {
@@ -236,15 +236,14 @@ test("If I enter valid data I should be taken to my home page", async () => {
     await waitFor(() => expect(submitButton.get()).toHaveAttribute("disabled"))
     resolveCb({ username })
     await waitForElementToBeRemoved(() => within(submitButton.get()).queryByRole("progressbar"))
-    expect(window.location.pathname).toEqual("/")
 })
 
-test("If there is Recipe in the state it should set the authorId and make a post request", async () => {
+test("If there is a non empty Recipe in the state it should send it along with the user", async () => {
     const authorId = "John"
     const res = Promise.resolve<User>(new User({ username: authorId, email: "" }))
-    const signupMock = jest.fn(() => res)
+    const signupMock = jest.fn((signupModel: SignUpModel) => res)
     useAuthMock.mockReturnValue({ signup: signupMock })
-    const recipe = new ModelRecipe({
+    const recipeMock = new ModelRecipe({
         name: "fruit recipe",
         ingrediants: [
             new ModelIngrediant({
@@ -259,17 +258,31 @@ test("If there is Recipe in the state it should set the authorId and make a post
     })
     setup(<Signup />, {
         localStorage: {
+            recipe: JSON.stringify(recipeMock.serialize()),
+        },
+    })
+    enterValidData()
+    await waitFor(() => {
+        const { recipe } = signupMock.mock.calls[0][0]
+        expect(recipe).toMatchObject(recipeMock)
+    })
+})
+
+test("If there is an empty Recipe in the state it should not send it in the signup request", async () => {
+    const authorId = "John"
+    const res = Promise.resolve<User>(new User({ username: authorId, email: "" }))
+    const signupMock = jest.fn((signupModel: SignUpModel, recipe?: ModelRecipe) => res)
+    useAuthMock.mockReturnValue({ signup: signupMock })
+    const recipe = new ModelRecipe({})
+    setup(<Signup />, {
+        localStorage: {
             recipe: JSON.stringify(recipe.serialize()),
         },
     })
-    apiRecipeMock.post.mockResolvedValue(Promise.resolve({}))
     enterValidData()
     let arg
     await waitFor(() => {
-        arg = apiRecipeMock.post.mock.calls[0][0]
-        expect(arg.authorId).toEqual(authorId)
+        arg = signupMock.mock.calls[0][1]
+        expect(arg).toEqual(undefined)
     })
-    recipe.authorId = authorId
-    expect(arg).toMatchObject(recipe)
-    await waitFor(() => expect(window.location.pathname).toEqual("/"))
 })

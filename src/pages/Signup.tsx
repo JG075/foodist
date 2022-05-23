@@ -1,13 +1,10 @@
 /** @jsxImportSource @emotion/react */
-import { useNavigate } from "react-router-dom"
 import { LoadingButton } from "@mui/lab"
 import { TextField } from "@mui/material"
 import { useForm, Controller, FieldErrors } from "react-hook-form"
-import { produce } from "immer"
 import { useImmer } from "use-immer"
 
 import { capitalize } from "../helpers/string"
-import apiRecipe from "../api/Recipe"
 import useLocalState from "../hooks/useLocalState"
 import Title from "../components/Title"
 import { useAuth } from "../hooks/auth"
@@ -62,7 +59,6 @@ const Signup = () => {
     })
     const [submitting, setSubmitting] = useImmer(false)
     const [formError, setFormError] = useImmer("")
-    const navigate = useNavigate()
     const [recipe] = useLocalState<Recipe | null>(null, "recipe", Recipe)
     const { signup } = useAuth()
 
@@ -73,20 +69,20 @@ const Signup = () => {
         }
         setFormError("")
         setSubmitting(true)
-        const formattedData = {
-            username: data.username,
-            email: data.email,
-            password: data.password,
+        const payload = {
+            user: {
+                username: data.username,
+                email: data.email,
+                password: data.password,
+            },
         }
         try {
-            const res = await signup(formattedData)
-            if (recipe instanceof Recipe) {
-                const updatedRecipe = produce(recipe, (draft) => {
-                    draft.authorId = res.username
-                })
-                await apiRecipe.post(updatedRecipe)
+            if (recipe && !recipe.isEmpty()) {
+                const newPayload = { ...payload, recipe }
+                await signup(newPayload)
+            } else {
+                await signup(payload)
             }
-            navigate("/")
         } catch (err) {
             const error = handleNonAxiosError(err)
             if (error.response && /duplicate/i.test(error.response.data)) {

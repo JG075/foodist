@@ -1,9 +1,29 @@
-.ingrediantList-item-enter {
+.ingrediantList-enter {
+    opacity: 0;
+}
+
+.ingrediantList-enter-active {
+    opacity: 1;
+    transition: opacity 100ms ease-in-out;
+}
+
+.ingrediantList-exit {
+    opacity: 1;
+}
+
+.ingrediantList-exit-active {
+    opacity: 0;
+    transition: opacity 100ms ease-in-out;
+}
+
+.ingrediantList-item-enter,
+.ingrediantList-item-appear {
     opacity: 0;
     margin: -66px 0 10px 0 !important;
 }
 
-.ingrediantList-item-enter-active {
+.ingrediantList-item-enter-active,
+.ingrediantList-item-appear-active {
     opacity: 1;
     margin: 0 0 10px 0 !important;
     transition: all 300ms ease-in-out;

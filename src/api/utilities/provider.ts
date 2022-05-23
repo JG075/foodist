@@ -1,7 +1,7 @@
 import axios from "axios"
 import { handleResponse, handleError } from "./response"
 
-const BASE_URL = "http://localhost:3001"
+const BASE_URL = process.env.NODE_ENV === "production" ? process.env.REACT_APP_API_URL : "http://localhost:3001"
 
 const instance = axios.create({
     withCredentials: true,

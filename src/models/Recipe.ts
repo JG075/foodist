@@ -1,4 +1,5 @@
 import { immerable } from "immer"
+import { isEqual } from "lodash"
 
 import Ingrediant from "./Ingrediant"
 
@@ -62,16 +63,21 @@ class Recipe {
         }
     }
 
-    belongsTo(username: string) {
-        return this.authorId === username
-    }
-
     get firstCheckedIndex() {
         return this.ingrediants.findIndex(({ checked }) => checked === true)
     }
 
     get displayName() {
         return this.name || "Unnamed recipe"
+    }
+
+    belongsTo(username: string) {
+        return this.authorId === username
+    }
+
+    isEmpty() {
+        const emptyRecipe = new Recipe({})
+        return isEqual(this, emptyRecipe)
     }
 }
 

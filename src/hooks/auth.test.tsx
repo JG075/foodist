@@ -122,9 +122,11 @@ test("The signup function calls the auth API and sets the users in the state", a
     mockedUseLocalState.mockImplementation(useImmer)
     mockedApiAuth.signup.mockResolvedValue(userMock)
     const data = {
-        username: "test",
-        password: "pass",
-        email: "testemail",
+        user: {
+            username: "test",
+            password: "pass",
+            email: "testemail",
+        },
     }
     const { user } = setup(
         <ProvideAuth>

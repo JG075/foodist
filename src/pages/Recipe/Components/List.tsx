@@ -1,10 +1,13 @@
 import { produce } from "immer"
-import { useMemo } from "react"
+import React, { useMemo, useRef } from "react"
+import { CSSTransition, SwitchTransition } from "react-transition-group"
 
 import IngrediantList from "../../../components/IngrediantList"
 import RecipeModel from "../../../models/Recipe"
 import Qty from "../../../lib/qty"
 import EmptyIngrediantsMsg from "../../../components/EmptyIngrediantsMsg"
+
+const transitionTimeout = process.env.NODE_ENV === "test" ? 0 : undefined
 
 interface ListProps {
     recipe: RecipeModel
@@ -15,6 +18,8 @@ interface ListProps {
 }
 
 const List = ({ recipe, onChange, allowEdit, onMakeForChange, makeForQty }: ListProps) => {
+    const containerRef = useRef<HTMLDivElement>(null)
+
     const handleItemCheck = (idToCheck: string) => {
         const newList = produce(recipe, ({ ingrediants }) => {
             const itemIndex = ingrediants.findIndex(({ id }) => id === idToCheck)
@@ -74,21 +79,37 @@ const List = ({ recipe, onChange, allowEdit, onMakeForChange, makeForQty }: List
         [recipe, makeForQty]
     )
 
-    if (recipe.ingrediants.length === 0) {
-        return <EmptyIngrediantsMsg />
-    }
+    const key = recipe.ingrediants.length === 0 ? "empty" : "not-empty"
 
     return (
-        <IngrediantList
-            list={visibleRecipe.ingrediants}
-            onItemDelete={handleItemDelete}
-            onItemCheck={handleItemCheck}
-            allowEdit={allowEdit}
-            onCheckAll={handleCheckAll}
-            onUncheckAll={handleUncheckAll}
-            makeForQty={makeForQty || recipe.serves}
-            onMakeForChange={handleMakeForChange}
-        />
+        <SwitchTransition>
+            <CSSTransition
+                key={key}
+                addEndListener={(done: () => void) => {
+                    containerRef.current?.addEventListener("transitionend", done, false)
+                }}
+                timeout={transitionTimeout}
+                classNames="ingrediantList"
+                nodeRef={containerRef}
+            >
+                <div style={{ minHeight: "188px" }} ref={containerRef as React.RefObject<HTMLDivElement>}>
+                    {recipe.ingrediants.length === 0 ? (
+                        <EmptyIngrediantsMsg />
+                    ) : (
+                        <IngrediantList
+                            list={visibleRecipe.ingrediants}
+                            onItemDelete={handleItemDelete}
+                            onItemCheck={handleItemCheck}
+                            allowEdit={allowEdit}
+                            onCheckAll={handleCheckAll}
+                            onUncheckAll={handleUncheckAll}
+                            makeForQty={makeForQty || recipe.serves}
+                            onMakeForChange={handleMakeForChange}
+                        />
+                    )}
+                </div>
+            </CSSTransition>
+        </SwitchTransition>
     )
 }
 

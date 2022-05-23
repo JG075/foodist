@@ -1,5 +1,6 @@
 import apiProvider from "./utilities/provider"
 import ModelUser from "../models/User"
+import Recipe from "../models/Recipe"
 
 export interface SignInModel {
     email: string
@@ -12,9 +13,12 @@ const signin = async (model: SignInModel) => {
 }
 
 export interface SignUpModel {
-    username: string
-    email: string
-    password: string
+    user: {
+        username: string
+        email: string
+        password: string
+    }
+    recipe?: Recipe
 }
 
 const signup = async (model: SignUpModel) => {

@@ -1,0 +1,34 @@
+{
+    "recipe": [
+        {
+            "id": "testid",
+            "authorId": "test",
+            "name": "Test Ingrediant List",
+            "imageUrl": "something.png",
+            "description": "some description",
+            "serves": 2,
+            "ingrediants": [
+                {
+                    "id": "testid",
+                    "name": "test ingrediant name",
+                    "qty": "100 g",
+                    "checked": "false"
+                },
+                {
+                    "id": "testid 2",
+                    "name": "test ingrediant name 2",
+                    "qty": "100 g",
+                    "checked": "false"
+                }
+            ]
+        }
+    ],
+    "user": [
+        {
+            "username": "Test",
+            "email": "test@example.com",
+            "password": "J4aMdy9VFUSkCKE1OjObAgVKyg4goU1KQheaME1ppXppbdqub62RAby1fQwCmN/y+rzAQ5OloE4qjXcDH1h777eP1A8PhQ/CMm9R5vJWFAvTM2TQMyVnSK82t+3wU3ISB5DBEqZHfr2UXFc8isRptZOXNx4E4c8OhYZ5wnGaAZ4=",
+            "salt": "PC2wWews6330ITBjNbtHuqufEjXy+WLlJFMu0tKN2UAFXSbVsq6JJoaRedoDtdEDncsVPzjzVfd21SHCtkQFtQ=="
+        }
+    ]
+}

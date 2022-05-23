@@ -110,7 +110,14 @@ const IngrediantList = ({
                 </Button>
             </div>
             <div css={{ overflow: "hidden" }}>
-                <List dense sx={{ width: "100%", bgcolor: "background.paper", position: "relative" }}>
+                <List
+                    dense
+                    sx={{
+                        width: "100%",
+                        bgcolor: "background.paper",
+                        position: "relative",
+                    }}
+                >
                     <TransitionGroup component={null}>{ingrediantItems}</TransitionGroup>
                 </List>
             </div>
