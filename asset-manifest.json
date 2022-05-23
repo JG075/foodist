@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/foodist/static/css/main.ba2c45b1.css",
-    "main.js": "/foodist/static/js/main.c993dcd8.js",
-    "static/js/787.ca4335f8.chunk.js": "/foodist/static/js/787.ca4335f8.chunk.js",
-    "static/media/restaurant.png": "/foodist/static/media/restaurant.cbd61f697ae6582063de.png",
-    "index.html": "/foodist/index.html",
-    "main.ba2c45b1.css.map": "/foodist/static/css/main.ba2c45b1.css.map",
-    "main.c993dcd8.js.map": "/foodist/static/js/main.c993dcd8.js.map",
-    "787.ca4335f8.chunk.js.map": "/foodist/static/js/787.ca4335f8.chunk.js.map"
+    "main.css": "https://jg075.github.io/foodist/static/css/main.1f3f189e.css",
+    "main.js": "https://jg075.github.io/foodist/static/js/main.a3d5ef4a.js",
+    "static/js/787.ca4335f8.chunk.js": "https://jg075.github.io/foodist/static/js/787.ca4335f8.chunk.js",
+    "static/media/restaurant.png": "https://jg075.github.io/foodist/static/media/restaurant.cbd61f697ae6582063de.png",
+    "index.html": "https://jg075.github.io/foodist/index.html",
+    "main.1f3f189e.css.map": "https://jg075.github.io/foodist/static/css/main.1f3f189e.css.map",
+    "main.a3d5ef4a.js.map": "https://jg075.github.io/foodist/static/js/main.a3d5ef4a.js.map",
+    "787.ca4335f8.chunk.js.map": "https://jg075.github.io/foodist/static/js/787.ca4335f8.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.ba2c45b1.css",
-    "static/js/main.c993dcd8.js"
+    "static/css/main.1f3f189e.css",
+    "static/js/main.a3d5ef4a.js"
   ]
 }
