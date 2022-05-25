@@ -52,7 +52,8 @@
         "predeploy:fe": "npm run build",
         "deploy:fe": "gh-pages -d build",
         "predeploy:be": "git subtree split --prefix server -b server",
-        "deploy:be": "git push heroku server:master --force"
+        "deploy:be": "git push heroku server:master --force",
+        "postdeploy:be": "git branch -D server"
     },
     "eslintConfig": {
         "extends": [
