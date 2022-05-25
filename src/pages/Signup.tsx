@@ -59,7 +59,7 @@ const Signup = () => {
     })
     const [submitting, setSubmitting] = useImmer(false)
     const [formError, setFormError] = useImmer("")
-    const [recipe] = useLocalState<Recipe | null>(null, "recipe", Recipe)
+    const [recipe, setRecipe] = useLocalState<Recipe | null>(null, "recipe", Recipe)
     const { signup } = useAuth()
 
     const onSubmit = async (data: typeof defaultValues) => {
@@ -79,6 +79,7 @@ const Signup = () => {
         try {
             if (recipe && !recipe.isEmpty()) {
                 const newPayload = { ...payload, recipe }
+                setRecipe(null)
                 await signup(newPayload)
             } else {
                 await signup(payload)

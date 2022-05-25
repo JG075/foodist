@@ -238,7 +238,7 @@ test("If I enter valid data I should be taken to my home page", async () => {
     await waitForElementToBeRemoved(() => within(submitButton.get()).queryByRole("progressbar"))
 })
 
-test("If there is a non empty Recipe in the state it should send it along with the user", async () => {
+test("If there is a non empty Recipe in the state it should send it along with the user, and is then cleared from localStorage", async () => {
     const authorId = "John"
     const res = Promise.resolve<User>(new User({ username: authorId, email: "" }))
     const signupMock = jest.fn((signupModel: SignUpModel) => res)
@@ -256,7 +256,7 @@ test("If there is a non empty Recipe in the state it should send it along with t
             }),
         ],
     })
-    setup(<Signup />, {
+    const { localStorage } = setup(<Signup />, {
         localStorage: {
             recipe: JSON.stringify(recipeMock.serialize()),
         },
@@ -266,6 +266,7 @@ test("If there is a non empty Recipe in the state it should send it along with t
         const { recipe } = signupMock.mock.calls[0][0]
         expect(recipe).toMatchObject(recipeMock)
     })
+    expect(localStorage.recipe).toEqual("null")
 })
 
 test("If there is an empty Recipe in the state it should not send it in the signup request", async () => {
