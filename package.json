@@ -47,6 +47,7 @@
         "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
+        "server": "node ./server/app.js",
         "postinstall": "cd server && npm install",
         "predeploy:fe": "npm run build",
         "deploy:fe": "gh-pages -d build",
