@@ -1,8 +1,3 @@
-"use strict"
-
-/**
- * Module dependencies.
- */
 require("dotenv").config()
 const express = require("express")
 const hash = require("pbkdf2-password")()
