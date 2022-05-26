@@ -1,6 +1,6 @@
 # Foodist
 
-![GitHub](https://img.shields.io/github/license/JG075/foodist?style=plastic)![AppVeyor tests](https://img.shields.io/appveyor/tests/JG075/foodist?style=plastic)
+![GitHub](https://img.shields.io/github/license/JG075/foodist?style=plastic) ![AppVeyor tests](https://img.shields.io/appveyor/tests/JG075/foodist?style=plastic)
 
 ![image](https://foodist.s3.eu-west-1.amazonaws.com/uploads/foodist.gif)
 
