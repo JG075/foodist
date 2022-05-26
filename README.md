@@ -1,31 +1,92 @@
-# Getting Started with Create React App
+# Foodist
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![GitHub](https://img.shields.io/github/license/JG075/foodist?style=plastic)![AppVeyor tests](https://img.shields.io/appveyor/tests/JG075/foodist?style=plastic)
 
-## Available Scripts
+![image](https://foodist.s3.eu-west-1.amazonaws.com/uploads/foodist.gif)
 
-In the project directory, you can run:
+A recipe manager app developed as a personal project following TDD principles. Built in [React](https://reactjs.org/) + [TypeScript](https://www.typescriptlang.org/). Also includes a small [Express](https://expressjs.com/) server that provides authentication and a REST API via [json-server](https://github.com/typicode/json-server). Tested with [Jest](https://jestjs.io/) and [Testing Library](https://testing-library.com/).
+
+## Demo
+
+Please note the b/e is hosted on [Heroku](https://heroku.com/) so it may take up to 30 seconds to initially load an API request (such as signing up).
+
+**Visit:**
+
+https://jg075.github.io/foodist/
+
+You can create a new account, or sign in with:
+
+Email: test@example.com
+
+Password: Password123!
+
+## Features
+
+-   Create a recipe (no account required)
+-   Create an account to publish your recipe (can then be shared with anyone)
+-   Create/Edit/Delete recipes in your account
+-   Users that view recipes they don't own have their own local version
+-   Auto saving after changes are made
+-   Deployment to GitHub Pages and Heroku
+-   JSON database is saved to S3
+
+## Installation
+
+[Nodejs](https://nodejs.org/en/) is required. Install foodist with npm:
+
+```bash
+git clone https://github.com/JG075/foodist.git
+cd foodist
+npm install
+```
+
+You can then update the `.env` file if you would like images to be uploaded to an s3 bucket, and set API related envs (although these will only apply locally).
+
+To deploy to Heroku you will need the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli).
+
+## Run Locally
+
+Start the development server:
+
+```bash
+  npm start
+```
+
+Start the express server (in another terminal):
+
+```bash
+  npm run server
+```
+
+## Scripts
 
 ### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Runs the app in the development mode. Open [http://localhost:3000/foodist](http://localhost:3000/foodist) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+The page will reload when you make changes. You may also see any lint errors in the console.
+
+### `npm run server`
+
+Starts the server on port 3001. Run this in a separate terminal.
 
 ### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Launches the test runner in the interactive watch mode. See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+### `npm run deploy:fe`
+
+Builds the front-end and then deploys the build folder to GitHub Pages.
+
+### `npm run deploy:be`
+
+Pushes the code from `/server` to Heroku.
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Builds the app for production to the `build` folder. It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+The build is minified and the filenames include the hashes.Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
@@ -39,32 +100,4 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-## Learn More
-
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
