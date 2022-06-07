@@ -25,8 +25,8 @@ Password: Password123!
 -   Create a recipe (no account required)
 -   Create an account to publish your recipe (can then be shared with anyone)
 -   Create/Edit/Delete recipes in your account
--   Users that view recipes they don't own have their own local version
--   Auto saving after changes are made
+-   Users that view recipes that they don't own have their own local version
+-   Auto saving after changes are made (to local storage, or to the API when logged in)
 -   Deployment to GitHub Pages and Heroku
 -   JSON database is saved to S3
 
